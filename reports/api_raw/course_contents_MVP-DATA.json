@@ -1,0 +1,391 @@
+[
+  {
+    "id": 6,
+    "name": "General",
+    "visible": 1,
+    "summary": "",
+    "summaryformat": 1,
+    "section": 0,
+    "hiddenbynumsections": 0,
+    "uservisible": true,
+    "component": null,
+    "itemid": null,
+    "modules": [
+      {
+        "id": 2,
+        "url": "http://localhost:8000/mod/forum/view.php?id=2",
+        "name": "Announcements",
+        "instance": 2,
+        "contextid": 22,
+        "visible": 1,
+        "uservisible": true,
+        "visibleoncoursepage": 1,
+        "modicon": "http://localhost:8000/theme/image.php/boost/forum/1784752288/monologo?filtericon=1",
+        "modname": "forum",
+        "purpose": "collaboration",
+        "branded": false,
+        "modplural": "Forums",
+        "indent": 0,
+        "onclick": "",
+        "afterlink": null,
+        "activitybadge": [],
+        "customdata": "{\"trackingtype\":\"1\"}",
+        "noviewlink": false,
+        "candisplay": true,
+        "completion": 0,
+        "downloadcontent": 1,
+        "dates": [],
+        "groupmode": 0
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "1. Knowledge Representation, Logic and Ontologies",
+    "visible": 1,
+    "summary": "",
+    "summaryformat": 1,
+    "section": 1,
+    "hiddenbynumsections": 0,
+    "uservisible": true,
+    "component": null,
+    "itemid": null,
+    "modules": [
+      {
+        "id": 7,
+        "url": "http://localhost:8000/mod/page/view.php?id=7",
+        "name": "Knowledge Representation, Logic and Ontologies",
+        "instance": 5,
+        "contextid": 27,
+        "visible": 1,
+        "uservisible": true,
+        "visibleoncoursepage": 1,
+        "modicon": "http://localhost:8000/theme/image.php/boost/page/1784752288/monologo?filtericon=1",
+        "modname": "page",
+        "purpose": "content",
+        "branded": false,
+        "modplural": "Pages",
+        "indent": 0,
+        "onclick": "",
+        "afterlink": null,
+        "customdata": "\"\"",
+        "noviewlink": false,
+        "candisplay": true,
+        "completion": 2,
+        "completiondata": {
+          "state": 0,
+          "timecompleted": 0,
+          "overrideby": null,
+          "valueused": false,
+          "hascompletion": true,
+          "isautomatic": true,
+          "istrackeduser": false,
+          "uservisible": true,
+          "details": [
+            {
+              "rulename": "completionview",
+              "rulevalue": {
+                "status": 0,
+                "description": "View"
+              }
+            }
+          ],
+          "isoverallcomplete": false
+        },
+        "downloadcontent": 1,
+        "dates": [],
+        "groupmode": 0,
+        "contents": [
+          {
+            "type": "file",
+            "filename": "index.html",
+            "filepath": "/",
+            "filesize": 0,
+            "fileurl": "http://localhost:8000/webservice/pluginfile.php/27/mod_page/content/index.html?forcedownload=1",
+            "timecreated": null,
+            "timemodified": 1785306828,
+            "sortorder": 1,
+            "userid": null,
+            "author": null,
+            "license": null
+          }
+        ],
+        "contentsinfo": {
+          "filescount": 1,
+          "filessize": 0,
+          "lastmodified": 1785306828,
+          "mimetypes": [],
+          "repositorytype": ""
+        }
+      },
+      {
+        "id": 12,
+        "url": "http://localhost:8000/mod/quiz/view.php?id=12",
+        "name": "Data and Intelligent Systems Fundamentals Quiz",
+        "instance": 2,
+        "contextid": 32,
+        "visible": 1,
+        "uservisible": true,
+        "visibleoncoursepage": 1,
+        "modicon": "http://localhost:8000/theme/image.php/boost/quiz/1784752288/monologo?filtericon=1",
+        "modname": "quiz",
+        "purpose": "assessment",
+        "branded": false,
+        "modplural": "Quizzes",
+        "indent": 0,
+        "onclick": "",
+        "afterlink": null,
+        "customdata": "\"\"",
+        "noviewlink": false,
+        "candisplay": true,
+        "completion": 0,
+        "downloadcontent": 1,
+        "dates": [],
+        "groupmode": 0
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "2. Relational and NoSQL Databases",
+    "visible": 1,
+    "summary": "",
+    "summaryformat": 1,
+    "section": 2,
+    "hiddenbynumsections": 0,
+    "uservisible": true,
+    "component": null,
+    "itemid": null,
+    "modules": [
+      {
+        "id": 8,
+        "url": "http://localhost:8000/mod/page/view.php?id=8",
+        "name": "Relational and NoSQL Database Systems",
+        "instance": 6,
+        "contextid": 28,
+        "visible": 1,
+        "uservisible": true,
+        "visibleoncoursepage": 1,
+        "modicon": "http://localhost:8000/theme/image.php/boost/page/1784752288/monologo?filtericon=1",
+        "modname": "page",
+        "purpose": "content",
+        "branded": false,
+        "modplural": "Pages",
+        "indent": 0,
+        "onclick": "",
+        "afterlink": null,
+        "customdata": "\"\"",
+        "noviewlink": false,
+        "candisplay": true,
+        "completion": 2,
+        "completiondata": {
+          "state": 0,
+          "timecompleted": 0,
+          "overrideby": null,
+          "valueused": false,
+          "hascompletion": true,
+          "isautomatic": true,
+          "istrackeduser": false,
+          "uservisible": true,
+          "details": [
+            {
+              "rulename": "completionview",
+              "rulevalue": {
+                "status": 0,
+                "description": "View"
+              }
+            }
+          ],
+          "isoverallcomplete": false
+        },
+        "downloadcontent": 1,
+        "dates": [],
+        "groupmode": 0,
+        "contents": [
+          {
+            "type": "file",
+            "filename": "index.html",
+            "filepath": "/",
+            "filesize": 0,
+            "fileurl": "http://localhost:8000/webservice/pluginfile.php/28/mod_page/content/index.html?forcedownload=1",
+            "timecreated": null,
+            "timemodified": 1785306893,
+            "sortorder": 1,
+            "userid": null,
+            "author": null,
+            "license": null
+          }
+        ],
+        "contentsinfo": {
+          "filescount": 1,
+          "filessize": 0,
+          "lastmodified": 1785306893,
+          "mimetypes": [],
+          "repositorytype": ""
+        }
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "3. SQL Queries and Decision Support",
+    "visible": 1,
+    "summary": "",
+    "summaryformat": 1,
+    "section": 3,
+    "hiddenbynumsections": 0,
+    "uservisible": true,
+    "component": null,
+    "itemid": null,
+    "modules": [
+      {
+        "id": 9,
+        "url": "http://localhost:8000/mod/page/view.php?id=9",
+        "name": "SQL Queries and Decision Support",
+        "instance": 7,
+        "contextid": 29,
+        "visible": 1,
+        "uservisible": true,
+        "visibleoncoursepage": 1,
+        "modicon": "http://localhost:8000/theme/image.php/boost/page/1784752288/monologo?filtericon=1",
+        "modname": "page",
+        "purpose": "content",
+        "branded": false,
+        "modplural": "Pages",
+        "indent": 0,
+        "onclick": "",
+        "afterlink": null,
+        "customdata": "\"\"",
+        "noviewlink": false,
+        "candisplay": true,
+        "completion": 2,
+        "completiondata": {
+          "state": 0,
+          "timecompleted": 0,
+          "overrideby": null,
+          "valueused": false,
+          "hascompletion": true,
+          "isautomatic": true,
+          "istrackeduser": false,
+          "uservisible": true,
+          "details": [
+            {
+              "rulename": "completionview",
+              "rulevalue": {
+                "status": 0,
+                "description": "View"
+              }
+            }
+          ],
+          "isoverallcomplete": false
+        },
+        "downloadcontent": 1,
+        "dates": [],
+        "groupmode": 0,
+        "contents": [
+          {
+            "type": "file",
+            "filename": "index.html",
+            "filepath": "/",
+            "filesize": 0,
+            "fileurl": "http://localhost:8000/webservice/pluginfile.php/29/mod_page/content/index.html?forcedownload=1",
+            "timecreated": null,
+            "timemodified": 1785307019,
+            "sortorder": 1,
+            "userid": null,
+            "author": null,
+            "license": null
+          }
+        ],
+        "contentsinfo": {
+          "filescount": 1,
+          "filessize": 0,
+          "lastmodified": 1785307019,
+          "mimetypes": [],
+          "repositorytype": ""
+        }
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "4. Data Science, Machine Learning and NLP",
+    "visible": 1,
+    "summary": "",
+    "summaryformat": 1,
+    "section": 4,
+    "hiddenbynumsections": 0,
+    "uservisible": true,
+    "component": null,
+    "itemid": null,
+    "modules": [
+      {
+        "id": 10,
+        "url": "http://localhost:8000/mod/page/view.php?id=10",
+        "name": "Data Science, Machine Learning and Natural Language Processing",
+        "instance": 8,
+        "contextid": 30,
+        "visible": 1,
+        "uservisible": true,
+        "visibleoncoursepage": 1,
+        "modicon": "http://localhost:8000/theme/image.php/boost/page/1784752288/monologo?filtericon=1",
+        "modname": "page",
+        "purpose": "content",
+        "branded": false,
+        "modplural": "Pages",
+        "indent": 0,
+        "onclick": "",
+        "afterlink": null,
+        "customdata": "\"\"",
+        "noviewlink": false,
+        "candisplay": true,
+        "completion": 2,
+        "completiondata": {
+          "state": 0,
+          "timecompleted": 0,
+          "overrideby": null,
+          "valueused": false,
+          "hascompletion": true,
+          "isautomatic": true,
+          "istrackeduser": false,
+          "uservisible": true,
+          "details": [
+            {
+              "rulename": "completionview",
+              "rulevalue": {
+                "status": 0,
+                "description": "View"
+              }
+            }
+          ],
+          "isoverallcomplete": false
+        },
+        "downloadcontent": 1,
+        "dates": [],
+        "groupmode": 0,
+        "contents": [
+          {
+            "type": "file",
+            "filename": "index.html",
+            "filepath": "/",
+            "filesize": 0,
+            "fileurl": "http://localhost:8000/webservice/pluginfile.php/30/mod_page/content/index.html?forcedownload=1",
+            "timecreated": null,
+            "timemodified": 1785307116,
+            "sortorder": 1,
+            "userid": null,
+            "author": null,
+            "license": null
+          }
+        ],
+        "contentsinfo": {
+          "filescount": 1,
+          "filessize": 0,
+          "lastmodified": 1785307116,
+          "mimetypes": [],
+          "repositorytype": ""
+        }
+      }
+    ]
+  }
+]

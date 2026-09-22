@@ -1,0 +1,12 @@
+{
+  "affected_fragment_count": 10,
+  "competency_catalogue_hash": "27ef8064e5eecc27b2baf0964a9c978a47de3b63338bd6642f658c1578650436",
+  "experiment_name": "post_hoc_child_preference_ablation",
+  "note": "Post-hoc hierarchy ablation. Frozen Gemini predictions were not overwritten.",
+  "original_predictions_modified": false,
+  "removed_parent_count": 10,
+  "removed_true_reference_labels": 0,
+  "rule_version": "1.0",
+  "source_prediction_hash": "4ec9abf4aa1d3b4cdab2b1a5b367bc8ed9512b6b85616d053809dd6770e03a03",
+  "timestamp": "2026-09-18T05:48:30+00:00"
+}

@@ -1,0 +1,9 @@
+=== FINAL ACTIVITY-COMPETENCY VALIDATION ===
+Activity-competency links: 20
+MVP-SW links: 13
+MVP-DATA links: 7
+Page links: 11
+Quiz links: 9
+Manual/database differences: 0
+
+Status: PASSED

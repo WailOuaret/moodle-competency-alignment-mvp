@@ -1,0 +1,28 @@
+{
+  "hit_at_1": 0.7428571428571429,
+  "hit_at_3": 0.8857142857142857,
+  "hit_at_5": 0.9714285714285714,
+  "mrr": 0.8309523809523809,
+  "notes": {
+    "multi_label": "Recall@K is label-level: gold labels found in Top-K divided by all gold labels.",
+    "no_competency_fragments": "Excluded from Recall@K / Hit@K / MRR denominators.",
+    "parent_child": "Parent and child IDs are distinct labels; a parent does not automatically satisfy a child."
+  },
+  "recall_at_1": 0.6842105263157895,
+  "recall_at_3": 0.868421052631579,
+  "recall_at_5": 0.9736842105263158,
+  "status": "COMPLETE",
+  "top1_macro": {
+    "f1": 0.5899806076276665,
+    "precision": 0.6538461538461539,
+    "recall": 0.561965811965812
+  },
+  "top1_micro": {
+    "f1": 0.7123287671232877,
+    "false_negatives": 12.0,
+    "false_positives": 9.0,
+    "precision": 0.7428571428571429,
+    "recall": 0.6842105263157895,
+    "true_positives": 26.0
+  }
+}

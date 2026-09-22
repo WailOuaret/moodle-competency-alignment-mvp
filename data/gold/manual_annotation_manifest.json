@@ -1,0 +1,14 @@
+{
+  "annotation_date": "2026-09-18",
+  "annotation_status": "human_reviewed_reference",
+  "annotator": "Wail Ouaret",
+  "backup_file": "data/gold/annotation_backups/manual_fragment_annotations_20260918T044644Z.csv",
+  "completed_decisions": 35,
+  "fragment_count": 35,
+  "not_ai_generated_gold": true,
+  "not_independent_blinded_gold_from_scratch": true,
+  "reads_bm25_or_gemini_to_set_labels": false,
+  "researcher_is_final_decision_maker": true,
+  "source_reviewed_file": "data/reviews/ai_assisted_annotation_drafts.csv",
+  "wording": "All 35 fragments were reviewed and finalized by the researcher against the 13-competency UTC GI catalogue. The finalized annotation set is used as the human-reviewed reference for evaluation."
+}

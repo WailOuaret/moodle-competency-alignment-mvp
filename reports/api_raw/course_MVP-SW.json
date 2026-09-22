@@ -1,0 +1,34 @@
+{
+  "courses": [
+    {
+      "id": 2,
+      "fullname": "Software Engineering and Distributed Systems",
+      "displayname": "Software Engineering and Distributed Systems",
+      "shortname": "MVP-SW",
+      "courseimage": "http://localhost:8000/pluginfile.php/19/course/generated/course.svg",
+      "categoryid": 1,
+      "categoryname": "Category 1",
+      "sortorder": 10002,
+      "summary": "<p>Test course for the Moodle competency-alignment MVP. It contains learning resources and quizzes related to software development, software quality, user experience, distributed systems, computer architectures, networks and cybersecurity.</p>",
+      "summaryformat": 1,
+      "summaryfiles": [],
+      "overviewfiles": [],
+      "showactivitydates": true,
+      "showcompletionconditions": true,
+      "contacts": [
+        {
+          "id": 3,
+          "fullname": "MVP Teacher"
+        },
+        {
+          "id": 2,
+          "fullname": "Admin User"
+        }
+      ],
+      "enrollmentmethods": [
+        "manual"
+      ]
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,2 @@
+id,shortname,idnumber,description,descriptionformat,contextid,scaleid,scaleconfiguration,visible,taxonomies,timecreated,timemodified
+2,UTC GI Competency Framework - MVP,UTC_GI_MVP_2026,"<p>Reduced UTC Computer Science competency framework prepared for the Moodle competency-alignment MVP.</p><p>The framework contains 13 selected competencies from the GI_C1, GI_C2 and GI_C3 branches.</p>",1,1,2,"[{""scaleid"":""2""},{""id"":2,""scaledefault"":1,""proficient"":1}]",1,"competency,competency,competency,competency",1784997717,1784997717

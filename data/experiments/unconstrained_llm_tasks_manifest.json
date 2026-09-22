@@ -1,0 +1,65 @@
+{
+  "candidate_counts_observed": [
+    13
+  ],
+  "candidate_space": "all_framework_competencies",
+  "condition_comparison": {
+    "errors": [],
+    "fragment_text_mismatches": [],
+    "fragments_with_identical_candidate_space": [],
+    "held_constant": [
+      "model",
+      "temperature",
+      "maximum_selections",
+      "abstention_allowed",
+      "evidence_must_be_exact_substring",
+      "output_schema",
+      "fragment_corpus",
+      "competency_descriptions",
+      "validator_semantics"
+    ],
+    "instruction_mismatches": [],
+    "intended_difference": "candidate space is all framework competencies instead of BM25 Top-5",
+    "presentation_difference": "the candidate block omits the BM25 score line, because this condition has no retrieval step and a fabricated score would add a signal the condition does not have",
+    "shared_fragment_count": 35,
+    "status": "PASSED"
+  },
+  "constrained_outputs_overwritten": false,
+  "evidence_must_be_exact_substring": true,
+  "experiment": "unconstrained_all_competencies",
+  "experiment_kind": "OPTIONAL POST-CORE CANDIDATE-RESTRICTION COMPARISON",
+  "held_constant": [
+    "model",
+    "temperature",
+    "maximum_selections",
+    "abstention_allowed",
+    "evidence_must_be_exact_substring",
+    "output_schema",
+    "fragment_corpus",
+    "competency_descriptions",
+    "validator_semantics"
+  ],
+  "intended_difference": "candidate space is all framework competencies instead of BM25 Top-5",
+  "maximum_selections": 3,
+  "model_name": "gemini-3.5-flash",
+  "output_location": "data/experiments/",
+  "presentation_difference": "the candidate block omits the BM25 score line, because this condition has no retrieval step and a fabricated score would add a signal the condition does not have",
+  "source_files": {
+    "competencies.jsonl": "27ef8064e5eecc27b2baf0964a9c978a47de3b63338bd6642f658c1578650436",
+    "fragments.jsonl": "6380f43b95628be59d028d0fcc5d55096448d49514ee42bce651082ba5568aa2",
+    "llm_tasks.jsonl": "32bc724db8aea5bd11a91bbe7788e839e853d6b726035fab78e5578b5924b66d"
+  },
+  "task_count": 35,
+  "task_version": "1.0",
+  "temperature": 0.0,
+  "validation": {
+    "duplicate_fragment_ids": [],
+    "errors": [],
+    "expected_task_count": 35,
+    "missing_fragment_ids": [],
+    "status": "PASSED",
+    "task_count": 35,
+    "unexpected_fragment_ids": []
+  },
+  "validator": "llm_validation.validate_alignment_response (reused unchanged)"
+}

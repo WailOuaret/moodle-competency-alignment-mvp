@@ -1,0 +1,3 @@
+review_id,analysis_id,runtime_resource_id,competency_id,decision,replacement_competency_id,reviewer_name,reviewer_role,review_date,backend,model,comment,counts_as_teacher_or_supervisor_validation
+an_433ef0bd8a6d9752|runtime:moodle:59b42a07cd74fc3d||GI_C3|2026-09-18|Wail Ouaret,an_433ef0bd8a6d9752,runtime:moodle:59b42a07cd74fc3d,GI_C3,REJECT,,Wail Ouaret,researcher,2026-09-18,gemini,gemini-3.5-flash,,false
+an_433ef0bd8a6d9752|runtime:moodle:59b42a07cd74fc3d||GI_C3_1|2026-09-18|Wail Ouaret,an_433ef0bd8a6d9752,runtime:moodle:59b42a07cd74fc3d,GI_C3_1,ACCEPT,,Wail Ouaret,researcher,2026-09-18,gemini,gemini-3.5-flash,,false

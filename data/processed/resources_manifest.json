@@ -1,0 +1,16 @@
+{
+  "duplicate_resource_ids": 0,
+  "empty_text_resources": [],
+  "invalid_quiz_answer_resources": [],
+  "missing_course_module_resources": [],
+  "passed": true,
+  "resource_types": {
+    "page": 8,
+    "quiz_question": 12
+  },
+  "resources_per_course": {
+    "MVP-DATA": 10,
+    "MVP-SW": 10
+  },
+  "total_resources": 20
+}

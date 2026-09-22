@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "moodle-competency-mvp"
+version = "0.1.0"
+description = "Moodle learning-resource to competency alignment prototype"
+requires-python = ">=3.10"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+markers = [
+    "frozen_data: test reads the frozen experimental files and is skipped when they are absent",
+    "slow: long-running test, not part of the fast feedback loop",
+]

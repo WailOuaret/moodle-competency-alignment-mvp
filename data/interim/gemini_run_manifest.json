@@ -1,0 +1,54 @@
+{
+  "candidate_count": 5,
+  "current_session_usage": {
+    "candidate_tokens": 2943,
+    "prompt_tokens": 15262,
+    "total_tokens": 27661
+  },
+  "end_timestamp": "2026-09-18T03:53:40+00:00",
+  "failed_fragment_ids": [],
+  "live_attempts": 12,
+  "max_selections": 3,
+  "model_id": "gemini-3.5-flash",
+  "model_name": "gemini-3.5-flash",
+  "model_provider": "google_gemini",
+  "newly_completed_responses": 12,
+  "output_files": {
+    "errors": "reports/logs/gemini_alignment_errors.jsonl",
+    "raw_attempts": "data/interim/gemini_raw_attempts.jsonl",
+    "responses": "data/interim/gemini_responses.jsonl",
+    "validated": "data/interim/gemini_validated.jsonl"
+  },
+  "preserved_valid_responses": 23,
+  "prompt_version": "1.0",
+  "quota_exhausted": false,
+  "remaining_fragment_ids": [],
+  "remaining_responses": 0,
+  "restart_used": false,
+  "results": {
+    "abstentions": 0,
+    "selected_alignments": 51,
+    "validated_responses": 35
+  },
+  "resumed_valid_responses": 23,
+  "retry_count": 1,
+  "schema_version": "1.0",
+  "source_tasks": 35,
+  "start_timestamp": "2026-09-18T03:51:26+00:00",
+  "temperature": 0,
+  "total_valid_now": 35,
+  "validation": {
+    "abstentions": 0,
+    "duplicate_response_fragments": [],
+    "invalid_fragment_ids": [],
+    "invalid_responses": 0,
+    "missing_responses": [],
+    "passed": true,
+    "selected_alignments": 51,
+    "source_responses": 35,
+    "source_tasks": 35,
+    "unknown_responses": [],
+    "valid_responses": 35,
+    "validated_responses": 35
+  }
+}

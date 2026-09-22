@@ -1,0 +1,1 @@
+validation_id,analysis_id,resource_id,resource_title,resource_type,competency_id,reviewer_name,reviewer_role,condition,decision,replacement_competency_id,evidence_usefulness_rating,confidence_in_decision,decision_time_seconds,comment,date

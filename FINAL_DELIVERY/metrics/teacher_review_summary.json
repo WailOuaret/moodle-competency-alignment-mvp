@@ -1,0 +1,42 @@
+{
+  "acceptance_rate": null,
+  "accepted": 0,
+  "added": 0,
+  "edit_rate": null,
+  "evidence_relevance_distribution": {
+    "0": 0,
+    "1": 0,
+    "2": 0
+  },
+  "evidence_relevance_unanswered": 0,
+  "message": "NO TEACHER REVIEW DECISIONS EXIST FOR THE RESEARCH CORPUS",
+  "modified": 0,
+  "pending": 34,
+  "per_course": {},
+  "per_resource_type": {},
+  "provenance_note": "A researcher decision is never reported as teacher validation. Only reviewer roles teacher or supervisor count as such.",
+  "rate_denominator": 0,
+  "rate_note": "Rates are computed over reviewed suggestions only. They are null when nothing has been reviewed, rather than 0.0, because 0.0 would read as a finding.",
+  "rejected": 0,
+  "rejection_rate": null,
+  "review_file_note": "corpus_teacher_reviews.csv holds decisions about the frozen research corpus. teacher_reviews.csv is the separate runtime app's log and is reported separately, not merged.",
+  "reviewable_mappings": 34,
+  "reviewed": 0,
+  "reviewed_fraction": 0.0,
+  "reviewer_roles": {},
+  "reviewers": {},
+  "runtime_note": "Runtime reviews come from the separate runtime analysis app and are not decisions about the frozen research corpus. They are reported here only so no real human decision goes unrecorded.",
+  "runtime_review_count": 2,
+  "runtime_reviewer_roles": {
+    "researcher": 2
+  },
+  "significance_tests": "not_run",
+  "significance_tests_note": "No significance tests. Sample size and design do not support inferential claims.",
+  "source_files": {
+    "corpus_teacher_reviews.csv": null,
+    "teacher_reviews.csv": "ba99c5f445df62e3b41ebb21f996d2033c26e34ccdb27839229690c89752d9c3"
+  },
+  "status": "WAITING_FOR_HUMAN",
+  "summary_version": "1.0",
+  "teacher_or_supervisor_validation_performed": false
+}

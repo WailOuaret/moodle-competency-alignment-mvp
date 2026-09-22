@@ -1,0 +1,3 @@
+"Parent ID number","ID number","Short name",Description,"Description format","Scale values","Scale configuration","Rule type (optional)","Rule outcome (optional)","Rule config (optional)","Cross-referenced competency ID numbers","Exported ID (optional)","Is framework",Taxonomy
+,CSV_TEMPLATE_2026,"CSV Template - Temporary","<p>Temporary framework used to obtain the Moodle 5.2 CSV export format.</p>",1,"Not yet competent,Competent","[{""scaleid"":""2""},{""id"":2,""scaledefault"":1,""proficient"":1}]",,,,,,1,"competency,competency,competency,competency"
+,TMP_1,"Temporary competency","<p>Temporary competency used only to verify the Moodle CSV export format.</p>",1,,,,0,null,,1,,

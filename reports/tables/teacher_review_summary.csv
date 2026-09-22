@@ -1,0 +1,17 @@
+scope,metric,value,note
+overall,status,WAITING_FOR_HUMAN,NO TEACHER REVIEW DECISIONS EXIST FOR THE RESEARCH CORPUS
+overall,reviewable_mappings,34,predicted resource-competency alignments offered for review
+overall,reviewed,0,
+overall,pending,34,
+overall,accepted,0,
+overall,rejected,0,
+overall,modified,0,
+overall,added,0,
+overall,acceptance_rate,,no real decisions exist
+overall,edit_rate,,no real decisions exist
+overall,rejection_rate,,no real decisions exist
+evidence_relevance,rating_0,0,teacher judgement of the evidence quote
+evidence_relevance,rating_1,0,teacher judgement of the evidence quote
+evidence_relevance,rating_2,0,teacher judgement of the evidence quote
+evidence_relevance,unanswered,0,reviews that left the evidence question blank
+runtime,runtime_review_count,2,Runtime reviews come from the separate runtime analysis app and are not decisions about the frozen research corpus. They are reported here only so no real human decision goes unrecorded.

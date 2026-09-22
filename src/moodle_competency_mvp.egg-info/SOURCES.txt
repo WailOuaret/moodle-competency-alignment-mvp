@@ -1,0 +1,6 @@
+pyproject.toml
+src/moodle_competency/__init__.py
+src/moodle_competency_mvp.egg-info/PKG-INFO
+src/moodle_competency_mvp.egg-info/SOURCES.txt
+src/moodle_competency_mvp.egg-info/dependency_links.txt
+src/moodle_competency_mvp.egg-info/top_level.txt

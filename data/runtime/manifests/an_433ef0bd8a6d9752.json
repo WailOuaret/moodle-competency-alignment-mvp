@@ -1,0 +1,235 @@
+{
+  "aggregation_method": "1.0",
+  "analysis_id": "an_433ef0bd8a6d9752",
+  "backend": "gemini",
+  "candidate_count": 5,
+  "competency_catalogue_hash": "27ef8064e5eecc27b2baf0964a9c978a47de3b63338bd6642f658c1578650436",
+  "extractor_version": "runtime-1.0",
+  "fragmenter_version": "1.0",
+  "hierarchy_warnings": [
+    {
+      "action": "warning_only",
+      "child_confidence": 0.95,
+      "child_evidence": [
+        "A well-designed knowledge representation system combines clear concepts, meaningful relationships, logical consistency, traceable evidence, ethical safeguards, and appropriate regulatory controls.",
+        "Ethical issues include privacy, transparency, explainability, discrimination, and the possibility of biased knowledge structures."
+      ],
+      "child_id": "GI_C3_1",
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f003",
+      "parent_confidence": 0.9,
+      "parent_evidence": [
+        "A well-designed knowledge representation system combines clear concepts, meaningful relationships, logical consistency, traceable evidence, ethical safeguards, and appropriate regulatory controls."
+      ],
+      "parent_id": "GI_C3",
+      "resource_id": "",
+      "same_or_overlapping_evidence": true,
+      "warning_type": "granularity_conflict"
+    },
+    {
+      "action": "warning_only",
+      "child_confidence": 0.95,
+      "child_evidence": [
+        "A well-designed knowledge representation system combines clear concepts, meaningful relationships, logical consistency, traceable evidence, ethical safeguards, and appropriate regulatory controls.",
+        "Ethical issues include privacy, transparency, explainability, discrimination, and the possibility of biased knowledge structures."
+      ],
+      "child_id": "GI_C3_1",
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f003",
+      "parent_confidence": 0.9,
+      "parent_evidence": [
+        "A well-designed knowledge representation system combines clear concepts, meaningful relationships, logical consistency, traceable evidence, ethical safeguards, and appropriate regulatory controls."
+      ],
+      "parent_id": "GI_C3",
+      "resource_id": "",
+      "same_or_overlapping_evidence": true,
+      "warning_type": "parent_child_redundancy"
+    },
+    {
+      "action": "warning_only",
+      "child_confidence": 0.95,
+      "child_evidence": [
+        "This page introduces knowledge representation, formal logic, ontologies, semantic relationships, automated reasoning, ethics, bias, and regulatory considerations.",
+        "an educational ontology may represent courses, learning resources, competencies, teachers, students, and assessment activities.",
+        "The Semantic Web uses structured data and shared vocabularies so that computers can interpret relationships between information from different sources.",
+        "Automated reasoning applies logical rules to existing knowledge to derive new conclusions.",
+        "A well-designed knowledge representation system combines clear concepts, meaningful relationships, logical consistency, traceable evidence, ethical safeguards, and appropriate regulatory controls.",
+        "Ethical issues include privacy, transparency, explainability, discrimination, and the possibility of biased knowledge structures."
+      ],
+      "child_id": "GI_C3_1",
+      "course_shortname": "MVP-DATA",
+      "parent_confidence": 0.9,
+      "parent_evidence": [
+        "A well-designed knowledge representation system combines clear concepts, meaningful relationships, logical consistency, traceable evidence, ethical safeguards, and appropriate regulatory controls."
+      ],
+      "parent_id": "GI_C3",
+      "resource_id": "runtime:moodle:59b42a07cd74fc3d",
+      "resource_type": "page",
+      "same_or_overlapping_evidence": true,
+      "warning_type": "granularity_conflict"
+    },
+    {
+      "action": "warning_only",
+      "child_confidence": 0.95,
+      "child_evidence": [
+        "This page introduces knowledge representation, formal logic, ontologies, semantic relationships, automated reasoning, ethics, bias, and regulatory considerations.",
+        "an educational ontology may represent courses, learning resources, competencies, teachers, students, and assessment activities.",
+        "The Semantic Web uses structured data and shared vocabularies so that computers can interpret relationships between information from different sources.",
+        "Automated reasoning applies logical rules to existing knowledge to derive new conclusions.",
+        "A well-designed knowledge representation system combines clear concepts, meaningful relationships, logical consistency, traceable evidence, ethical safeguards, and appropriate regulatory controls.",
+        "Ethical issues include privacy, transparency, explainability, discrimination, and the possibility of biased knowledge structures."
+      ],
+      "child_id": "GI_C3_1",
+      "course_shortname": "MVP-DATA",
+      "parent_confidence": 0.9,
+      "parent_evidence": [
+        "A well-designed knowledge representation system combines clear concepts, meaningful relationships, logical consistency, traceable evidence, ethical safeguards, and appropriate regulatory controls."
+      ],
+      "parent_id": "GI_C3",
+      "resource_id": "runtime:moodle:59b42a07cd74fc3d",
+      "resource_type": "page",
+      "same_or_overlapping_evidence": true,
+      "warning_type": "parent_child_redundancy"
+    }
+  ],
+  "max_selections": 3,
+  "model": "gemini-3.5-flash",
+  "normalization_version": "1.0",
+  "prompt_version": "1.0",
+  "raw_response_references": [
+    "data/runtime/model_responses/an_433ef0bd8a6d9752_raw.jsonl"
+  ],
+  "raw_text_hash": "df11218dc28860ae5f45c3b026379005c343768673049411c824f1ca5cd3d064",
+  "reconciled_view_requested": true,
+  "research_status": "RUNTIME_DEMO",
+  "resource_hash": "fffb0ce3bf0e4ee0190c4c42385cfb72ce5187e3c26c31846b060bfbd563af14",
+  "retrieval_configuration": {
+    "method": "bm25",
+    "top_k": 5
+  },
+  "runtime_resource_id": "runtime:moodle:59b42a07cd74fc3d",
+  "source": "moodle",
+  "source_reference": "page:5",
+  "temperature": 0.0,
+  "timestamp": "2026-09-18T06:10:11+00:00",
+  "top5_candidate_lists": [
+    {
+      "candidates": [
+        {
+          "bm25_score": 94.00899718,
+          "competency_id": "GI_C3_1",
+          "rank": 1
+        },
+        {
+          "bm25_score": 24.4298755,
+          "competency_id": "GI_C3",
+          "rank": 2
+        },
+        {
+          "bm25_score": 16.02151869,
+          "competency_id": "GI_C2",
+          "rank": 3
+        },
+        {
+          "bm25_score": 10.26410095,
+          "competency_id": "GI_C3_2",
+          "rank": 4
+        },
+        {
+          "bm25_score": 9.53428778,
+          "competency_id": "GI_C1",
+          "rank": 5
+        }
+      ],
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f001"
+    },
+    {
+      "candidates": [
+        {
+          "bm25_score": 50.30047688,
+          "competency_id": "GI_C3_1",
+          "rank": 1
+        },
+        {
+          "bm25_score": 30.97862263,
+          "competency_id": "GI_C3",
+          "rank": 2
+        },
+        {
+          "bm25_score": 13.67089539,
+          "competency_id": "GI_C3_2",
+          "rank": 3
+        },
+        {
+          "bm25_score": 13.1970765,
+          "competency_id": "GI_C2_1",
+          "rank": 4
+        },
+        {
+          "bm25_score": 11.9649213,
+          "competency_id": "GI_C1_4",
+          "rank": 5
+        }
+      ],
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f002"
+    },
+    {
+      "candidates": [
+        {
+          "bm25_score": 41.30187993,
+          "competency_id": "GI_C3_1",
+          "rank": 1
+        },
+        {
+          "bm25_score": 23.98807886,
+          "competency_id": "GI_C3",
+          "rank": 2
+        },
+        {
+          "bm25_score": 4.68590422,
+          "competency_id": "GI_C3_2",
+          "rank": 3
+        },
+        {
+          "bm25_score": 4.23746123,
+          "competency_id": "GI_C1",
+          "rank": 4
+        },
+        {
+          "bm25_score": 4.21117788,
+          "competency_id": "GI_C2",
+          "rank": 5
+        }
+      ],
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f003"
+    }
+  ],
+  "validated_predictions": [
+    {
+      "abstain": false,
+      "errors": [],
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f001",
+      "selected": [
+        "GI_C3_1"
+      ],
+      "valid": true
+    },
+    {
+      "abstain": false,
+      "errors": [],
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f002",
+      "selected": [
+        "GI_C3_1"
+      ],
+      "valid": true
+    },
+    {
+      "abstain": false,
+      "errors": [],
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f003",
+      "selected": [
+        "GI_C3_1",
+        "GI_C3"
+      ],
+      "valid": true
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+=== UTC COMPETENCY DATA CHECK ===
+Original file: data/raw/competencies_utc.jsonl
+Working file: data/processed/competencies_utc.jsonl
+Original top-level type: object
+object
+object
+object
+object
+object
+object
+object
+object
+object
+object
+object
+object
+object
+object
+object
+object
+object
+object
+object
+object
+object
+Competency records: 22
+Fields:
+["aliases_en","aliases_fr","competency_id","description","label","label_en","label_fr","neighbors","uri","uv_ids"]

@@ -1,0 +1,28 @@
+=== MOODLE COMPETENCY CSV VALIDATION ===
+File: /home/wailo/projects/moodle_competency_mvp/data/processed/utc_gi_mvp_moodle.csv
+Columns: 14
+Total data rows: 14
+Framework rows: 1
+Competency rows: 13
+Root competencies: 3
+Child competencies: 10
+Root IDs: GI_C1, GI_C2, GI_C3
+
+Parent-child relationships:
+- GI_C1 -> GI_C1_1
+- GI_C1 -> GI_C1_2
+- GI_C1 -> GI_C1_3
+- GI_C1 -> GI_C1_4
+- GI_C2 -> GI_C2_1
+- GI_C2 -> GI_C2_2
+- GI_C2 -> GI_C2_3
+- GI_C3 -> GI_C3_1
+- GI_C3 -> GI_C3_2
+- GI_C3 -> GI_C3_3
+
+Header matches Moodle template: YES
+All IDs unique: YES
+All parents exist: YES
+All parents precede children: YES
+Framework scale configuration present: YES
+Status: PASSED

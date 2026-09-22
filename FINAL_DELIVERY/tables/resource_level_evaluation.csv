@@ -1,0 +1,21 @@
+resource_id,course_shortname,resource_type,title,fragment_count,reference_competency_ids,predicted_competency_ids,reference_label_count,predicted_label_count,label_count_error,true_positive_ids,false_positive_ids,false_negative_ids,precision,recall,f1,exact_set_match,parent_child_redundancy
+page:1,MVP-SW,page,Software Development Lifecycle and Deployment,2,GI_C1_1;GI_C1_2,GI_C1;GI_C1_1;GI_C1_2,2,3,1,GI_C1_1;GI_C1_2,GI_C1,,0.6666666667,1.0000000000,0.8000000000,false,true
+page:2,MVP-SW,page,User-Centered Interface Design and Accessibility,2,GI_C1_3,GI_C1;GI_C1_3,1,2,1,GI_C1_3,GI_C1,,0.5000000000,1.0000000000,0.6666666667,false,true
+page:3,MVP-SW,page,"Distributed Systems, Concurrency and Scalability",3,GI_C1_4;GI_C2_3,GI_C1_4;GI_C2_2;GI_C2_3,2,3,1,GI_C1_4;GI_C2_3,GI_C2_2,,0.6666666667,1.0000000000,0.8000000000,false,false
+page:4,MVP-SW,page,"Computer Architectures, Networks and Cybersecurity",3,GI_C2_1;GI_C2_2;GI_C2_3,GI_C2;GI_C2_1;GI_C2_2;GI_C2_3,3,4,1,GI_C2_1;GI_C2_2;GI_C2_3,GI_C2,,0.7500000000,1.0000000000,0.8571428571,false,true
+quiz_question:1:1,MVP-SW,quiz_question,SW_Q1_User_Requirements,1,GI_C1_1,GI_C1;GI_C1_1,1,2,1,GI_C1_1,GI_C1,,0.5000000000,1.0000000000,0.6666666667,false,true
+quiz_question:1:3,MVP-SW,quiz_question,SW_Q2_Software_Testing,1,GI_C1_2,GI_C1_2,1,1,0,GI_C1_2,,,1.0000000000,1.0000000000,1.0000000000,true,false
+quiz_question:1:4,MVP-SW,quiz_question,SW_Q3_User_Centred_Design,1,GI_C1_3,GI_C1_1,1,1,0,,GI_C1_1,GI_C1_3,0.0000000000,0.0000000000,0.0000000000,false,false
+quiz_question:1:5,MVP-SW,quiz_question,SW_Q4_Horizontal_Scaling,1,GI_C1_4,GI_C1_4,1,1,0,GI_C1_4,,,1.0000000000,1.0000000000,1.0000000000,true,false
+quiz_question:1:6,MVP-SW,quiz_question,SW_Q5_Risk_Analysis,1,GI_C2_3,GI_C2_3,1,1,0,GI_C2_3,,,1.0000000000,1.0000000000,1.0000000000,true,false
+quiz_question:1:7,MVP-SW,quiz_question,SW_Q6_Software_Quality,1,GI_C1_2,GI_C1_2,1,1,0,GI_C1_2,,,1.0000000000,1.0000000000,1.0000000000,true,false
+page:5,MVP-DATA,page,"Knowledge Representation, Logic and Ontologies",3,GI_C3_1,GI_C3;GI_C3_1,1,2,1,GI_C3_1,GI_C3,,0.5000000000,1.0000000000,0.6666666667,false,true
+page:6,MVP-DATA,page,Relational and NoSQL Database Systems,3,GI_C3_2,GI_C3_2,1,1,0,GI_C3_2,,,1.0000000000,1.0000000000,1.0000000000,true,false
+page:7,MVP-DATA,page,SQL Queries and Decision Support,3,GI_C3_2,GI_C3_2,1,1,0,GI_C3_2,,,1.0000000000,1.0000000000,1.0000000000,true,false
+page:8,MVP-DATA,page,"Data Science, Machine Learning and Natural Language Processing",4,GI_C3_3,GI_C3;GI_C3_3,1,2,1,GI_C3_3,GI_C3,,0.5000000000,1.0000000000,0.6666666667,false,true
+quiz_question:2:8,MVP-DATA,quiz_question,DATA_Q1_Ontology,1,GI_C3_1,GI_C3;GI_C3_1,1,2,1,GI_C3_1,GI_C3,,0.5000000000,1.0000000000,0.6666666667,false,true
+quiz_question:2:9,MVP-DATA,quiz_question,DATA_Q2_Primary_Key,1,GI_C3_2,GI_C3;GI_C3_2,1,2,1,GI_C3_2,GI_C3,,0.5000000000,1.0000000000,0.6666666667,false,true
+quiz_question:2:10,MVP-DATA,quiz_question,DATA_Q3_Normalization,1,GI_C3_2,GI_C3_2,1,1,0,GI_C3_2,,,1.0000000000,1.0000000000,1.0000000000,true,false
+quiz_question:2:11,MVP-DATA,quiz_question,DATA_Q4_SQL_Aggregation,1,GI_C3_2,GI_C3_2,1,1,0,GI_C3_2,,,1.0000000000,1.0000000000,1.0000000000,true,false
+quiz_question:2:12,MVP-DATA,quiz_question,DATA_Q5_Supervised_Learning,1,GI_C3_3,GI_C3;GI_C3_3,1,2,1,GI_C3_3,GI_C3,,0.5000000000,1.0000000000,0.6666666667,false,true
+quiz_question:2:13,MVP-DATA,quiz_question,DATA_Q6_Embeddings,1,GI_C3_3,GI_C3_3,1,1,0,GI_C3_3,,,1.0000000000,1.0000000000,1.0000000000,true,false

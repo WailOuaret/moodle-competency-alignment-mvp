@@ -1,0 +1,43 @@
+{
+  "configuration": {
+    "max_page_characters": 900,
+    "page_strategy": "paragraph_sentence_greedy_chunking",
+    "quiz_question_strategy": "one_question_one_fragment"
+  },
+  "fragmentation_version": "1.0",
+  "input_file": "/home/wailo/projects/moodle_competency_mvp/data/processed/resources.jsonl",
+  "output_file": "/home/wailo/projects/moodle_competency_mvp/data/processed/fragments.jsonl",
+  "validation": {
+    "duplicate_fragment_ids": [],
+    "empty_fragment_ids": [],
+    "empty_search_text_ids": [],
+    "fragment_characters": {
+      "average": 553.886,
+      "maximum": 890,
+      "minimum": 178
+    },
+    "fragments_by_course": {
+      "MVP-DATA": 19,
+      "MVP-SW": 16
+    },
+    "fragments_by_type": {
+      "page_chunk": 23,
+      "quiz_question": 12
+    },
+    "fragments_per_resource": {
+      "average": 1.75,
+      "maximum": 4,
+      "minimum": 1
+    },
+    "invalid_fragment_order": [],
+    "invalid_quiz_fragment_counts": [],
+    "max_page_characters": 900,
+    "missing_resources": [],
+    "oversized_page_fragments": [],
+    "passed": true,
+    "represented_resources": 20,
+    "source_resources": 20,
+    "total_fragments": 35,
+    "unknown_resources": []
+  }
+}

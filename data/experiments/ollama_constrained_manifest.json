@@ -1,0 +1,21 @@
+{
+  "candidate_restriction": "BM25 Top-5",
+  "experiment": "POST-HOC LOCAL OLLAMA COMPARISON",
+  "failed_fragment_ids": [],
+  "finished_at": "2026-09-18T05:23:53+00:00",
+  "host": "http://127.0.0.1:11434",
+  "live_attempt_count": 35,
+  "max_selections": 3,
+  "model_name": "mistral:latest",
+  "model_provider": "ollama",
+  "new_completed": 28,
+  "not_part_of_original_gemini_run": true,
+  "outputs": {
+    "responses": "data/experiments/ollama_constrained_responses.jsonl",
+    "validated": "data/experiments/ollama_constrained_validated.jsonl"
+  },
+  "started_at": "2026-09-18T05:18:26+00:00",
+  "task_count": 35,
+  "temperature": 0,
+  "valid_count": 35
+}

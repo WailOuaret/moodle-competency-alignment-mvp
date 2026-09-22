@@ -1,0 +1,40 @@
+{
+  "configuration": {
+    "top_k": 5
+  },
+  "input_files": {
+    "competencies": "/home/wailo/projects/moodle_competency_mvp/data/processed/competencies.jsonl",
+    "fragments": "/home/wailo/projects/moodle_competency_mvp/data/processed/fragments.jsonl"
+  },
+  "output_file": "/home/wailo/projects/moodle_competency_mvp/data/interim/bm25_candidates.jsonl",
+  "retrieval_method": "BM25Okapi",
+  "retrieval_version": "1.0",
+  "validation": {
+    "all_scores_zero_fragments": [],
+    "candidate_count_statistics": {
+      "average": 5,
+      "maximum": 5,
+      "minimum": 5
+    },
+    "candidate_sets": 35,
+    "competency_corpus_size": 13,
+    "configured_top_k": 5,
+    "duplicate_candidates": [],
+    "duplicate_fragment_ids": [],
+    "expected_candidates_per_fragment": 5,
+    "invalid_candidate_counts": [],
+    "invalid_ranks": [],
+    "invalid_scores": [],
+    "missing_fragments": [],
+    "passed": true,
+    "source_fragments": 35,
+    "top_score_statistics": {
+      "average": 42.39122629,
+      "maximum": 106.79327407,
+      "minimum": 12.20699294
+    },
+    "unknown_competencies": [],
+    "unknown_fragments": [],
+    "unsorted_scores": []
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "input_files": {
+    "competencies_csv": "reports/sql_raw/competencies.csv",
+    "framework_csv": "reports/sql_raw/competency_framework.csv"
+  },
+  "output_file": "data/processed/competencies.jsonl",
+  "source_rows": {
+    "competency_rows": 13,
+    "framework_rows": 1
+  },
+  "validation": {
+    "competencies_by_depth": {
+      "0": 3,
+      "1": 10
+    },
+    "duplicate_competency_ids": [],
+    "duplicate_idnumbers": [],
+    "empty_full_text": [],
+    "expected_count": 13,
+    "framework_count": 1,
+    "framework_ids": [
+      2
+    ],
+    "hierarchy_cycles": [],
+    "missing_competency_ids": [],
+    "missing_expected_idnumbers": [],
+    "missing_idnumbers": [],
+    "missing_parent_references": [],
+    "passed": true,
+    "top_level_competencies": 3,
+    "total_competencies": 13,
+    "unexpected_idnumbers": []
+  }
+}

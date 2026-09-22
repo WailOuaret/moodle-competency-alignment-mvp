@@ -1,0 +1,33 @@
+{
+  "constraints": {
+    "abstention_allowed": true,
+    "candidate_count": 5,
+    "exact_evidence_required": true,
+    "json_only": true,
+    "maximum_selections": 3
+  },
+  "input_files": {
+    "bm25_candidates": "data/interim/bm25_candidates.jsonl",
+    "competencies": "data/processed/competencies.jsonl"
+  },
+  "output_file": "data/interim/llm_tasks.jsonl",
+  "task_version": "1.0",
+  "validation": {
+    "alignment_tasks": 35,
+    "duplicate_allowed_ids": [],
+    "duplicate_fragment_ids": [],
+    "duplicate_task_ids": [],
+    "empty_fragment_texts": [],
+    "empty_prompts": [],
+    "expected_candidates_per_task": 5,
+    "incomplete_candidate_profiles": [],
+    "inconsistent_allowed_ids": [],
+    "invalid_candidate_counts": [],
+    "missing_fragments": [],
+    "passed": true,
+    "source_candidate_sets": 35,
+    "source_competencies": 13,
+    "unknown_allowed_ids": [],
+    "unknown_fragments": []
+  }
+}

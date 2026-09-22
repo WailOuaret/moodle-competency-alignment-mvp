@@ -1,0 +1,49 @@
+{
+  "candidate_case_count": 51,
+  "case_ids": [
+    "page:3#f001|GI_C1_4",
+    "page:3#f002|GI_C1_4",
+    "page:4#f001|GI_C2_1",
+    "page:4#f001|GI_C2_2",
+    "page:4#f003|GI_C2",
+    "page:8#f001|GI_C3",
+    "quiz_question:1:1#f001|GI_C1_1",
+    "quiz_question:1:4#f001|GI_C1_1",
+    "quiz_question:1:6#f001|GI_C2_3",
+    "quiz_question:2:10#f001|GI_C3_2",
+    "quiz_question:2:13#f001|GI_C3_3",
+    "quiz_question:2:9#f001|GI_C3"
+  ],
+  "condition_counts": {
+    "A": 6,
+    "B": 6
+  },
+  "conditions": [
+    "A",
+    "B"
+  ],
+  "course_counts": {
+    "MVP-DATA": 4,
+    "MVP-SW": 8
+  },
+  "design_note": "Conditions are balanced within each stratum using a fixed seed. Rerunning with the same seed reproduces this design exactly.",
+  "generated_utc": "2026-09-22T10:17:50.354636+00:00",
+  "interpretation_note": "Exploratory usability exercise on a small stratified sample. Not a controlled study of Moodle teachers. No inferential claim is supported.",
+  "requested_sample_size": 12,
+  "resource_type_counts": {
+    "page": 6,
+    "quiz_question": 6
+  },
+  "sampled_case_count": 12,
+  "seed": 20260918,
+  "source_files": {
+    "error_analysis.csv": "fee7d69b6acf6e31e52cee91d66998166f00cc9b910bbba286953c3d756a54c2",
+    "evidence_review.csv": "c0747d433b2b5e98ebcde50dbdd5df9836190447abfe93f7ef67bc10cc65c667"
+  },
+  "stratum_counts": {
+    "correct_prediction": 4,
+    "incorrect_prediction": 4,
+    "parent_child_redundancy": 4
+  },
+  "study_version": "1.0"
+}

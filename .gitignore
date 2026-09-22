@@ -1,0 +1,95 @@
+# ---------------------------------------------------------------------------
+# Secrets — never commit
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# Contains a Moodle userprivateaccesskey
+reports/site_info.json
+
+# ---------------------------------------------------------------------------
+# Environments, caches, editors
+# ---------------------------------------------------------------------------
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+node_modules/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------------------------
+# Archives and build output
+# ---------------------------------------------------------------------------
+# Release archives belong in GitHub Releases, not in the tree.
+*.zip
+*.tar.gz
+*.tgz
+*.mbz
+!*.zip.sha256
+
+# dist/ is a generated duplicate of the tree plus release archives.
+dist/
+
+# ---------------------------------------------------------------------------
+# Private / raw Moodle data
+# ---------------------------------------------------------------------------
+# Raw API and SQL dumps may carry private Moodle fields.
+data/raw/
+
+# Logs
+reports/logs/
+*.log
+
+# External reference repository, not part of this project
+data/source/
+
+# Local safety backups — superseded by the files they back up
+backups/
+data/gold/annotation_backups/
+data/reviews/evidence_review_backups/
+data/reviews/corpus_teacher_review_backups/
+
+# Runtime application output — not part of the reported experiment
+data/runtime/uploads/
+data/runtime/resources/
+data/runtime/fragments/
+data/runtime/retrieval/
+data/runtime/model_responses/
+data/runtime/analyses/
+
+# ---------------------------------------------------------------------------
+# Archive — local provenance
+# ---------------------------------------------------------------------------
+# documentation_history/ and pre_final_cleanup/ ARE published: current reports
+# link to them, and they record how the documentation evolved.
+# These two are not:
+archive/development_prompts/
+archive/superseded_builds/
+archive/experiment_backups/
+
+# ---------------------------------------------------------------------------
+# Deliberately NOT ignored — required for reproducibility
+# ---------------------------------------------------------------------------
+# The frozen experimental artefacts below must be published, otherwise the
+# repository cannot reproduce its own reported results. They are listed here
+# explicitly so a future edit does not exclude them by accident.
+#
+#   data/processed/          normalised corpus, fragments, competencies
+#   data/interim/            BM25 candidates, model tasks, model responses
+#   data/gold/               human-reviewed reference annotations
+#   data/reviews/            evidence review and runtime review decisions
+#   data/studies/            evidence-usefulness pilot design
+#   data/experiments/        post-hoc and optional experiment outputs
+#   reports/metrics/         all measured results
+#   reports/tables/          result tables
+#   reports/figures/         figures
+#
+# See reports/PROTECTED_ARTIFACT_CANONICAL_LIST.md for the 21 protected files.

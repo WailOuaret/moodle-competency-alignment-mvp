@@ -1,0 +1,21 @@
+{
+  "baseline": "always_abstain",
+  "input_tasks": "data/interim/llm_tasks.jsonl",
+  "purpose": "Validate the response schema before connecting a real language model.",
+  "responses_file": "data/interim/abstention_baseline_responses.jsonl",
+  "validated_file": "data/interim/abstention_baseline_validated.jsonl",
+  "validation": {
+    "abstentions": 35,
+    "duplicate_response_fragments": [],
+    "invalid_fragment_ids": [],
+    "invalid_responses": 0,
+    "missing_responses": [],
+    "passed": true,
+    "selected_alignments": 0,
+    "source_responses": 35,
+    "source_tasks": 35,
+    "unknown_responses": [],
+    "valid_responses": 35,
+    "validated_responses": 35
+  }
+}

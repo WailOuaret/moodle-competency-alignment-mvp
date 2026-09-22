@@ -1,0 +1,11 @@
+course,activity_type,activity_or_question,competency_ids,reason,mapping_level
+MVP-SW,Page,Software Development Lifecycle and Deployment,GI_C1_1;GI_C1_2,"The Page covers software requirements, design, programming paradigms, performance, testing, deployment and maintenance.",Moodle activity level
+MVP-SW,Page,User-Centered Interface Design and Accessibility,GI_C1_3,"The Page covers user-centred design, prototyping, usability, accessibility and interface evaluation.",Moodle activity level
+MVP-SW,Page,"Distributed Systems, Concurrency and Scalability",GI_C1_4;GI_C2_2,"The Page covers distributed software, concurrency, network communication, cloud systems and horizontal scalability.",Moodle activity level
+MVP-SW,Page,"Computer Architectures, Networks and Cybersecurity",GI_C2_1;GI_C2_3,"The Page covers software and hardware architecture, computing resources, threats, vulnerabilities and cybersecurity controls.",Moodle activity level
+MVP-SW,Quiz,Software Engineering Fundamentals Quiz,GI_C1_1;GI_C1_2;GI_C1_3;GI_C1_4;GI_C2_2;GI_C2_3,"The Quiz assesses requirements, testing, user-centred design, scalability, cybersecurity risk and software quality.",Moodle activity level
+MVP-DATA,Page,"Knowledge Representation, Logic and Ontologies",GI_C3_1,"The Page covers knowledge representation, formal logic, concepts, relationships and ontologies.",Moodle activity level
+MVP-DATA,Page,Relational and NoSQL Database Systems,GI_C3_2,"The Page covers relational modelling, keys, normalization, transactions and NoSQL database models.",Moodle activity level
+MVP-DATA,Page,SQL Queries and Decision Support,GI_C3_2,"The Page covers SQL selection, joins, grouping, aggregation, views and decision-support queries.",Moodle activity level
+MVP-DATA,Page,"Data Science, Machine Learning and Natural Language Processing",GI_C3_3,"The Page covers data preparation, machine learning, classification, NLP, embeddings, evaluation, ethics and bias.",Moodle activity level
+MVP-DATA,Quiz,Data and Intelligent Systems Fundamentals Quiz,GI_C3_1;GI_C3_2;GI_C3_3,"The Quiz assesses ontologies, relational databases, normalization, SQL aggregation, supervised learning and NLP embeddings.",Moodle activity level

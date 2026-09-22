@@ -1,0 +1,27 @@
+=== COMPETENCY DATABASE EXTRACTION ===
+Framework records: 1
+Competency records: 13
+Course-competency links: 10
+Activity-competency links: 19
+
+Course-competency links by course:
+- MVP-DATA: 3
+- MVP-SW: 7
+
+Activity-competency links by course:
+- MVP-DATA: 7
+- MVP-SW: 12
+
+Activity links by module type:
+- page: 11
+- quiz: 8
+
+Competency checks:
+- Missing expected IDs: 0
+- Unexpected IDs: 0
+
+Status: REVIEW REQUIRED
+frameworks: /home/wailo/projects/moodle_competency_mvp/reports/sql_raw/competency_framework.csv
+competencies: /home/wailo/projects/moodle_competency_mvp/reports/sql_raw/competencies.csv
+course_links: /home/wailo/projects/moodle_competency_mvp/reports/sql_raw/course_competency_links.csv
+activity_links: /home/wailo/projects/moodle_competency_mvp/reports/sql_raw/activity_competency_links.csv

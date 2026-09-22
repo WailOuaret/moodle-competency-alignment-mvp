@@ -1,0 +1,9 @@
+system,precision,recall,F1,macro_F1,Recall@1,Recall@3,Recall@5,MRR,exact_set,coverage,abstention,evidence_validity,notes
+BM25 Top-1,0.7429,0.6842,0.7123,0.5900,NA,NA,NA,NA,NA,NA,NA,NA,Fragment-level Top-1 as a standalone classifier against the human-reviewed reference.
+BM25 Top-5 retrieval,NA,NA,NA,NA,0.6842,0.8684,0.9737,0.8310,NA,NA,NA,NA,Label-level Recall@K over 38 reference labels; Hit@5=0.9714.
+Gemini constrained fragment,0.7255,0.9737,0.8315,0.6958,NA,NA,NA,NA,0.6286,1.0,0.0,NA,"gemini-3.5-flash; temperature 0; BM25 Top-5; max 3; 35/35 valid. Macro F1 is macro_all_13."
+Gemini resource,0.6765,0.9583,0.7931,0.7026,NA,NA,NA,NA,0.45,1.0,0.0,NA,Page reference is the union of fragment labels; quiz questions remain independent. TP=23 FP=11 FN=1.
+Post-hoc graph fragment,0.9024,0.9737,0.9367,0.6958,NA,NA,NA,NA,0.9143,1.0,0.0,NA,POST-HOC ABLATION. Child-preference copy only. Original Gemini files unchanged.
+Post-hoc graph resource,0.9200,0.9583,0.9388,0.7026,NA,NA,NA,NA,0.90,1.0,0.0,NA,POST-HOC ABLATION at resource level after fragment parent removal and re-aggregation.
+Ollama constrained post-hoc,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,"mistral:latest 35/35 checkpoints exist under data/experiments/. No frozen Ollama metric file was written; not mixed into constrained_llm_metrics.json."
+Evidence pedagogical review,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1.0,"83/83 mechanically exact substrings. Pedagogical: 65 clear (78.3%), 16 partial (19.3%), 2 unsupported (2.4%). Mechanical validity is not pedagogical correctness."

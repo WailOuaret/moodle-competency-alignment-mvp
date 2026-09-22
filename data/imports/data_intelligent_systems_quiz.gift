@@ -1,0 +1,41 @@
+::DATA_Q1_Ontology::What does an ontology primarily define? {
+=Concepts and relationships within a domain
+~Only passwords used by a system
+~Physical network cable lengths
+~A list of unrelated files
+}
+
+::DATA_Q2_Primary_Key::What is the main purpose of a primary key in a relational table? {
+=Uniquely identify each record
+~Encrypt every column
+~Connect the database to the internet
+~Automatically delete duplicate tables
+}
+
+::DATA_Q3_Normalization::Why is database normalization used? {
+=To reduce unnecessary duplication and update problems
+~To place all information in one very large table
+~To remove every relationship between tables
+~To prevent SQL queries from being executed
+}
+
+::DATA_Q4_SQL_Aggregation::Which SQL clause is normally used to create groups before applying functions such as COUNT or AVG? {
+=GROUP BY
+~ORDER BY
+~DELETE
+~DROP TABLE
+}
+
+::DATA_Q5_Supervised_Learning::What distinguishes supervised machine learning? {
+=The model learns from examples containing known labels or target values
+~The model never uses training data
+~The model works only with database passwords
+~The model cannot be evaluated
+}
+
+::DATA_Q6_Embeddings::What is the purpose of an embedding in natural language processing? {
+=Represent text as numerical vectors that capture semantic information
+~Convert every sentence into a database password
+~Delete all relationships between words
+~Replace model evaluation with manual guessing
+}

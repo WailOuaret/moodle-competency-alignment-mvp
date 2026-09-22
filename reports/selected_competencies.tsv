@@ -1,0 +1,14 @@
+ID	French label	English label	Parent IDs	Child IDs
+GI_C1	Concevoir et développer des logiciels	Design and develop software		GI_C1_1;GI_C1_2;GI_C1_3;GI_C1_4
+GI_C1_1	Développement logiciel (conception, paradigmes, performance, déploiement)	Software development (design, paradigms, performance, deployment)	GI_C1	
+GI_C1_2	Qualité logicielle et ingénierie soutenable	Software quality and sustainable engineering	GI_C1	
+GI_C1_3	IHM et UX (mobile/VR/AR)	HCI and UX (mobile/VR/AR)	GI_C1	
+GI_C1_4	Logiciels distribués et passage à l’échelle	Distributed software and scalability	GI_C1	
+GI_C2	Concevoir et mettre en œuvre des architectures informatiques	Design and implement computer architectures		GI_C2_1;GI_C2_2;GI_C2_3
+GI_C2_1	Architectures logicielles et matérielles (ressources/énergie)	Software and hardware architectures (resources/energy)	GI_C2	
+GI_C2_2	Architectures communicantes (réseaux, cloud/fog/IoT)	Communicating architectures (networks, cloud/fog/IoT)	GI_C2	
+GI_C2_3	Architectures sûres et cybersécurité	Safe architectures and cybersecurity	GI_C2	
+GI_C3	Concevoir et mettre en œuvre des systèmes de traitement et d’analyse des données et des connaissances	Design and implement data and knowledge processing and analytics systems		GI_C3_1;GI_C3_2;GI_C3_3
+GI_C3_1	Représentation et raisonnement sur les connaissances (logique/ontologies)	Knowledge representation and reasoning (logic/ontologies)	GI_C3	
+GI_C3_2	Données et bases de données (SQL/NoSQL) & décision	Data and databases (SQL/NoSQL) and decision support	GI_C3	
+GI_C3_3	Data science / ML / NLP	Data science / ML / NLP	GI_C3	

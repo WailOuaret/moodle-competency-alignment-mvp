@@ -1,0 +1,151 @@
+{
+  "aggregation_method": "1.0",
+  "analysis_id": "an_5133dbb54c6266db",
+  "backend": "ollama",
+  "candidate_count": 5,
+  "competency_catalogue_hash": "27ef8064e5eecc27b2baf0964a9c978a47de3b63338bd6642f658c1578650436",
+  "extractor_version": "runtime-1.0",
+  "fragmenter_version": "1.0",
+  "hierarchy_warnings": [],
+  "max_selections": 3,
+  "model": "mistral:latest",
+  "normalization_version": "1.0",
+  "prompt_version": "1.0",
+  "raw_response_references": [
+    "data/runtime/model_responses/an_5133dbb54c6266db_raw.jsonl"
+  ],
+  "raw_text_hash": "df11218dc28860ae5f45c3b026379005c343768673049411c824f1ca5cd3d064",
+  "reconciled_view_requested": true,
+  "research_status": "RUNTIME_DEMO",
+  "resource_hash": "fffb0ce3bf0e4ee0190c4c42385cfb72ce5187e3c26c31846b060bfbd563af14",
+  "retrieval_configuration": {
+    "method": "bm25",
+    "top_k": 5
+  },
+  "runtime_resource_id": "runtime:moodle:59b42a07cd74fc3d",
+  "source": "moodle",
+  "source_reference": "page:5",
+  "temperature": 0.0,
+  "timestamp": "2026-09-18T06:35:44+00:00",
+  "top5_candidate_lists": [
+    {
+      "candidates": [
+        {
+          "bm25_score": 94.00899718,
+          "competency_id": "GI_C3_1",
+          "rank": 1
+        },
+        {
+          "bm25_score": 24.4298755,
+          "competency_id": "GI_C3",
+          "rank": 2
+        },
+        {
+          "bm25_score": 16.02151869,
+          "competency_id": "GI_C2",
+          "rank": 3
+        },
+        {
+          "bm25_score": 10.26410095,
+          "competency_id": "GI_C3_2",
+          "rank": 4
+        },
+        {
+          "bm25_score": 9.53428778,
+          "competency_id": "GI_C1",
+          "rank": 5
+        }
+      ],
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f001"
+    },
+    {
+      "candidates": [
+        {
+          "bm25_score": 50.30047688,
+          "competency_id": "GI_C3_1",
+          "rank": 1
+        },
+        {
+          "bm25_score": 30.97862263,
+          "competency_id": "GI_C3",
+          "rank": 2
+        },
+        {
+          "bm25_score": 13.67089539,
+          "competency_id": "GI_C3_2",
+          "rank": 3
+        },
+        {
+          "bm25_score": 13.1970765,
+          "competency_id": "GI_C2_1",
+          "rank": 4
+        },
+        {
+          "bm25_score": 11.9649213,
+          "competency_id": "GI_C1_4",
+          "rank": 5
+        }
+      ],
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f002"
+    },
+    {
+      "candidates": [
+        {
+          "bm25_score": 41.30187993,
+          "competency_id": "GI_C3_1",
+          "rank": 1
+        },
+        {
+          "bm25_score": 23.98807886,
+          "competency_id": "GI_C3",
+          "rank": 2
+        },
+        {
+          "bm25_score": 4.68590422,
+          "competency_id": "GI_C3_2",
+          "rank": 3
+        },
+        {
+          "bm25_score": 4.23746123,
+          "competency_id": "GI_C1",
+          "rank": 4
+        },
+        {
+          "bm25_score": 4.21117788,
+          "competency_id": "GI_C2",
+          "rank": 5
+        }
+      ],
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f003"
+    }
+  ],
+  "validated_predictions": [
+    {
+      "abstain": false,
+      "errors": [],
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f001",
+      "selected": [
+        "GI_C3_1"
+      ],
+      "valid": true
+    },
+    {
+      "abstain": false,
+      "errors": [],
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f002",
+      "selected": [
+        "GI_C3_1"
+      ],
+      "valid": true
+    },
+    {
+      "abstain": false,
+      "errors": [],
+      "fragment_id": "runtime:moodle:59b42a07cd74fc3d#f003",
+      "selected": [
+        "GI_C3_1"
+      ],
+      "valid": true
+    }
+  ]
+}
