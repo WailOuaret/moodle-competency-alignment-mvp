@@ -31,12 +31,54 @@ EVIDENCE_RELEVANCE_VALUES = ("0", "1", "2")
 
 TEACHER_ROLES = frozenset({"teacher", "supervisor"})
 
+DEMO_STATUS_FIELDS = (
+    "record_status",
+    "review_status",
+    "research_status",
+    "provenance",
+    "reviewer_role",
+)
+DEMO_STATUS_VALUES = frozenset(
+    {
+        "demo",
+        "test",
+        "fixture",
+        "test/demo",
+        "demo/test",
+    }
+)
+
 SUMMARY_TABLE_COLUMNS = (
     "scope",
     "metric",
     "value",
     "note",
 )
+
+
+def is_demo_or_test_review(review: Mapping[str, Any]) -> bool:
+    """True when a row is an explicit demo or test, not a genuine decision.
+
+    A reviewer name is never enough. The row must carry a demo/test marker in
+    ``record_status``, ``review_status``, ``research_status``, ``provenance``,
+    or ``reviewer_role``.
+    """
+
+    for field in DEMO_STATUS_FIELDS:
+        value = stripped_text(review.get(field)).casefold()
+
+        if value in DEMO_STATUS_VALUES:
+            return True
+
+    return False
+
+
+def genuine_corpus_reviews(
+    reviews: Sequence[Mapping[str, Any]],
+) -> list[Mapping[str, Any]]:
+    """Drop demo and test rows before any corpus-review summary is computed."""
+
+    return [review for review in reviews if not is_demo_or_test_review(review)]
 
 
 def _decision_of(review: Mapping[str, Any]) -> str:
@@ -74,6 +116,7 @@ def summarize_teacher_reviews(
     acceptance, edit or rejection rates.
     """
 
+    reviews = genuine_corpus_reviews(reviews)
     predicted_keys = {_key(mapping) for mapping in mappings}
 
     counts = {decision: 0 for decision in DECISIONS}

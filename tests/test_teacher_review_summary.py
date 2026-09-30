@@ -7,13 +7,27 @@ no real decisions the rates must be ``None`` — not ``0.0``, which would read a
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
+from moodle_competency.annotation import read_csv
 from moodle_competency.teacher_review_summary import (
     REVIEWED_DECISIONS,
     TEACHER_ROLES,
+    genuine_corpus_reviews,
+    is_demo_or_test_review,
     summarize_teacher_reviews,
     summary_table_rows,
+)
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+GENUINE_CORPUS_REVIEWS = (
+    PROJECT_ROOT / "data" / "reviews" / "corpus_teacher_reviews.csv"
+)
+DEMO_CORPUS_REVIEW = (
+    PROJECT_ROOT / "tests" / "fixtures" / "corpus_teacher_review_demo.csv"
 )
 
 
@@ -365,3 +379,58 @@ def test_table_formats_real_rates(mappings) -> None:
 
     assert by_metric["acceptance_rate"]["value"] == "0.5000000000"
     assert by_metric["acceptance_rate"]["note"] == "denominator = reviewed suggestions"
+
+
+def test_genuine_corpus_file_has_no_demo_decision() -> None:
+    rows = read_csv(GENUINE_CORPUS_REVIEWS)
+
+    assert rows == []
+    assert genuine_corpus_reviews(rows) == []
+
+
+def test_demo_fixture_is_explicit_and_would_count_without_the_marker() -> None:
+    demo_rows = read_csv(DEMO_CORPUS_REVIEW)
+
+    assert len(demo_rows) == 1
+    assert demo_rows[0]["research_status"] == "demo"
+    assert demo_rows[0]["reviewer"] == "reviewer_001"
+    assert demo_rows[0]["reviewer_role"] == "supervisor"
+    assert demo_rows[0]["decision"] == "reject"
+    assert is_demo_or_test_review(demo_rows[0])
+
+    unmarked = dict(demo_rows[0])
+    unmarked["research_status"] = ""
+    unmarked["record_status"] = ""
+    assert is_demo_or_test_review(unmarked) is False
+
+
+def test_demo_review_cannot_contaminate_genuine_summary(mappings) -> None:
+    demo_rows = read_csv(DEMO_CORPUS_REVIEW)
+    genuine_rows = read_csv(GENUINE_CORPUS_REVIEWS)
+    summary = summarize_teacher_reviews(
+        [*genuine_rows, *demo_rows],
+        mappings,
+    )
+
+    assert summary["status"] == "WAITING_FOR_HUMAN"
+    assert summary["reviewable_mappings"] == len(mappings)
+    assert summary["reviewed"] == 0
+    assert summary["pending"] == len(mappings)
+    assert summary["accepted"] == 0
+    assert summary["rejected"] == 0
+    assert summary["modified"] == 0
+    assert summary["acceptance_rate"] is None
+    assert summary["edit_rate"] is None
+    assert summary["rejection_rate"] is None
+    assert summary["teacher_or_supervisor_validation_performed"] is False
+
+    rows = summary_table_rows(summary)
+    rates = {
+        row["metric"]: row
+        for row in rows
+        if row["metric"] in {"acceptance_rate", "edit_rate", "rejection_rate"}
+    }
+
+    for row in rates.values():
+        assert row["value"] == ""
+        assert row["note"] == "no real decisions exist"

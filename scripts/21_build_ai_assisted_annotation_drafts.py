@@ -61,7 +61,7 @@ def main() -> int:
 
     summary = draft_summary(rows)
     print("=== AI-ASSISTED ANNOTATION DRAFTS ===")
-    print("These are Cursor drafts, not independent manual gold.")
+    print("These are drafts, not independent manual gold.")
     print(f"Total fragments: {summary['total']}")
     print(f"Draft suggestions: {summary['total']}")
     print(f"Suggested NONE: {summary['none']}")

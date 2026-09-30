@@ -395,12 +395,12 @@ def fragment_runtime_resource(
         )
 
     normalized = str(resource.get("text") or "")
-    cursor = 0
+    search_offset = 0
     enriched: list[dict[str, Any]] = []
 
     for fragment in fragments:
         text = str(fragment.get("text") or "")
-        start = normalized.find(text, cursor)
+        start = normalized.find(text, search_offset)
 
         if start < 0:
             start = normalized.find(text)
@@ -408,7 +408,7 @@ def fragment_runtime_resource(
         end = start + len(text) if start >= 0 else 0
 
         if start >= 0:
-            cursor = end
+            search_offset = end
 
         record = dict(fragment)
         record["runtime_resource_id"] = resource["runtime_resource_id"]

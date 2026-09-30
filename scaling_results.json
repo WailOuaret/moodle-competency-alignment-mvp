@@ -1,0 +1,376 @@
+{
+  "note": "Offline scaling checks added after the frozen experiment. No Gemini, Ollama, Moodle, or other external calls. Frozen scientific artefacts were not modified. Synthetic framework sizes are timing and prompt-size checks, not retrieval-quality experiments. Stop-word and alias variants are post-hoc diagnostics, not a replacement of the published BM25 or Gemini metrics. There is no LBG precision, recall, F1, or teacher validation.",
+  "frozen_artifact_hashes_before": {
+    "data/gold/manual_fragment_annotations.csv": "3f96afd974db96394ee22239f0293bf1b641548836072839909b3992cf92fd53",
+    "data/interim/bm25_candidates.jsonl": "4e4e1ec030d8f1bfd17865690c83d66cec24fb256d8dc5e3dd523a27325bcaee",
+    "data/interim/gemini_responses.jsonl": "0d8095dd1d320504ceeafad30a00eaf02b1a8f58b147a4f9f3ac275d18700602",
+    "data/interim/gemini_validated.jsonl": "4ec9abf4aa1d3b4cdab2b1a5b367bc8ed9512b6b85616d053809dd6770e03a03",
+    "data/processed/fragments.jsonl": "6380f43b95628be59d028d0fcc5d55096448d49514ee42bce651082ba5568aa2",
+    "data/processed/resource_predictions.jsonl": "fe7b20b01a8c51791573f5672c7e69e0c2e9ff5555febd7b8829d9f32697d66f",
+    "reports/metrics/bm25_metrics.json": "f24ff968200a6ceacaee67986dabef19bc08eb04a026696232a91924c3366ab2",
+    "reports/metrics/constrained_llm_metrics.json": "5ab206050828ec31f3b0cf9e45f7f889060c666e489d666fe2d1a36789e43248",
+    "reports/metrics/resource_level_metrics.json": "9648d05548d6434e209142b9d4b6822d2cd5ae296eacbd61640af030fa4c90a2",
+    "data/reviews/evidence_review.csv": "c0747d433b2b5e98ebcde50dbdd5df9836190447abfe93f7ef67bc10cc65c667",
+    "data/experiments/graph_child_preference_predictions.jsonl": "13dc984c2cb386723cb36943133b872015fe516d88468149a12597fbc901938a",
+    "data/experiments/ollama_constrained_responses.jsonl": "d8984f39cca11ef5ab7af833f25c1f32e7690a68bec96b39b36e6f5b95f2f50e",
+    "data/experiments/ollama_constrained_validated.jsonl": "c3f78f02802b47b62cfc77b405797b012e3020dfbd43d83a434e731f0f8d53bf",
+    "data/experiments/ollama_constrained_raw_attempts.jsonl": "7474b01428d78c167161754857aac1b774fd725b012a5c50845b5e9a15fff50f",
+    "data/experiments/ollama_constrained_manifest.json": "732f2498b58cc640d3acf66f4ba7c79dd36738aa72be6a841463d3230e4d695d"
+  },
+  "frozen_artifact_hashes_after": {
+    "data/gold/manual_fragment_annotations.csv": "3f96afd974db96394ee22239f0293bf1b641548836072839909b3992cf92fd53",
+    "data/interim/bm25_candidates.jsonl": "4e4e1ec030d8f1bfd17865690c83d66cec24fb256d8dc5e3dd523a27325bcaee",
+    "data/interim/gemini_responses.jsonl": "0d8095dd1d320504ceeafad30a00eaf02b1a8f58b147a4f9f3ac275d18700602",
+    "data/interim/gemini_validated.jsonl": "4ec9abf4aa1d3b4cdab2b1a5b367bc8ed9512b6b85616d053809dd6770e03a03",
+    "data/processed/fragments.jsonl": "6380f43b95628be59d028d0fcc5d55096448d49514ee42bce651082ba5568aa2",
+    "data/processed/resource_predictions.jsonl": "fe7b20b01a8c51791573f5672c7e69e0c2e9ff5555febd7b8829d9f32697d66f",
+    "reports/metrics/bm25_metrics.json": "f24ff968200a6ceacaee67986dabef19bc08eb04a026696232a91924c3366ab2",
+    "reports/metrics/constrained_llm_metrics.json": "5ab206050828ec31f3b0cf9e45f7f889060c666e489d666fe2d1a36789e43248",
+    "reports/metrics/resource_level_metrics.json": "9648d05548d6434e209142b9d4b6822d2cd5ae296eacbd61640af030fa4c90a2",
+    "data/reviews/evidence_review.csv": "c0747d433b2b5e98ebcde50dbdd5df9836190447abfe93f7ef67bc10cc65c667",
+    "data/experiments/graph_child_preference_predictions.jsonl": "13dc984c2cb386723cb36943133b872015fe516d88468149a12597fbc901938a",
+    "data/experiments/ollama_constrained_responses.jsonl": "d8984f39cca11ef5ab7af833f25c1f32e7690a68bec96b39b36e6f5b95f2f50e",
+    "data/experiments/ollama_constrained_validated.jsonl": "c3f78f02802b47b62cfc77b405797b012e3020dfbd43d83a434e731f0f8d53bf",
+    "data/experiments/ollama_constrained_raw_attempts.jsonl": "7474b01428d78c167161754857aac1b774fd725b012a5c50845b5e9a15fff50f",
+    "data/experiments/ollama_constrained_manifest.json": "732f2498b58cc640d3acf66f4ba7c79dd36738aa72be6a841463d3230e4d695d"
+  },
+  "frozen_artifacts_unchanged": true,
+  "A_mvp_corpus_utc_gi_13_subset": {
+    "corpus": "MVP",
+    "framework": "UTC GI frozen 13-competency subset",
+    "competencies": 13,
+    "uses_frozen_processed_profiles": true,
+    "model_called": false,
+    "recall_at_1": 0.6842,
+    "hit_at_1": 0.7429,
+    "recall_at_3": 0.8684,
+    "hit_at_3": 0.8857,
+    "recall_at_5": 0.9737,
+    "hit_at_5": 0.9714,
+    "recall_at_10": 1.0,
+    "hit_at_10": 1.0,
+    "mrr_at_5": 0.831,
+    "gold_labels": 38,
+    "fragments": 35,
+    "fragments_with_gold": 35,
+    "current_retriever_vs_frozen_candidate_file": {
+      "identical_candidate_lists": 35,
+      "different_candidate_lists": 0
+    },
+    "adapter_based_13": {
+      "competencies": 13,
+      "recall_at_1": 0.6842,
+      "recall_at_3": 0.8684,
+      "recall_at_5": 0.9737,
+      "recall_at_10": 1.0,
+      "mrr_at_5": 0.831,
+      "candidate_list_comparison_to_frozen_bm25": {
+        "fragments_compared": 35,
+        "identical_candidate_lists": 32,
+        "different_candidate_lists": 3,
+        "differences": [
+          {
+            "fragment_id": "page:3#f001",
+            "frozen_top5": [
+              "GI_C1_4",
+              "GI_C3",
+              "GI_C3_1",
+              "GI_C2_2",
+              "GI_C2_1"
+            ],
+            "adapter_top5": [
+              "GI_C1_4",
+              "GI_C3",
+              "GI_C3_1",
+              "GI_C2_1",
+              "GI_C2_2"
+            ]
+          },
+          {
+            "fragment_id": "page:6#f003",
+            "frozen_top5": [
+              "GI_C3_2",
+              "GI_C3",
+              "GI_C1_4",
+              "GI_C1",
+              "GI_C3_3"
+            ],
+            "adapter_top5": [
+              "GI_C3_2",
+              "GI_C3",
+              "GI_C1_4",
+              "GI_C1",
+              "GI_C2"
+            ]
+          },
+          {
+            "fragment_id": "page:7#f003",
+            "frozen_top5": [
+              "GI_C3_2",
+              "GI_C3",
+              "GI_C1",
+              "GI_C2",
+              "GI_C1_3"
+            ],
+            "adapter_top5": [
+              "GI_C3_2",
+              "GI_C3",
+              "GI_C1",
+              "GI_C2",
+              "GI_C2_3"
+            ]
+          }
+        ],
+        "cause": "The adapter builds profiles from competencies_utc.jsonl with framework shortname 'UTC GI' and does not repeat the description inside search_text. The frozen BM25 file was built from data/processed/competencies.jsonl, whose framework shortname is 'UTC GI Competency Framework - MVP' and whose search_text repeats the description, so BM25 term frequencies differ. The swaps are adjacent ranks, not a different retriever."
+      }
+    }
+  },
+  "A_mvp_corpus_utc_gi_22_full": {
+    "corpus": "MVP",
+    "framework": "UTC GI 22 competencies, aliases omitted",
+    "competencies": 22,
+    "model_called": false,
+    "overwrites_frozen_bm25_file": false,
+    "recall_at_1": 0.5789,
+    "hit_at_1": 0.6286,
+    "recall_at_3": 0.8421,
+    "hit_at_3": 0.8571,
+    "recall_at_5": 0.9474,
+    "hit_at_5": 0.9429,
+    "recall_at_10": 0.9737,
+    "hit_at_10": 0.9714,
+    "mrr_at_5": 0.7614,
+    "gold_labels": 38,
+    "fragments": 35,
+    "fragments_with_gold": 35,
+    "rank1_most_frequent": {
+      "idnumber": "GI_C4",
+      "fragments": 9,
+      "fragment_count": 35
+    }
+  },
+  "B_lbg_corpus_utc_gi_22": {
+    "corpus": "LBG source corpus",
+    "framework": "UTC GI 22, current retrieval implementation, aliases omitted",
+    "model_called": false,
+    "final_precision_recall_f1": null,
+    "teacher_validation": null,
+    "reason_no_end_to_end_scores": "No Gemini run was performed on the LBG corpus. These figures are retrieval Recall/Hit/MRR only.",
+    "course_units": 26,
+    "fragment_count": 432,
+    "fragments_with_gold": 347,
+    "gold_labels": 352,
+    "repaired_json_values_in_memory": 16,
+    "source_files_rewritten": false,
+    "recall_at_1": 0.108,
+    "hit_at_1": 0.1095,
+    "recall_at_3": 0.4659,
+    "hit_at_3": 0.464,
+    "recall_at_5": 0.5824,
+    "hit_at_5": 0.5821,
+    "recall_at_10": 0.7756,
+    "hit_at_10": 0.7723,
+    "mrr_at_5": 0.2903,
+    "fragments": 432,
+    "rank1_most_frequent": {
+      "idnumber": "GI_C4",
+      "fragments": 325,
+      "fragment_count": 432
+    }
+  },
+  "C_computational_scaling": [
+    {
+      "framework_size": 22,
+      "synthetic_copies": false,
+      "retrieval_quality_measured": false,
+      "index_build_seconds": 0.000638,
+      "fragments_timed": 35,
+      "mean_retrieval_milliseconds_per_fragment": 0.806,
+      "fragments_measured": 35,
+      "top_k": 5,
+      "min_prompt_chars": 3875,
+      "max_prompt_chars": 4677,
+      "mean_prompt_chars": 4280.3714,
+      "prompt_built_from_top_k_candidates_only": true
+    },
+    {
+      "framework_size": 220,
+      "synthetic_copies": true,
+      "retrieval_quality_measured": false,
+      "index_build_seconds": 0.005997,
+      "fragments_timed": 35,
+      "mean_retrieval_milliseconds_per_fragment": 2.522,
+      "fragments_measured": 35,
+      "top_k": 5,
+      "min_prompt_chars": 3890,
+      "max_prompt_chars": 4899,
+      "mean_prompt_chars": 4320.2,
+      "prompt_built_from_top_k_candidates_only": true
+    },
+    {
+      "framework_size": 2200,
+      "synthetic_copies": true,
+      "retrieval_quality_measured": false,
+      "index_build_seconds": 0.057463,
+      "fragments_timed": 35,
+      "mean_retrieval_milliseconds_per_fragment": 21.862,
+      "fragments_measured": 35,
+      "top_k": 5,
+      "min_prompt_chars": 3890,
+      "max_prompt_chars": 4899,
+      "mean_prompt_chars": 4347.5143,
+      "prompt_built_from_top_k_candidates_only": true
+    },
+    {
+      "framework_size": 22000,
+      "synthetic_copies": true,
+      "retrieval_quality_measured": false,
+      "index_build_seconds": 0.630189,
+      "fragments_timed": 35,
+      "mean_retrieval_milliseconds_per_fragment": 581.5,
+      "fragments_measured": 35,
+      "top_k": 5,
+      "min_prompt_chars": 3705,
+      "max_prompt_chars": 4889,
+      "mean_prompt_chars": 4336.1714,
+      "prompt_built_from_top_k_candidates_only": true
+    }
+  ],
+  "D_posthoc_retrieval_diagnostics": {
+    "corpus": "LBG",
+    "changes_limited_to_retrieval_profiles_and_tokenization": true,
+    "llm_validator_aggregation_and_human_reference_unchanged": true,
+    "focus_stopwords_in_current_22_profiles": {
+      "the": {
+        "profiles": 1,
+        "idnumbers": [
+          "GI_C4"
+        ],
+        "occurs_in_only_one_profile": true
+      },
+      "that": {
+        "profiles": 1,
+        "idnumbers": [
+          "GI_C4"
+        ],
+        "occurs_in_only_one_profile": true
+      },
+      "with": {
+        "profiles": 1,
+        "idnumbers": [
+          "GI_C4"
+        ],
+        "occurs_in_only_one_profile": true
+      }
+    },
+    "alias_comparison": {
+      "source_records": 22,
+      "source_alias_strings": 411,
+      "moodle_processed_records": 13,
+      "moodle_processed_records_have_alias_fields": false,
+      "alias_strings_absent_from_processed_retrieval_documents": 122,
+      "aliases_dropped_from_moodle_oriented_profiles": true
+    },
+    "variants": {
+      "D1_current_implementation": {
+        "status": "current retrieval implementation",
+        "post_hoc_diagnostic": false,
+        "stopwords": false,
+        "aliases": false,
+        "recall_at_1": 0.108,
+        "hit_at_1": 0.1095,
+        "recall_at_3": 0.4659,
+        "hit_at_3": 0.464,
+        "recall_at_5": 0.5824,
+        "hit_at_5": 0.5821,
+        "recall_at_10": 0.7756,
+        "hit_at_10": 0.7723,
+        "mrr_at_5": 0.2903,
+        "gold_labels": 352,
+        "fragments": 432,
+        "fragments_with_gold": 347,
+        "rank1_most_frequent": {
+          "idnumber": "GI_C4",
+          "fragments": 325,
+          "fragment_count": 432
+        }
+      },
+      "D2_stopword_filter": {
+        "status": "POST-HOC DIAGNOSTIC",
+        "post_hoc_diagnostic": true,
+        "designed_after_inspecting_the_current_lbg_result": true,
+        "not_the_improved_system_accuracy": true,
+        "stopwords": true,
+        "aliases": false,
+        "recall_at_1": 0.4375,
+        "hit_at_1": 0.4438,
+        "recall_at_3": 0.6562,
+        "hit_at_3": 0.6542,
+        "recall_at_5": 0.7415,
+        "hit_at_5": 0.7378,
+        "recall_at_10": 0.8466,
+        "hit_at_10": 0.8444,
+        "mrr_at_5": 0.5565,
+        "gold_labels": 352,
+        "fragments": 432,
+        "fragments_with_gold": 347,
+        "rank1_most_frequent": {
+          "idnumber": "GI_C1_1",
+          "fragments": 34,
+          "fragment_count": 432
+        }
+      },
+      "D3_restore_aliases": {
+        "status": "POST-HOC DIAGNOSTIC",
+        "post_hoc_diagnostic": true,
+        "designed_after_inspecting_the_current_lbg_result": true,
+        "not_the_improved_system_accuracy": true,
+        "stopwords": false,
+        "aliases": true,
+        "recall_at_1": 0.2358,
+        "hit_at_1": 0.2392,
+        "recall_at_3": 0.642,
+        "hit_at_3": 0.6455,
+        "recall_at_5": 0.8352,
+        "hit_at_5": 0.8386,
+        "recall_at_10": 0.9517,
+        "hit_at_10": 0.951,
+        "mrr_at_5": 0.4586,
+        "gold_labels": 352,
+        "fragments": 432,
+        "fragments_with_gold": 347,
+        "rank1_most_frequent": {
+          "idnumber": "GI_C4",
+          "fragments": 268,
+          "fragment_count": 432
+        }
+      },
+      "D4_stopwords_and_aliases": {
+        "status": "POST-HOC DIAGNOSTIC",
+        "post_hoc_diagnostic": true,
+        "designed_after_inspecting_the_current_lbg_result": true,
+        "not_the_improved_system_accuracy": true,
+        "interpretation": "LBG retrieval Recall in a post-hoc diagnostic variant. No Gemini model run was performed on the LBG corpus, so there is no LBG precision, recall, F1, or teacher validation.",
+        "stopwords": true,
+        "aliases": true,
+        "recall_at_1": 0.5256,
+        "hit_at_1": 0.5331,
+        "recall_at_3": 0.821,
+        "hit_at_3": 0.8213,
+        "recall_at_5": 0.8949,
+        "hit_at_5": 0.8963,
+        "recall_at_10": 0.9773,
+        "hit_at_10": 0.9769,
+        "mrr_at_5": 0.6798,
+        "gold_labels": 352,
+        "fragments": 432,
+        "fragments_with_gold": 347,
+        "rank1_most_frequent": {
+          "idnumber": "GI_C3_3",
+          "fragments": 39,
+          "fragment_count": 432
+        }
+      }
+    }
+  }
+}

@@ -89,10 +89,11 @@ streamlit run app/Home.py      # page "2 Teacher Review"
 python scripts/28_summarize_teacher_reviews.py
 ```
 
-See `docs/TEACHER_INTERFACE_GUIDE.md`. Decisions are stored in
-`data/reviews/corpus_teacher_reviews.csv`, kept separate from the runtime app's
-`data/reviews/teacher_reviews.csv` so the two existing researcher decisions are
-preserved.
+See `docs/TEACHER_INTERFACE_GUIDE.md`. Genuine decisions are stored in
+`data/reviews/corpus_teacher_reviews.csv`, which has a header and zero
+decisions. Demo rows are not validation. The corpus file stays separate from
+the runtime app's `data/reviews/teacher_reviews.csv` so the two researcher
+decisions are preserved.
 
 **Do not invent decisions.** The researcher reviews already stored are not
 teacher validation, and no acceptance rate is reported until real decisions

@@ -1,7 +1,0 @@
-=== COMPLETION REST INSPECTION ===
-Modules inspected: 12
-Modules with completion configured: 9
-Modules containing completiondata: 9
-- MVP-SW: 6 modules, 5 with completion configured
-- MVP-DATA: 6 modules, 4 with completion configured
-Created: /home/wailo/projects/moodle_competency_mvp/reports/api_raw/completion_from_course_contents.csv

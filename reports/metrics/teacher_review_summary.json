@@ -33,7 +33,7 @@
   "significance_tests": "not_run",
   "significance_tests_note": "No significance tests. Sample size and design do not support inferential claims.",
   "source_files": {
-    "corpus_teacher_reviews.csv": null,
+    "corpus_teacher_reviews.csv": "dc519ddfa769d1da9e631dcc86e7d7cfb3e903556a0b7e413cba87dd30cebb9e",
     "teacher_reviews.csv": "ba99c5f445df62e3b41ebb21f996d2033c26e34ccdb27839229690c89752d9c3"
   },
   "status": "WAITING_FOR_HUMAN",

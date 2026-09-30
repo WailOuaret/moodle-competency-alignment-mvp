@@ -1,4 +1,4 @@
-"""Human review of Cursor AI-assisted annotation drafts.
+"""Human review of assisted annotation drafts.
 
 Confirmed rows are marked human_confirmed_ai_assisted.
 They are not independent gold and are never written to the gold CSV.
@@ -92,7 +92,7 @@ def format_draft(row: dict[str, str], position: int, total: int) -> str:
         f"resource_title: {row.get('resource_title', '')}\n"
         "\nFRAGMENT\n--------\n"
         f"{row.get('fragment_text', '')}\n"
-        "\nCURSOR DRAFT\n------------\n"
+        "\nDRAFT SUGGESTION\n----------------\n"
         f"Suggested competency: "
         f"{row.get('suggested_competency_ids', '') or 'NONE'}\n"
         f"Suggested no_competency: {row.get('suggested_no_competency', '')}\n"
@@ -122,7 +122,7 @@ def review_one(
     review_date: str,
 ) -> dict[str, str] | None:
     while True:
-        answer = ask("Accept Cursor suggestion? [y/n]: ")
+        answer = ask("Accept draft suggestion? [y/n]: ")
         accepted, errors = parse_accept_choice(answer)
 
         if errors:
