@@ -1,2 +1,1 @@
 review_id,resource_id,competency_id,fragment_ids,decision,modified_competency_ids,comment,evidence_relevance,reviewer,review_date
-page:1|GI_C1,page:1,GI_C1,page:1#f002,reject,,Too broad; GI_C1_1 is the more precise competency for this resource.,,Marie-Hélène,2026-09-22

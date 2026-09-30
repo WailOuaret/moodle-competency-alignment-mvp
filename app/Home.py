@@ -4,9 +4,9 @@ Launch from the project root:
 
     streamlit run app/Home.py
 
-This is the teacher validation interface described in Section L of the
-completion plan. It is distinct from the runtime app at ``app.py``, which
-analyses arbitrary new Moodle resources. See docs/TEACHER_INTERFACE_GUIDE.md.
+This is the teacher validation interface for the frozen research corpus.
+It is distinct from the runtime app at ``app.py``, which analyses a new
+resource. See docs/TEACHER_INTERFACE_GUIDE.md.
 """
 
 from __future__ import annotations

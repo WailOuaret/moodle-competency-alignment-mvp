@@ -754,6 +754,19 @@ def test_decision_for_ignores_blank_decisions() -> None:
 # --------------------------------------------------------------------------
 
 
+def test_progress_ignores_demo_reviews(corpus: CorpusData) -> None:
+    mappings = corpus.reviewable_mappings()
+    demo = validate_review(**_valid_kwargs(decision="reject"))
+    demo["record_status"] = "demo"
+
+    progress = review_progress(mappings, [demo])
+
+    assert progress["reviewed"] == 0
+    assert progress["pending"] == progress["total_mappings"]
+    assert progress["rejected"] == 0
+    assert decision_for([demo], demo["resource_id"], demo["competency_id"]) == "pending"
+
+
 def test_progress_with_no_reviews_is_all_pending(corpus: CorpusData) -> None:
     progress = review_progress(corpus.reviewable_mappings(), [])
 

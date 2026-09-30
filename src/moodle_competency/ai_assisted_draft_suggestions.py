@@ -1,4 +1,4 @@
-"""Cursor draft suggestions for AI-assisted review.
+"""Draft suggestions for assisted annotation review.
 
 These are NOT independent gold labels. A researcher must confirm or
 edit each row before any human_* field is filled.

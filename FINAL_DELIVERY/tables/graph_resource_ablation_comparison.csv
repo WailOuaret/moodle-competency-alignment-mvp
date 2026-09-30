@@ -1,3 +1,0 @@
-system,micro_precision,micro_recall,micro_f1,macro_all_13_f1,macro_gold_supported_f1,exact_set_match,average_predicted_labels,average_absolute_label_count_error,parent_child_redundancy_count,delta_micro_precision,delta_micro_recall,delta_micro_f1,delta_exact_set_match
-Original resource-level Gemini,0.6764705882,0.9583333333,0.7931034483,0.7025641026,0.9133333333,0.4500000000,1.7000000000,0.5000000000,9,0.0000000000,0.0000000000,0.0000000000,0.0000000000
-Post-hoc child-preference resource predictions,0.9200000000,0.9583333333,0.9387755102,0.7025641026,0.9133333333,0.9000000000,1.2500000000,0.0500000000,0,0.2435294118,0.0000000000,0.1456720619,0.4500000000

@@ -1,0 +1,2 @@
+review_id,resource_id,competency_id,fragment_ids,decision,modified_competency_ids,comment,evidence_relevance,reviewer,review_date,reviewer_role,research_status
+example:1|GI_C1,example:1,GI_C1,,reject,,Synthetic demo row. Not a genuine review.,,reviewer_001,2026-01-01,supervisor,demo

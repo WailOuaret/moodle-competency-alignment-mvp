@@ -31,6 +31,7 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
 from moodle_competency.annotation import read_csv, stripped_text, write_csv
+from moodle_competency.teacher_review_summary import is_demo_or_test_review
 from moodle_competency.teacher_reviews import (
     ALLOWED_DECISIONS,
     ALLOWED_EVIDENCE_RELEVANCE,
@@ -564,6 +565,9 @@ def decision_for(
     key = review_key(resource_id, competency_id)
 
     for review in reviews:
+        if is_demo_or_test_review(review):
+            continue
+
         if review_key(
             review.get("resource_id"), review.get("competency_id")
         ) == key:
@@ -814,6 +818,9 @@ def review_progress(
     reviewed_keys: set[str] = set()
 
     for review in reviews:
+        if is_demo_or_test_review(review):
+            continue
+
         decision = stripped_text(review.get("decision")).lower()
 
         if decision not in ALL_DECISIONS:

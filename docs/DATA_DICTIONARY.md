@@ -265,8 +265,10 @@ External teacher decisions about the **frozen research corpus**, written by
 `app/pages/2_Teacher_Review.py` through `corpus_app.save_review`. One row per
 reviewed (resource, competency) mapping; 34 are reviewable.
 
-The file does not exist until a human records a decision. It is written
-atomically, after a timestamped backup into
+The file contains the column header and **zero genuine decisions**.
+Rows marked `research_status=demo` (or `record_status=demo`) are test data.
+They are not teacher or supervisor validation, and the summary ignores them.
+A later genuine decision is written atomically, after a timestamped backup into
 `data/reviews/corpus_teacher_review_backups/`. Re-deciding a mapping replaces
 the earlier row rather than duplicating it.
 

@@ -37,6 +37,8 @@ Thumbs.db
 
 # dist/ is a generated duplicate of the tree plus release archives.
 dist/
+build/
+*.egg-info/
 
 # ---------------------------------------------------------------------------
 # Private / raw Moodle data
@@ -48,8 +50,23 @@ data/raw/
 reports/logs/
 *.log
 
-# External reference repository, not part of this project
+# External reference repository, not part of this project.
+# Obtain it separately. Do not redistribute it from this repository.
 data/source/
+
+# Local copies of test review rows. Not validation and not for publication.
+data/private/
+
+# Superseded working copies
+data/gold/manual_fragment_annotations_before_reset.csv
+data/reviews/teacher_reviews_before_fix_20260918.csv
+data/interim/gemini_pilot_manifest.json
+data/interim/gemini_pilot_raw.json
+data/interim/gemini_pilot_response.jsonl
+data/interim/gemini_pilot_validated.jsonl
+
+# Runtime demo manifests, not the frozen experiment
+data/runtime/manifests/*.json
 
 # Local safety backups — superseded by the files they back up
 backups/
@@ -66,30 +83,58 @@ data/runtime/model_responses/
 data/runtime/analyses/
 
 # ---------------------------------------------------------------------------
-# Archive — local provenance
+# Local supervision material. Kept on disk, not part of the public tree.
 # ---------------------------------------------------------------------------
-# documentation_history/ and pre_final_cleanup/ ARE published: current reports
-# link to them, and they record how the documentation evolved.
-# These two are not:
-archive/development_prompts/
-archive/superseded_builds/
-archive/experiment_backups/
+archive/
+FINAL_DELIVERY/
+FINAL_PACKAGE_CONTENTS.md
+docs/handoff/
+docs/internal/
+docs/meeting/
+docs/SUPERVISOR_DEMO.md
+docs/TEACHER_DEMO_GUIDE.md
+meeting/
+presentations/
+presentation/
+paper_drafts/
+utc_forms/
+
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+*.toc
+
+tmp/
+temp/
+.cache/
+
+# Package and handoff builders. The evaluation scripts stay tracked.
+scripts/build_final_package_zip.py
+scripts/build_handoff_zip.py
+scripts/collect_handoff_facts.py
+tests/test_handoff_facts.py
+
+# Narrative reports stay local. Measured metrics, tables, and figures
+# remain available for reproduction.
+reports/*
+!reports/metrics/
+!reports/tables/
+!reports/figures/
+!reports/reproducibility_manifest.json
 
 # ---------------------------------------------------------------------------
 # Deliberately NOT ignored — required for reproducibility
 # ---------------------------------------------------------------------------
-# The frozen experimental artefacts below must be published, otherwise the
-# repository cannot reproduce its own reported results. They are listed here
-# explicitly so a future edit does not exclude them by accident.
-#
 #   data/processed/          normalised corpus, fragments, competencies
 #   data/interim/            BM25 candidates, model tasks, model responses
 #   data/gold/               human-reviewed reference annotations
-#   data/reviews/            evidence review and runtime review decisions
+#   data/reviews/evidence_review.csv
 #   data/studies/            evidence-usefulness pilot design
 #   data/experiments/        post-hoc and optional experiment outputs
-#   reports/metrics/         all measured results
+#   reports/metrics/         measured results
 #   reports/tables/          result tables
 #   reports/figures/         figures
-#
-# See reports/PROTECTED_ARTIFACT_CANONICAL_LIST.md for the 21 protected files.

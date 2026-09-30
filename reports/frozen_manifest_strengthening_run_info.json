@@ -1,8 +1,0 @@
-{
-  "created_utc": "2026-09-21T19:54:58.722115+00:00",
-  "executable": "/home/wailo/projects/moodle_competency_mvp/.venv/bin/python",
-  "finished_utc": "2026-09-21T19:54:58.814300+00:00",
-  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
-  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
-  "root": "/home/wailo/projects/moodle_competency_mvp"
-}

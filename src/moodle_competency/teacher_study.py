@@ -248,7 +248,7 @@ def select_stratified_sample(
 
     # Independent course rotation per stratum, so a stratum missing a course
     # does not push the others out of step.
-    course_cursor = {stratum: 0 for stratum in stratum_order}
+    course_index = {stratum: 0 for stratum in stratum_order}
 
     def take_from(stratum: str) -> dict[str, Any] | None:
         courses = sorted(cells.get(stratum, {}))
@@ -257,11 +257,11 @@ def select_stratified_sample(
             return None
 
         for offset in range(len(courses)):
-            index = (course_cursor[stratum] + offset) % len(courses)
+            index = (course_index[stratum] + offset) % len(courses)
             bucket = cells[stratum][courses[index]]
 
             if bucket:
-                course_cursor[stratum] = (index + 1) % len(courses)
+                course_index[stratum] = (index + 1) % len(courses)
                 return bucket.pop(0)
 
         return None
