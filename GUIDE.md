@@ -284,6 +284,9 @@ the Python package does not require them. Follow the upstream Moodle Docker
 documentation if you need a local site. Point `MOODLE_BASE_URL` at whatever
 host and port that site actually uses.
 
+To develop the Moodle plugin on the `feature/moodle-plugin` branch against such
+a site, see section 21.
+
 ## 12. Analyze a new resource
 
 ```bash
@@ -510,7 +513,171 @@ when a human disagrees with it. Store the decision beside it.
 - Pages and quiz questions are the evaluated resource types.
 - Quiz text uses a SQL fallback.
 - Hierarchy numbers published beside the Gemini scores are a post-hoc diagnostic. The model did not receive the graph as an input.
-- There is no production REST service, database, or queue.
-- There is no native Moodle plugin and no LTI launch implementation.
+- There is no production REST service, database, or queue. The service in `service/` is a development adapter with no queue and no result store.
+- A Moodle plugin exists only as an alpha prototype on the `feature/moodle-plugin` branch, tested on one local Moodle 5.2 sandbox. It is not a released plugin. There is no LTI launch implementation.
 - No second LMS has been connected or measured.
 - Teacher and supervisor validation of the frozen mappings is `WAITING_FOR_HUMAN`: 0 reviewed of 34. Demo rows are not included in that count.
+
+## 21. Moodle Plugin Development / Sandbox
+
+**Status.** The Moodle plugin is under development on `feature/moodle-plugin`. It
+has been installed and exercised only on one local Moodle 5.2 sandbox, with the
+service's mock backend. It is alpha software, has not been validated by teachers,
+and is not for production use.
+
+### Where things are
+
+| What | Where |
+|---|---|
+| Plugin source (component `local_compalign`) | `moodle-plugin/compalign/` |
+| Python alignment service | `service/`, see `service/README.md` |
+| Architecture and contract | `docs/MOODLE_PLUGIN_ARCHITECTURE.md` |
+| Plugin location inside Moodle 5.2 | `public/local/compalign` |
+
+Moodle 5.1 and later serve from a `public/` directory, so a plugin goes in
+`public/local/`, not `local/`. The command-line scripts moved with the layout: they
+are in `admin/cli/` at the Moodle root, not under `public/`.
+
+### Link the plugin into the sandbox
+
+The plugin source stays in this repository. Moodle Docker bind-mounts the Moodle
+tree into the container, so a host symlink to this repository would dangle inside
+the container. Mount the plugin directory instead, through Moodle Docker's
+`local.yml` override. `bin/moodle-docker-compose` loads it automatically, and Moodle
+Docker's own `.gitignore` excludes it. Create
+`~/moodle-dev/moodle-docker/local.yml` (merge into an existing one, never overwrite):
+
+```yaml
+services:
+  webserver:
+    volumes:
+      - "/home/<user>/projects/moodle_competency_mvp/moodle-plugin/compalign:/var/www/html/public/local/compalign"
+```
+
+**Back up first. In this setup `moodledata` is not on a volume.** `/var/www/moodledata`
+lives in the web server container's writable layer, so recreating that container
+deletes it: uploaded files, caches and the encryption key. The database is on a
+volume and is not affected.
+
+```bash
+cd ~/moodle-dev/moodle-docker && source ../moodle-env.sh
+STAMP=$(date +%Y%m%d-%H%M%S); mkdir -p ~/moodle-dev/backups
+docker exec moodle_comp_mvp-db-1 pg_dump -U moodle --no-owner moodle > ~/moodle-dev/backups/moodle_$STAMP.sql
+docker exec moodle_comp_mvp-webserver-1 tar -C /var/www -cpf - moodledata > ~/moodle-dev/backups/moodledata_$STAMP.tar
+mkdir -p ~/moodle-dev/moodle/public/local/compalign    # the mount point, owned by you
+```
+
+Then validate, check what Compose would touch, recreate only the web server, and
+restore the data:
+
+```bash
+bin/moodle-docker-compose config > /dev/null
+bin/moodle-docker-compose --dry-run up -d --no-deps webserver    # must list only the webserver
+bin/moodle-docker-compose up -d --no-deps webserver
+docker exec -i moodle_comp_mvp-webserver-1 tar -C /var/www -xpf - < ~/moodle-dev/backups/moodledata_$STAMP.tar
+bin/moodle-docker-compose exec -T webserver ls /var/www/html/public/local/compalign
+```
+
+Never run `docker compose down -v` on this sandbox: it removes the volumes,
+including the database. Install the plugin, then clear the caches:
+
+```bash
+bin/moodle-docker-compose exec -T -u www-data webserver php /var/www/html/admin/cli/upgrade.php --non-interactive
+bin/moodle-docker-compose exec -T -u www-data webserver php /var/www/html/admin/cli/purge_caches.php
+```
+
+You can also open `http://localhost:8000/admin`. Moodle enters maintenance mode
+briefly during the install. The container names assume
+`COMPOSE_PROJECT_NAME=moodle_comp_mvp` from `moodle-env.sh`.
+
+### Start Moodle and the service
+
+Docker Desktop must be running, with WSL integration enabled for the distribution.
+
+```bash
+cd ~/moodle-dev/moodle-docker && source ../moodle-env.sh
+bin/moodle-docker-compose start
+bin/moodle-docker-wait-for-db
+bin/moodle-docker-compose ps
+```
+
+Moodle is at http://localhost:8000. In another terminal start the service. Use the
+mock backend until a live model run has been authorised:
+
+```bash
+cd ~/projects/moodle_competency_mvp && source .venv/bin/activate
+ALIGNMENT_BACKEND=mock uvicorn service.main:app --host 0.0.0.0 --port 8001
+```
+
+`ALIGNMENT_SERVICE_TOKEN` comes from the ignored `.env`. See `service/README.md`.
+
+### Configure the plugin
+
+Site administration → Plugins → Local plugins → Competency Alignment Assistant.
+
+- **Alignment service URL:** `http://host.docker.internal:8001`. From inside the
+  Moodle container this name reaches the machine that runs the service. Plain
+  `http://` is accepted only for local development hosts.
+- **Alignment service token:** the value of `ALIGNMENT_SERVICE_TOKEN`. It is stored
+  encrypted and never shown again.
+- **Top-K** is fixed at 5. The first plugin prototype uses the evaluated research
+  configuration, and the service refuses other values.
+- **Official write-back** is off. It is not implemented in this release.
+- **Human review** is always required.
+
+### SANDBOX ONLY: let Moodle reach the service
+
+By default Moodle's HTTP client refuses private addresses and every port except 80
+and 443, a defence against server-side request forgery. The plugin does not bypass
+it. In this sandbox the service sits on a private address and port 8001, so two
+settings under Site administration → General → Security → HTTP security were
+changed, as narrowly as Moodle allows. The previous values and the restore commands
+were saved beside the backups.
+
+1. **cURL allowed ports list:** add `8001`, so the list is `443`, `80`, `8001`.
+2. **cURL blocked hosts list:** inside the container `host.docker.internal` resolves
+   to `192.168.65.254` (`getent ahosts host.docker.internal`). Moodle has no allow
+   list, only a block list, so replace `192.168.0.0/16` with the 16 blocks that cover
+   the same range except that one address:
+
+```text
+192.168.0.0/18     192.168.64.0/24    192.168.65.0/25    192.168.65.128/26
+192.168.65.192/27  192.168.65.224/28  192.168.65.240/29  192.168.65.248/30
+192.168.65.252/31  192.168.65.255/32  192.168.66.0/23    192.168.68.0/22
+192.168.72.0/21    192.168.80.0/20    192.168.96.0/19    192.168.128.0/17
+```
+
+`python -c "import ipaddress as i; print(*i.ip_network('192.168.0.0/16').address_exclude(i.ip_network('192.168.65.254/32')), sep='\n')"`
+prints them. The other entries (`127.0.0.0/8`, `10.0.0.0/8`, `172.16.0.0/12`,
+`localhost`, `169.254.169.254`, and so on) stay.
+
+Do not remove `192.168.0.0/16` wholesale, and do not copy this to a production
+site. Production should use HTTPS, a normal host name and port 443. If Docker
+Desktop changes its host address the plugin reports "Blocked by Moodle": repeat the
+lookup and adjust the carve-out.
+
+### Test the connection
+
+Open `http://localhost:8000/local/compalign/index.php` as an administrator. It is
+also linked from the plugin settings page. The check runs on the server, so the
+token never reaches the browser. The page shows one of: Connected, Unauthorized,
+Service unavailable, Invalid response, Blocked by Moodle, or Not configured.
+
+### Run the tests
+
+```bash
+python scripts/12_validate_manual_annotations.py --mode final
+python -m pytest -q
+python -m compileall -q src scripts tests app service
+python scripts/ui_smoke_check.py
+```
+
+The syntax of the plugin is checked with the container's PHP:
+
+```bash
+cd moodle-plugin/compalign
+for f in $(find . -name '*.php'); do docker exec -i moodle_comp_mvp-webserver-1 php -l < "$f"; done
+```
+
+Moodle PHPUnit is not set up in this sandbox, because Moodle's `vendor/` directory
+is not installed, so no plugin PHPUnit test has been run.
