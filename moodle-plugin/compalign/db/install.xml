@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/compalign/db" VERSION="2026100300" COMMENT="XMLDB file for Moodle local/compalign"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="local_compalign_analysis" COMMENT="One request to align a resource with a competency catalogue.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Course module of the analysed resource."/>
+        <FIELD NAME="resourceid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Stable resource id sent to the service, for example moodle:page:42."/>
+        <FIELD NAME="resourcetype" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="resourcehash" TYPE="char" LENGTH="80" NOTNULL="false" SEQUENCE="false" COMMENT="sha256 of the text that was analysed. The text itself is not stored."/>
+        <FIELD NAME="cataloguehash" TYPE="char" LENGTH="80" NOTNULL="false" SEQUENCE="false" COMMENT="Digest of the competency catalogue that was sent."/>
+        <FIELD NAME="frameworkid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Competency framework the catalogue was built from."/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="queued" SEQUENCE="false" COMMENT="queued, running, completed or failed."/>
+        <FIELD NAME="requestedby" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="backend" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false" COMMENT="Model backend reported by the service."/>
+        <FIELD NAME="model" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="topk" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="5" SEQUENCE="false"/>
+        <FIELD NAME="maxsuggestions" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="3" SEQUENCE="false"/>
+        <FIELD NAME="externalanalysisid" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false" COMMENT="Analysis id returned by the service."/>
+        <FIELD NAME="requestid" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false" COMMENT="Correlation id sent to the service, to match its log."/>
+        <FIELD NAME="completeness" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="complete or partial, as reported by the service."/>
+        <FIELD NAME="abstained" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 when the model declined to select any competency."/>
+        <FIELD NAME="diagnostics" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON list of service diagnostics."/>
+        <FIELD NAME="errorcode" TYPE="char" LENGTH="60" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="errormessage" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Safe summary for administrators. Never a stack trace or a secret."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timestarted" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="requestedby" TYPE="foreign" FIELDS="requestedby" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="course_cm" UNIQUE="false" FIELDS="courseid, cmid"/>
+        <INDEX NAME="cm_hashes" UNIQUE="false" FIELDS="cmid, resourcehash, cataloguehash"/>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_compalign_sugg" COMMENT="Original model proposals. Written once and never changed by a review.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="analysisid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="competencyid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Moodle competency id, resolved from the idnumber."/>
+        <FIELD NAME="competencyidnumber" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="confidence" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="5" COMMENT="Model-reported confidence. Not a calibrated probability."/>
+        <FIELD NAME="bm25rank" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="supportcount" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Order in which the service returned the suggestions."/>
+        <FIELD NAME="warnings" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON list of hierarchy warnings."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="analysisid" TYPE="foreign" FIELDS="analysisid" REFTABLE="local_compalign_analysis" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="analysis_competency" UNIQUE="true" FIELDS="analysisid, competencyidnumber"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_compalign_evidence" COMMENT="Exact quotations that support a suggestion, as validated by the service.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="suggestionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="fragmentid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="evidencetext" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="evidenceorder" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="suggestionid" TYPE="foreign" FIELDS="suggestionid" REFTABLE="local_compalign_sugg" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="suggestion_order" UNIQUE="false" FIELDS="suggestionid, evidenceorder"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_compalign_review" COMMENT="Teacher decisions. Append-only: an edit adds a new revision.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="analysisid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="suggestionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Always the authenticated reviewer, never a submitted value."/>
+        <FIELD NAME="revision" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="decision" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="accept, reject or modify."/>
+        <FIELD NAME="finalcompetencyid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Null for reject."/>
+        <FIELD NAME="finalcompetencyidnumber" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="evidenceusefulness" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="0, 1 or 2. Null when the teacher gave no rating."/>
+        <FIELD NAME="commenttext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Optional comment. Plain text, escaped on output."/>
+        <FIELD NAME="reviewstartedat" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Server time at which the review card was first shown."/>
+        <FIELD NAME="reviewdurationseconds" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Seconds from the card being shown to the decision being saved. Null when unknown or out of range."/>
+        <FIELD NAME="writebackstatus" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="none" SEQUENCE="false"/>
+        <FIELD NAME="writebacktime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="analysisid" TYPE="foreign" FIELDS="analysisid" REFTABLE="local_compalign_analysis" REFFIELDS="id"/>
+        <KEY NAME="suggestionid" TYPE="foreign" FIELDS="suggestionid" REFTABLE="local_compalign_sugg" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="suggestion_user_revision" UNIQUE="true" FIELDS="suggestionid, userid, revision"/>
+        <INDEX NAME="analysis_user" UNIQUE="false" FIELDS="analysisid, userid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

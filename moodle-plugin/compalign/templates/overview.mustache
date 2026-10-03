@@ -1,0 +1,82 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_compalign/overview
+
+    Plugin overview, with the alignment service connection status for managers.
+
+    Context variables required for this template:
+    * release - Plugin release
+    * topk - The fixed Top-K
+    * writebackstatus - Text describing the official write-back state
+    * humanreview - Text describing the human review rule
+    * showconnection - Whether to show the connection status
+    * connection - Connection status: type (success, warning, danger or info), label, help and checked
+    * showsettings - Whether to link to the plugin settings
+    * settingsurl - Address of the plugin settings page
+    * iscourse - Whether the page is shown inside a course
+
+    Example context (json):
+    {
+        "release": "0.1.0",
+        "topk": 5,
+        "writebackstatus": "Off.",
+        "humanreview": "Always required",
+        "showconnection": true,
+        "connection": {
+            "type": "success",
+            "label": "Connected",
+            "help": "The service answered and accepted the configured token.",
+            "checked": "Checked Saturday, 3 October 2026, 9:00 PM"
+        },
+        "showsettings": true,
+        "settingsurl": "https://example.org/admin/settings.php?section=local_compalign",
+        "iscourse": false
+    }
+}}
+<div class="local-compalign-overview">
+    <dl class="row">
+        <dt class="col-sm-3">{{#str}} overview_release, local_compalign {{/str}}</dt>
+        <dd class="col-sm-9">{{release}}</dd>
+
+        <dt class="col-sm-3">{{#str}} overview_topk, local_compalign {{/str}}</dt>
+        <dd class="col-sm-9">{{topk}}</dd>
+
+        <dt class="col-sm-3">{{#str}} overview_writeback, local_compalign {{/str}}</dt>
+        <dd class="col-sm-9">{{writebackstatus}}</dd>
+
+        <dt class="col-sm-3">{{#str}} overview_humanreview, local_compalign {{/str}}</dt>
+        <dd class="col-sm-9">{{humanreview}}</dd>
+    </dl>
+
+    {{#iscourse}}
+        <p>{{#str}} coursenotyet, local_compalign {{/str}}</p>
+    {{/iscourse}}
+
+    {{#showconnection}}
+        <h3 class="h5 mt-4">{{#str}} connectionstatus, local_compalign {{/str}}</h3>
+        <div class="alert alert-{{connection.type}}" role="status">
+            <strong>{{connection.label}}</strong>
+            <p class="mb-0">{{connection.help}}</p>
+            <small>{{connection.checked}}</small>
+        </div>
+    {{/showconnection}}
+
+    {{#showsettings}}
+        <a class="btn btn-secondary" href="{{{settingsurl}}}">{{#str}} opensettings, local_compalign {{/str}}</a>
+    {{/showsettings}}
+</div>
