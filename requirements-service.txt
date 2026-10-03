@@ -1,0 +1,11 @@
+# Python alignment service (service/). Install on top of the research requirements:
+#
+#   pip install -r requirements.txt -r requirements-service.txt
+#
+# Kept separate so the research environment does not depend on a web stack.
+# Lower bounds are the versions the service was tested with.
+fastapi>=0.142,<1
+uvicorn>=0.53,<1
+# HTTP client used by the FastAPI/Starlette TestClient. Tests only, not run time.
+# Starlette prefers httpx2 and warns when it falls back to httpx.
+httpx2>=2.13,<3
