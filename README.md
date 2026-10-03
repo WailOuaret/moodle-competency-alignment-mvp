@@ -193,6 +193,8 @@ python -m pytest -q tests/test_core_result_regression.py
 | `scripts/` | Extraction, retrieval, evaluation, verification |
 | `tests/` | Automated tests |
 | `sql/` | Read-only quiz export used in the research environment |
+| `service/` | Development HTTP service around the engine (branch `feature/moodle-plugin`) |
+| `moodle-plugin/compalign/` | Moodle plugin prototype `local_compalign`, under development (branch `feature/moodle-plugin`) |
 | `docs/` | Architecture, connectors, evaluation, reproducibility |
 | `data/processed/`, `data/interim/`, `data/gold/` | Frozen corpus, responses, and reference |
 | `reports/metrics/`, `reports/tables/`, `reports/figures/` | Measured results |
@@ -220,17 +222,20 @@ run against a live Canvas site.
 - The reference has no genuine `NONE` fragments, so abstention was not measured on that case.
 - Only Pages and quiz questions were evaluated.
 - Quiz text depends on a local SQL export.
-- There is no production REST service, database, or job queue.
-- There is no native Moodle plugin and no LTI launch implementation.
+- There is no production service. `service/` is a development adapter with no queue and no result store.
+- The Moodle plugin is under development on the `feature/moodle-plugin` branch. It has only been run with
+  the mock backend on one local sandbox, has not been validated by teachers, and does not write competency
+  links. It is not a released or production plugin. There is no LTI launch implementation.
 - There is no live second-LMS validation.
 - Teacher/supervisor review of the frozen mappings is waiting: 0 / 34.
 
 ## Roadmap
 
-The next technical steps, none of which are built here, are a small HTTP
-service around the existing engine, durable storage for reviews, and a Moodle
-placement that returns suggestions only. Write-back of a link would happen
-only after an explicit accept or modify. Framework-size and LBG checks in
+An HTTP service around the existing engine and a Moodle plugin prototype that
+returns suggestions only are under development on the `feature/moodle-plugin`
+branch. Not yet built or done: a run of a live model through the plugin, a study
+with teachers, and a study export. Write-back of a link is not implemented and
+would happen only after an explicit accept or modify. Framework-size and LBG checks in
 `scaling_checks.py` measure retrieval behaviour. They are not a licence to
 reuse the 13-competency Gemini scores on a new catalogue. K = 5 was selected
 on this reference. It is not a universal setting.

@@ -522,8 +522,9 @@ when a human disagrees with it. Store the decision beside it.
 
 **Status.** The Moodle plugin is under development on `feature/moodle-plugin`. It
 has been installed and exercised only on one local Moodle 5.2 sandbox, with the
-service's mock backend. It is alpha software, has not been validated by teachers,
-and is not for production use.
+service's mock backend. A teacher can ask for suggestions for a Moodle Page and
+accept, reject or modify each one; nothing is written to Moodle's competency links. It
+is alpha software, has not been validated by teachers, and is not for production use.
 
 ### Where things are
 
@@ -620,9 +621,14 @@ Site administration → Plugins → Local plugins → Competency Alignment Assis
   `http://` is accepted only for local development hosts.
 - **Alignment service token:** the value of `ALIGNMENT_SERVICE_TOKEN`. It is stored
   encrypted and never shown again.
-- **Top-K** is fixed at 5. The first plugin prototype uses the evaluated research
-  configuration, and the service refuses other values.
-- **Official write-back** is off. It is not implemented in this release.
+- **Competency framework:** the one framework the assistant reads. Choose a visible
+  framework in which every competency has an ID number and a description. Frameworks
+  are never combined. Until one is chosen, analyses are refused.
+- **Maximum suggestions:** how many competencies may be proposed for one resource.
+- **Top-K** is fixed at 5. The first plugin prototype uses Top-K=5, matching the
+  evaluated research configuration, and the service refuses other values.
+- **Official write-back** is off. It is not implemented in this release: the checkbox
+  is reserved and has no effect.
 - **Human review** is always required.
 
 ### SANDBOX ONLY: let Moodle reach the service
@@ -663,6 +669,59 @@ also linked from the plugin settings page. The check runs on the server, so the
 token never reaches the browser. The page shows one of: Connected, Unauthorized,
 Service unavailable, Invalid response, Blocked by Moodle, or Not configured.
 
+### Analyse a Page and review the suggestions
+
+This works with the mock backend. Its suggestions are placeholders, not model output,
+and the review page says so.
+
+1. As an administrator, select the framework in the plugin settings (above) and check
+   that the connection test says Connected.
+2. As a teacher of the course, open **Competency Alignment** in the course navigation, or
+   `http://localhost:8000/local/compalign/index.php?courseid=<course id>`. The dashboard
+   lists every resource with its status and its current official competency links.
+3. Open **View suggestions** for a Page and press **Suggest competencies**. The page
+   says the analysis is queued. Forums, quizzes and other types are not supported yet.
+4. **Run Moodle's background tasks.** The analysis starts when cron runs, and the sandbox
+   does not run cron by itself:
+
+   ```bash
+   cd ~/moodle-dev/moodle-docker && source ../moodle-env.sh
+   bin/moodle-docker-compose exec -T -u www-data webserver php /var/www/html/admin/cli/adhoc_task.php --execute
+   ```
+
+   For a longer session leave this running in a spare terminal:
+
+   ```bash
+   while true; do bin/moodle-docker-compose exec -T -u www-data webserver \
+     php /var/www/html/admin/cli/adhoc_task.php --execute > /dev/null; sleep 10; done
+   ```
+
+5. The page refreshes itself while the analysis waits. When it completes there is one
+   card per suggested competency: the competency and its description, the exact
+   evidence from the Page, any hierarchy note, and the decision form.
+6. Choose **Accept**, **Reject** or **Modify** (Modify needs a different competency of the
+   framework), optionally rate the evidence 0, 1 or 2, add a comment, and save. Nothing
+   is pre-selected. Saving again adds a new revision; the earlier one is kept.
+
+A failed analysis shows a short reason and a **Reanalyse** button; an administrator
+finds the detail in the analysis record. If the Page or the framework changes after an
+analysis, the review page warns that the evidence may be out of date.
+
+Review time is measured on the server, from the moment a card is first shown in the
+session to the moment the decision is saved. It is stored as unknown when that cannot be
+known or lasts more than four hours.
+
+**Test data is not study data.** Decisions made in the sandbox come from mock output and
+must never be mixed with real teacher reviews. To empty the plugin's tables in this
+sandbox only:
+
+```bash
+docker exec moodle_comp_mvp-db-1 psql -U moodle -d moodle -c \
+  "TRUNCATE m_local_compalign_review, m_local_compalign_evidence, m_local_compalign_sugg, m_local_compalign_analysis RESTART IDENTITY;"
+```
+
+(`m_` is this sandbox's table prefix. Do not run this on a site that holds real reviews.)
+
 ### Run the tests
 
 ```bash
@@ -680,4 +739,8 @@ for f in $(find . -name '*.php'); do docker exec -i moodle_comp_mvp-webserver-1 
 ```
 
 Moodle PHPUnit is not set up in this sandbox, because Moodle's `vendor/` directory
-is not installed, so no plugin PHPUnit test has been run.
+is not installed. The plugin's PHPUnit tests are in `moodle-plugin/compalign/tests/`,
+but **no plugin PHPUnit test has been run**, so none of them is claimed to pass. Setting
+PHPUnit up means installing Moodle's Composer dependencies and running
+`php admin/tool/phpunit/cli/init.php`; the sandbox's `config.php` already carries the
+`phpunit_prefix` and `phpunit_dataroot` settings it needs.
