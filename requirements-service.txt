@@ -6,6 +6,13 @@
 # Lower bounds are the versions the service was tested with.
 fastapi>=0.142,<1
 uvicorn>=0.53,<1
-# HTTP client used by the FastAPI/Starlette TestClient. Tests only, not run time.
-# Starlette prefers httpx2 and warns when it falls back to httpx.
+
+# HTTP client used by the FastAPI/Starlette TestClient. Tests only, not run time:
+# nothing in service/ or tests/ imports it directly.
+#
+# httpx2 is the maintained successor of httpx (same author, published by Pydantic
+# Services from https://github.com/pydantic/httpx2). It is not a look-alike package:
+# Starlette 1.6 lists it in its own "full" extra, and its TestClient prefers it and
+# emits a deprecation warning when it falls back to httpx. Plain httpx (already
+# installed for google-genai) still works, with that warning.
 httpx2>=2.13,<3
