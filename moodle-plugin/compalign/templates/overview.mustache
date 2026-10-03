@@ -28,7 +28,6 @@
     * connection - Connection status: type (success, warning, danger or info), label, help and checked
     * showsettings - Whether to link to the plugin settings
     * settingsurl - Address of the plugin settings page
-    * iscourse - Whether the page is shown inside a course
 
     Example context (json):
     {
@@ -44,8 +43,7 @@
             "checked": "Checked Saturday, 3 October 2026, 9:00 PM"
         },
         "showsettings": true,
-        "settingsurl": "https://example.org/admin/settings.php?section=local_compalign",
-        "iscourse": false
+        "settingsurl": "https://example.org/admin/settings.php?section=local_compalign"
     }
 }}
 <div class="local-compalign-overview">
@@ -62,10 +60,6 @@
         <dt class="col-sm-3">{{#str}} overview_humanreview, local_compalign {{/str}}</dt>
         <dd class="col-sm-9">{{humanreview}}</dd>
     </dl>
-
-    {{#iscourse}}
-        <p>{{#str}} coursenotyet, local_compalign {{/str}}</p>
-    {{/iscourse}}
 
     {{#showconnection}}
         <h3 class="h5 mt-4">{{#str}} connectionstatus, local_compalign {{/str}}</h3>

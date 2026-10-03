@@ -46,12 +46,10 @@ class overview implements renderable, named_templatable {
     /**
      * Constructor.
      *
-     * @param bool $iscourse Whether the page is shown inside a course.
      * @param connection_result|null $connection The connection status, or null to hide it.
      * @param bool $showsettings Whether to link to the plugin settings.
      */
     public function __construct(
-        private bool $iscourse,
         private ?connection_result $connection,
         private bool $showsettings,
     ) {
@@ -85,7 +83,6 @@ class overview implements renderable, named_templatable {
             'connection' => $this->connection ? $this->describe($this->connection) : null,
             'showsettings' => $this->showsettings,
             'settingsurl' => (new \moodle_url('/admin/settings.php', ['section' => 'local_compalign']))->out(false),
-            'iscourse' => $this->iscourse,
         ];
     }
 

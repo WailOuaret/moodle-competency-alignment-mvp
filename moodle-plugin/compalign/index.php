@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Overview of the Competency Alignment Assistant.
+ * Entry page of the Competency Alignment Assistant.
  *
- * Without a course id this is the site overview for managers, including the alignment
- * service connection status. With a course id it is the course page of the assistant.
+ * With a course id it is the course dashboard: every resource with its analysis status. Without one it
+ * is the site overview for managers, including the alignment service connection status.
  *
  * @package    local_compalign
  * @copyright  2026 Wail Ouaret
@@ -27,6 +27,7 @@
 
 require_once(__DIR__ . '/../../config.php');
 
+use local_compalign\output\dashboard;
 use local_compalign\output\overview;
 use local_compalign\service\alignment_client;
 
@@ -39,27 +40,31 @@ if ($courseid) {
     require_capability('local/compalign:view', $context);
     $PAGE->set_pagelayout('incourse');
     $PAGE->set_heading($course->fullname);
-    $url = new moodle_url('/local/compalign/index.php', ['courseid' => $course->id]);
-} else {
-    require_login();
-    $context = context_system::instance();
-    require_capability('local/compalign:manage', $context);
-    $PAGE->set_pagelayout('admin');
-    $PAGE->set_heading(get_string('pluginname', 'local_compalign'));
-    $url = new moodle_url('/local/compalign/index.php');
+    $PAGE->set_url(new moodle_url('/local/compalign/index.php', ['courseid' => $course->id]));
+    $PAGE->set_context($context);
+    $PAGE->set_title(get_string('pluginname', 'local_compalign'));
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading(get_string('competencyalignment', 'local_compalign'));
+    echo $OUTPUT->render(dashboard::create($course, (int) $USER->id));
+    echo $OUTPUT->footer();
+    exit;
 }
 
+require_login();
+$context = context_system::instance();
+require_capability('local/compalign:manage', $context);
+$PAGE->set_pagelayout('admin');
+$PAGE->set_heading(get_string('pluginname', 'local_compalign'));
+$PAGE->set_url(new moodle_url('/local/compalign/index.php'));
 $PAGE->set_context($context);
-$PAGE->set_url($url);
 $PAGE->set_title(get_string('pluginname', 'local_compalign'));
 
-// Only managers see the service status, and the check runs server side so that the
-// token never reaches the browser.
-$canmanage = has_capability('local/compalign:manage', context_system::instance());
-$connection = $canmanage ? alignment_client::check_configured_connection() : null;
-$showsettings = has_capability('moodle/site:config', context_system::instance());
+// The service status is checked on the server, so the token never reaches the browser.
+$connection = alignment_client::check_configured_connection();
+$showsettings = has_capability('moodle/site:config', $context);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'local_compalign'));
-echo $OUTPUT->render(new overview((bool) $courseid, $connection, $showsettings));
+echo $OUTPUT->render(new overview($connection, $showsettings));
 echo $OUTPUT->footer();

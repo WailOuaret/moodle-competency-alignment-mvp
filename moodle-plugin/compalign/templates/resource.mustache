@@ -1,0 +1,82 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_compalign/resource
+
+    The page of one resource: official links, the state of its analysis, and the suggestion cards.
+
+    Context variables required for this template:
+    * heading - Page heading
+    * typename - Resource type, for example Page
+    * coursename - Name of the course
+    * backurl - Address of the course dashboard
+    * haslinks - Whether the resource has official competency links
+    * links - Each with idnumber and shortname
+    * notices - Each with type (success, info, warning or danger), role, title and text
+    * actionhtml - A rendered button that starts or repeats the analysis, or empty
+    * hascards - Whether there are suggestions
+    * cards - Suggestion cards, rendered with local_compalign/suggestion
+
+    Example context (json):
+    {
+        "heading": "Competency suggestions: Software Development Lifecycle and Deployment",
+        "typename": "Page",
+        "coursename": "Software Engineering and Distributed Systems",
+        "backurl": "https://example.org/local/compalign/index.php?courseid=2",
+        "haslinks": true,
+        "links": [{"idnumber": "GI_C1_1", "shortname": "Concevoir"}],
+        "notices": [{"type": "info", "role": "status", "title": "", "text": "Official write-back is off."}],
+        "actionhtml": "",
+        "hascards": false,
+        "cards": []
+    }
+}}
+<div class="local-compalign-resource">
+    <p><a href="{{{backurl}}}">{{#str}} backtodashboard, local_compalign {{/str}}</a></p>
+
+    <h3 class="h4">{{heading}}</h3>
+    <p class="text-muted">{{typename}} &middot; {{coursename}}</p>
+
+    <section aria-labelledby="local-compalign-links">
+        <h3 class="h5" id="local-compalign-links">{{#str}} officiallinks, local_compalign {{/str}}</h3>
+        {{#haslinks}}
+            <ul>
+                {{#links}}<li><strong>{{idnumber}}</strong> {{shortname}}</li>{{/links}}
+            </ul>
+        {{/haslinks}}
+        {{^haslinks}}
+            <p class="text-muted">{{#str}} officiallinks_none, local_compalign {{/str}}</p>
+        {{/haslinks}}
+    </section>
+
+    {{#notices}}
+        <div class="alert alert-{{type}}" role="{{role}}">
+            {{#title}}<strong>{{title}}</strong><br>{{/title}}
+            {{text}}
+        </div>
+    {{/notices}}
+
+    {{#actionhtml}}
+        <div class="mb-4">{{{actionhtml}}}</div>
+    {{/actionhtml}}
+
+    {{#hascards}}
+        {{#cards}}
+            {{> local_compalign/suggestion }}
+        {{/cards}}
+    {{/hascards}}
+</div>

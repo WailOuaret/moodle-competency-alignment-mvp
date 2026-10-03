@@ -1,0 +1,124 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_compalign/dashboard
+
+    The course dashboard: every resource with its analysis status, official links and next action.
+
+    Context variables required for this template:
+    * hasissues - Whether the assistant is not ready
+    * issues - Reasons: text, hasdetails and details (each with text)
+    * hasrows - Whether the course has resources to list
+    * rows - One per resource: name, url, typename, statuskey, statuslabel, statustype, progress, haslinks,
+      links (each with text) and action (html, or url and label, or text)
+    * showoverviewlink - Whether to link to the plugin overview
+    * overviewurl - Address of the plugin overview
+
+    Example context (json):
+    {
+        "hasissues": false,
+        "issues": [],
+        "hasrows": true,
+        "rows": [
+            {
+                "name": "Software Development Lifecycle and Deployment",
+                "url": "https://example.org/mod/page/view.php?id=3",
+                "typename": "Page",
+                "statuskey": "ready",
+                "statuslabel": "Suggestions ready",
+                "statustype": "primary",
+                "progress": "1 of 2 reviewed",
+                "haslinks": true,
+                "links": [{"text": "GI_C1_1 Concevoir"}],
+                "action": {"url": "https://example.org/local/compalign/review.php?cmid=3", "label": "View suggestions"}
+            }
+        ],
+        "showoverviewlink": true,
+        "overviewurl": "https://example.org/local/compalign/index.php"
+    }
+}}
+<div class="local-compalign-dashboard">
+    <p>{{#str}} dashboard_intro, local_compalign {{/str}}</p>
+
+    {{#hasissues}}
+        <div class="alert alert-warning" role="alert">
+            <strong>{{#str}} dashboard_notready, local_compalign {{/str}}</strong>
+            <ul class="mb-0">
+                {{#issues}}
+                    <li>{{text}}
+                        {{#hasdetails}}
+                            <ul>
+                                {{#details}}<li>{{text}}</li>{{/details}}
+                            </ul>
+                        {{/hasdetails}}
+                    </li>
+                {{/issues}}
+            </ul>
+        </div>
+    {{/hasissues}}
+
+    {{#hasrows}}
+        <div class="table-responsive">
+            <table class="generaltable table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">{{#str}} column_resource, local_compalign {{/str}}</th>
+                        <th scope="col">{{#str}} column_type, local_compalign {{/str}}</th>
+                        <th scope="col">{{#str}} column_status, local_compalign {{/str}}</th>
+                        <th scope="col">{{#str}} column_links, local_compalign {{/str}}</th>
+                        <th scope="col">{{#str}} column_action, local_compalign {{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#rows}}
+                        <tr>
+                            <th scope="row">
+                                {{#url}}<a href="{{{url}}}">{{name}}</a>{{/url}}
+                                {{^url}}{{name}}{{/url}}
+                            </th>
+                            <td>{{typename}}</td>
+                            <td>
+                                <span class="badge bg-{{statustype}}">{{statuslabel}}</span>
+                                {{#progress}}<br><small>{{progress}}</small>{{/progress}}
+                            </td>
+                            <td>
+                                {{#haslinks}}
+                                    <ul class="list-unstyled mb-0">
+                                        {{#links}}<li>{{text}}</li>{{/links}}
+                                    </ul>
+                                {{/haslinks}}
+                                {{^haslinks}}<span class="text-muted">{{#str}} linksnone, local_compalign {{/str}}</span>{{/haslinks}}
+                            </td>
+                            <td>
+                                {{#action.html}}{{{action.html}}}{{/action.html}}
+                                {{#action.url}}<a class="btn btn-secondary btn-sm" href="{{{action.url}}}">{{action.label}}</a>{{/action.url}}
+                                {{#action.text}}<span class="text-muted">{{action.text}}</span>{{/action.text}}
+                            </td>
+                        </tr>
+                    {{/rows}}
+                </tbody>
+            </table>
+        </div>
+    {{/hasrows}}
+    {{^hasrows}}
+        <p class="text-muted">{{#str}} dashboard_noresources, local_compalign {{/str}}</p>
+    {{/hasrows}}
+
+    {{#showoverviewlink}}
+        <p><a href="{{{overviewurl}}}">{{#str}} plugin_overview, local_compalign {{/str}}</a></p>
+    {{/showoverviewlink}}
+</div>

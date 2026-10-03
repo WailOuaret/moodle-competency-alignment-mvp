@@ -1,0 +1,106 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_compalign/suggestion
+
+    One suggested competency with its evidence, any hierarchy note, collapsed technical details and the
+    teacher's decision form. It shows no reference label, prompt, model reasoning or raw response.
+
+    Context variables required for this template:
+    * id - Suggestion id
+    * code - Competency idnumber
+    * name - Competency name
+    * description - Competency description
+    * evidence - Exact quotations, each with quote
+    * haswarnings - Whether there is a hierarchy note
+    * warnings - Each with text
+    * bm25rank - Retrieval rank, or a placeholder
+    * confidence - Model confidence, or a placeholder
+    * supportcount - Number of supporting passages
+    * passages - Passage ids, comma separated
+    * reviewed - The teacher's latest decision: summary and saved. Absent when not reviewed yet
+    * form - The rendered decision form
+
+    Example context (json):
+    {
+        "id": 1,
+        "code": "GI_C1_1",
+        "name": "Concevoir des logiciels",
+        "description": "Design software systems.",
+        "evidence": [{"quote": "Software design defines the architecture."}],
+        "haswarnings": true,
+        "warnings": [{"text": "Its parent competency (GI_C1) is also suggested for this resource."}],
+        "bm25rank": 1,
+        "confidence": "0.80",
+        "supportcount": 2,
+        "passages": "moodle:page:1#f001, moodle:page:1#f002",
+        "reviewed": {"summary": "Accepted", "saved": "Revision 1, saved Saturday, 3 October 2026, 11:00 PM"},
+        "form": "<form></form>"
+    }
+}}
+<div class="card mb-4 local-compalign-card" id="suggestion-{{id}}">
+    <div class="card-header">
+        <span class="text-muted small">{{#str}} proposedcompetency, local_compalign {{/str}}</span>
+        <h4 class="h5 mb-0"><span class="badge bg-secondary">{{code}}</span> {{name}}</h4>
+    </div>
+    <div class="card-body">
+        {{#description}}<p>{{description}}</p>{{/description}}
+
+        <h5 class="h6">{{#str}} evidenceheading, local_compalign {{/str}}</h5>
+        {{#evidence}}
+            <blockquote class="blockquote border-start ps-3 mb-2">
+                <p class="mb-0 fs-6">{{quote}}</p>
+            </blockquote>
+        {{/evidence}}
+
+        {{#haswarnings}}
+            <div class="alert alert-warning mt-3" role="note">
+                <strong>{{#str}} hierarchywarning, local_compalign {{/str}}</strong>
+                <ul class="mb-0">
+                    {{#warnings}}<li>{{text}}</li>{{/warnings}}
+                </ul>
+            </div>
+        {{/haswarnings}}
+
+        <details class="my-3">
+            <summary>{{#str}} technicaldetails, local_compalign {{/str}}</summary>
+            <dl class="row mt-2 mb-0">
+                <dt class="col-sm-4">{{#str}} bm25rank, local_compalign {{/str}}</dt>
+                <dd class="col-sm-8">{{bm25rank}}</dd>
+                <dt class="col-sm-4">{{#str}} modelconfidence, local_compalign {{/str}}</dt>
+                <dd class="col-sm-8">{{confidence}}</dd>
+                <dt class="col-sm-4">{{#str}} supportcount, local_compalign {{/str}}</dt>
+                <dd class="col-sm-8">{{supportcount}}</dd>
+                <dt class="col-sm-4">{{#str}} passages, local_compalign {{/str}}</dt>
+                <dd class="col-sm-8">{{passages}}</dd>
+            </dl>
+        </details>
+
+        <hr>
+        {{#reviewed}}
+            <div class="alert alert-success" role="status">
+                <strong>{{#str}} yourdecision, local_compalign {{/str}}:</strong> {{summary}}<br>
+                <small>{{saved}}</small>
+            </div>
+        {{/reviewed}}
+        {{^reviewed}}
+            <p class="text-muted">{{#str}} notreviewed, local_compalign {{/str}}</p>
+        {{/reviewed}}
+
+        {{{form}}}
+    </div>
+</div>
