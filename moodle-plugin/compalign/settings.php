@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use local_compalign\admin\framework_setting;
 use local_compalign\admin\validated_text_setting;
 use local_compalign\service\alignment_client;
 
@@ -67,6 +68,12 @@ if ($hassiteconfig) {
             PARAM_INT,
             5,
             [alignment_client::class, 'validate_timeout']
+        ));
+
+        $settings->add(new framework_setting(
+            'local_compalign/frameworkid',
+            get_string('frameworkid', 'local_compalign'),
+            get_string('frameworkid_desc', 'local_compalign')
         ));
 
         // The engine is evaluated at Top-5 and the service refuses any other value, so

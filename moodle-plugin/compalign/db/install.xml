@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/compalign/db" VERSION="2026100300" COMMENT="XMLDB file for Moodle local/compalign"
+<XMLDB PATH="local/compalign/db" VERSION="2026100301" COMMENT="XMLDB file for Moodle local/compalign"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -25,6 +25,7 @@
         <FIELD NAME="completeness" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="complete or partial, as reported by the service."/>
         <FIELD NAME="abstained" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 when the model declined to select any competency."/>
         <FIELD NAME="diagnostics" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON list of service diagnostics."/>
+        <FIELD NAME="manifest" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON provenance reported by the service: backend, model, prompt version, hashes, fragment count, timing."/>
         <FIELD NAME="errorcode" TYPE="char" LENGTH="60" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="errormessage" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Safe summary for administrators. Never a stack trace or a secret."/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

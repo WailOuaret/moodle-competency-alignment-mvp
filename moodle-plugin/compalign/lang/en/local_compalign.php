@@ -81,7 +81,141 @@ $string['status_notconfigured_help'] = 'Enter the service URL and token in the p
 $string['status_notconfigured_url'] = 'The service URL is missing or not valid. Check it in the plugin settings.';
 $string['status_notconfigured_token'] = 'The service token is missing or cannot be read. Enter it again in the plugin settings.';
 $string['opensettings'] = 'Open the plugin settings';
-$string['coursenotyet'] = 'Suggestions for the resources of this course are added in the next release of the assistant.';
+
+// Competency framework setting.
+$string['frameworkid'] = 'Competency framework';
+$string['frameworkid_desc'] = 'The framework the assistant proposes competencies from. Only this one framework is used; frameworks are never combined. Every competency in it needs an ID number and a description.';
+$string['framework_none'] = 'Not selected';
+$string['framework_nocompetencies'] = 'Competencies are disabled on this site, so no framework can be chosen.';
+
+// Dashboard.
+$string['dashboard_intro'] = 'Ask the assistant to suggest competencies for a resource, then review each suggestion. The assistant only proposes: nothing is written to Moodle competency links.';
+$string['dashboard_noresources'] = 'This course has no resources yet.';
+$string['dashboard_notready'] = 'The assistant is not ready to analyse resources';
+$string['column_resource'] = 'Resource';
+$string['column_type'] = 'Type';
+$string['column_status'] = 'Analysis';
+$string['column_links'] = 'Current Moodle competency links';
+$string['column_action'] = 'Action';
+$string['linksnone'] = 'None';
+$string['viewsuggestions'] = 'View suggestions';
+$string['unsupportedtype'] = 'Resource type not supported in this prototype.';
+$string['analysis_none'] = 'Not analysed';
+$string['analysis_queued'] = 'Queued';
+$string['analysis_running'] = 'Analysing';
+$string['analysis_ready'] = 'Suggestions ready';
+$string['analysis_nosuggestion'] = 'Analysed, no suggestion';
+$string['analysis_reviewed'] = 'Reviewed';
+$string['analysis_failed'] = 'Failed';
+$string['analysis_progress'] = '{$a->reviewed} of {$a->total} reviewed';
+$string['plugin_overview'] = 'Plugin overview';
+
+// Resource page.
+$string['reviewheading'] = 'Competency suggestions: {$a}';
+$string['backtodashboard'] = 'Back to Competency Alignment';
+$string['officiallinks'] = 'Current Moodle competency links';
+$string['officiallinks_none'] = 'No competency is linked to this resource yet.';
+$string['noanalysis'] = 'No analysis has been requested for this resource yet.';
+$string['analysis_queued_hint'] = 'The analysis starts when Moodle next runs its background tasks (cron). This page refreshes by itself.';
+$string['analysis_running_hint'] = 'The resource is being analysed. This page refreshes by itself.';
+$string['analysis_changed_page'] = 'This page was edited after the analysis, so the evidence below may no longer match it. Use Reanalyse before you decide.';
+$string['analysis_changed_framework'] = 'The competency framework was changed after the analysis, so these suggestions may be out of date. Use Reanalyse before you decide.';
+$string['analysis_failed_heading'] = 'The analysis did not complete';
+$string['analysis_failed_hint'] = 'Nothing was changed in your course. When the problem is fixed, use Reanalyse to try again.';
+$string['analysisqueued'] = 'The analysis was queued.';
+$string['analysisactive'] = 'An analysis is already in progress for this resource.';
+$string['analysisreused'] = 'An identical analysis already exists, so no new request was made. Use Reanalyse to run it again.';
+$string['reanalyse'] = 'Reanalyse';
+$string['reanalyse_help'] = 'Sends the resource to the alignment service again and replaces the suggestions you see here. Your earlier decisions are kept.';
+$string['analysisabstained'] = 'The assistant found no competency with direct evidence in this resource, so it suggested none.';
+$string['analysispartial'] = 'Some parts of this resource could not be analysed, so the suggestions below may be incomplete.';
+$string['backend_mock_notice'] = 'This analysis used the test backend. Its suggestions are placeholders and are not model output.';
+$string['writebackoffnotice'] = 'Official write-back is off. Saving a decision does not create or change any Moodle competency link.';
+$string['nopermissiontoreview'] = 'You can see these suggestions but you may not review them.';
+$string['nopermissiontoanalyse'] = 'You may not ask for suggestions for this resource.';
+
+// Suggestion card.
+$string['proposedcompetency'] = 'Suggested competency';
+$string['competencycode'] = 'Code';
+$string['competencyname'] = 'Name';
+$string['competencydescription'] = 'Description';
+$string['evidenceheading'] = 'Exact evidence from the resource';
+$string['technicaldetails'] = 'Technical details';
+$string['bm25rank'] = 'Search rank (BM25)';
+$string['modelconfidence'] = 'Model confidence (not a probability)';
+$string['supportcount'] = 'Supporting passages';
+$string['passages'] = 'Passages';
+$string['unknownvalue'] = 'Not available';
+$string['hierarchywarning'] = 'Hierarchy note';
+$string['warning_parent_child_redundancy_parent'] = 'A more specific child competency ({$a}) is also suggested for this resource.';
+$string['warning_parent_child_redundancy_child'] = 'Its parent competency ({$a}) is also suggested for this resource.';
+$string['warning_granularity_conflict_parent'] = 'A more specific child competency ({$a}) is suggested with overlapping evidence.';
+$string['warning_granularity_conflict_child'] = 'Its parent competency ({$a}) is suggested with overlapping evidence.';
+$string['warning_generic'] = 'A hierarchy check flagged this competency.';
+
+// Review form.
+$string['decision'] = 'Decision';
+$string['finalcompetency'] = 'Replacement competency';
+$string['finalcompetency_help'] = 'Choose the competency that fits this resource better. It is used only when you choose Modify.';
+$string['choosecompetency'] = 'Choose a competency...';
+$string['usefulness_0'] = 'Did not help justify the decision';
+$string['usefulness_1'] = 'Partly useful';
+$string['usefulness_2'] = 'Clearly supported the decision';
+$string['evidenceusefulness_help'] = 'Optional. How useful was the evidence in reaching your decision?';
+$string['comment_help'] = 'Optional. Mention anything that was difficult, ambiguous or unclear.';
+$string['decisionsaved'] = 'Your decision was saved. Nothing was written to Moodle competency links.';
+$string['yourdecision'] = 'Your decision';
+$string['notreviewed'] = 'Not reviewed yet';
+$string['decision_accept_summary'] = 'Accepted';
+$string['decision_reject_summary'] = 'Rejected';
+$string['decision_modify_summary'] = 'Modified to {$a}';
+$string['revisionsaved'] = 'Revision {$a->revision}, saved {$a->time}';
+$string['changedecision'] = 'Change your decision';
+
+// Form validation.
+$string['error_decisionrequired'] = 'Choose accept, reject or modify.';
+$string['error_modifyneedscompetency'] = 'Choose the competency that replaces the suggestion.';
+$string['error_invalidcompetency'] = 'That competency is not in the configured framework.';
+$string['error_modifysame'] = 'Choose a competency other than the suggested one, or accept the suggestion.';
+$string['error_invalidusefulness'] = 'Choose one of the three ratings, or leave it empty.';
+$string['error_commenttoolong'] = 'The comment is longer than {$a} characters.';
+
+// Why an analysis could not run or complete. The stored code is mapped to one of these sentences.
+$string['error_generic'] = 'The analysis could not be completed.';
+$string['error_notconfigured_url'] = 'The alignment service address is not set. Ask an administrator to set it in the plugin settings.';
+$string['error_notconfigured_token'] = 'The alignment service token is not set. Ask an administrator to set it in the plugin settings.';
+$string['error_framework_not_selected'] = 'No competency framework has been selected for the assistant. Ask an administrator to choose one in the plugin settings.';
+$string['error_competencies_disabled'] = 'Competencies are disabled on this site, so the assistant cannot suggest any.';
+$string['error_framework_unavailable'] = 'The selected competency framework cannot be read. Ask an administrator to check the plugin settings.';
+$string['error_framework_hidden'] = 'The selected competency framework is hidden. Ask an administrator to choose a visible one.';
+$string['error_framework_empty'] = 'The selected competency framework has no competencies.';
+$string['error_framework_invalid'] = 'The selected competency framework cannot be used yet. Every competency needs an ID number and a description.';
+$string['error_unsupported_resource_type'] = 'Resource type not supported in this prototype.';
+$string['error_resource_not_accessible'] = 'You cannot see this resource, so it cannot be analysed.';
+$string['error_resource_missing'] = 'This resource no longer exists.';
+$string['error_resource_empty'] = 'This page has no text to analyse.';
+$string['error_resource_too_large'] = 'This page is too long to analyse.';
+$string['error_busy'] = 'Another request for this resource is being handled. Try again in a moment.';
+$string['error_unavailable'] = 'The alignment service could not be reached.';
+$string['error_unauthorized'] = 'The alignment service did not accept the plugin\'s credentials. Ask an administrator to check the token.';
+$string['error_blocked'] = 'Moodle\'s HTTP security settings blocked the request to the alignment service. Ask an administrator.';
+$string['error_invalid_response'] = 'The alignment service answered with something that did not pass validation. No suggestion was stored.';
+$string['error_model_output_invalid'] = 'The model did not return a suggestion that passed validation. No suggestion was stored.';
+$string['error_backend_unavailable'] = 'The model behind the alignment service is not available right now.';
+$string['error_service'] = 'The alignment service refused the request ({$a}).';
+$string['error_internal_error'] = 'The analysis failed unexpectedly. An administrator can find details in the Moodle logs.';
+$string['error_invalid_review'] = 'The decision could not be saved.';
+
+// Framework problems found while reading the framework.
+$string['catalogueproblem_noidnumber'] = '{$a}: the competency has no ID number.';
+$string['catalogueproblem_duplicate'] = '{$a}: the ID number is used twice.';
+$string['catalogueproblem_nodescription'] = '{$a}: the competency has no description.';
+$string['catalogueproblem_parent'] = '{$a}: its parent competency has no ID number.';
+
+// Events and tasks.
+$string['event_analysis_requested'] = 'Competency suggestions requested';
+$string['event_review_saved'] = 'Competency suggestion reviewed';
+$string['task_analyse_resource'] = 'Analyse a resource for competency suggestions';
 
 // Review vocabulary.
 $string['analyse'] = 'Analyse';

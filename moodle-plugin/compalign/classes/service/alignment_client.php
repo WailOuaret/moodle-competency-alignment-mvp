@@ -245,6 +245,49 @@ final class alignment_client {
     }
 
     /**
+     * Ask the service to analyse one resource against one competency catalogue.
+     *
+     * Only the decoded answer is returned. It is untrusted: the caller validates it before
+     * anything is stored. Every failure becomes a service_exception with a stable code and a
+     * message that is safe to log: no token, header or response body is ever included.
+     *
+     * @param array $request The request body, following contract version 1.0.
+     * @param string $requestid Correlation id, sent as X-Request-ID so the service log can be matched.
+     * @return array The decoded answer.
+     * @throws service_exception When the service cannot be reached or does not answer with an analysis.
+     */
+    public function analyse(array $request, string $requestid): array {
+        try {
+            $response = $this->send('POST', '/v1/analyses', true, null, $request, $requestid);
+        } catch (GuzzleException | \RuntimeException $exception) {
+            $failure = $this->classify_failure($exception);
+            throw new service_exception($failure->status, 'The alignment service could not be reached.', $exception);
+        }
+
+        $code = $response->getStatusCode();
+        $body = $this->decode($response);
+
+        if ($code === 200 && is_array($body)) {
+            return $body;
+        }
+
+        $errorcode = $body['error']['code'] ?? null;
+        $errorcode = is_string($errorcode) && preg_match('/^[a-z][a-z0-9_]{0,59}$/', $errorcode) ? $errorcode : null;
+
+        throw match (true) {
+            $code === 401 => new service_exception(self::STATUS_UNAUTHORIZED, 'The service rejected the token.'),
+            $errorcode === 'model_output_invalid' => new service_exception($errorcode, 'No model response passed validation.'),
+            $errorcode === 'backend_unavailable' => new service_exception($errorcode, 'The model backend is not available.'),
+            $code >= 500 => new service_exception(self::STATUS_UNAVAILABLE, "The service answered HTTP $code."),
+            $code >= 400 && $errorcode !== null => new service_exception(
+                'service_' . $errorcode,
+                "The service refused the request: $errorcode."
+            ),
+            default => new service_exception('invalid_response', "The service answered HTTP $code."),
+        };
+    }
+
+    /**
      * Turn the answer to the credentials probe into a connection result.
      *
      * @param ResponseInterface $probe The answer to the empty analysis request.
@@ -279,6 +322,7 @@ final class alignment_client {
      * @param bool $authenticated Whether to send the bearer token.
      * @param int|null $timeout Seconds to wait. Defaults to the configured timeout.
      * @param mixed $json Value to send as the JSON body, or null for no body.
+     * @param string|null $requestid Correlation id. A random one is used when omitted.
      * @return ResponseInterface
      * @throws GuzzleException When the request cannot be completed.
      */
@@ -288,11 +332,12 @@ final class alignment_client {
         bool $authenticated,
         ?int $timeout = null,
         mixed $json = null,
+        ?string $requestid = null,
     ): ResponseInterface {
         $timeout ??= $this->timeout;
         $headers = [
             'Accept' => 'application/json',
-            'X-Request-ID' => 'compalign-' . bin2hex(random_bytes(8)),
+            'X-Request-ID' => $requestid ?? 'compalign-' . bin2hex(random_bytes(8)),
         ];
         if ($authenticated) {
             $headers['Authorization'] = 'Bearer ' . $this->token;
