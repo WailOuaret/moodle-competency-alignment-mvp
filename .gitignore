@@ -49,6 +49,8 @@ data/raw/
 # Logs
 reports/logs/
 *.log
+wget-log
+wget-log.*
 
 # External reference repository, not part of this project.
 # Obtain it separately. Do not redistribute it from this repository.
@@ -131,6 +133,7 @@ reports/*
 # Private teacher pilot (deploy/pilot): secrets, credentials, backups and logs never go in Git.
 # (.env and .env.* are already ignored above; .env.example is kept.)
 # ---------------------------------------------------------------------------
+private/
 deploy/pilot/private/
 deploy/pilot/backups/
 deploy/pilot/logs/
