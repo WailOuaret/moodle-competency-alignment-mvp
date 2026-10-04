@@ -52,8 +52,8 @@ class review_form extends \moodleform {
         $mform = $this->_form;
         $custom = $this->_customdata;
 
-        $mform->addElement('hidden', 'cmid', (int) $custom['cmid']);
-        $mform->setType('cmid', PARAM_INT);
+        // The page address carries the course module id, and Moodle renders an address's parameters as hidden
+        // fields, so it is not declared here a second time.
         $mform->addElement('hidden', 'suggestionid', (int) $custom['suggestionid']);
         $mform->setType('suggestionid', PARAM_INT);
 
