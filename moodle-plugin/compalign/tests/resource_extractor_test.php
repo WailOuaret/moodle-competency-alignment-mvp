@@ -149,10 +149,16 @@ final class resource_extractor_test extends advanced_testcase {
         $this->assertSame((string) $environment['cm']->id, $resource['course_module_id']);
         $this->assertSame('Software testing', $resource['title']);
         $this->assertSame(
-            'Unit tests check one function at a time. Integration tests check how the parts of a program work together.',
-            $resource['text']
+            "Introduction to software testing.\n\n"
+                . 'Unit tests check one function at a time. Integration tests check how the parts of a program work together.',
+            $resource['text'],
+            'The introduction and the body are joined by a blank line.'
         );
-        $this->assertSame("Software testing\n\n" . $resource['text'], $resource['search_text']);
+        $this->assertSame(
+            "Software testing\n\n" . preg_replace('/\s+/', ' ', $resource['text']),
+            $resource['search_text'],
+            'The retrieval text is the title and the text, with the white space inside each part collapsed.'
+        );
         $this->assertSame($environment['course']->fullname, $resource['course_fullname']);
         $this->assertSame(resource_extractor::hash($resource), $extracted['hash']);
 
@@ -185,6 +191,8 @@ final class resource_extractor_test extends advanced_testcase {
      * A Page the user cannot see, with no text, or with too much text is not analysed.
      */
     public function test_pages_that_cannot_be_analysed(): void {
+        global $DB;
+
         $this->resetAfterTest();
         $environment = $this->create_environment();
         $generator = $this->getDataGenerator();
@@ -192,7 +200,9 @@ final class resource_extractor_test extends advanced_testcase {
         $extractor = new resource_extractor();
 
         $hidden = $generator->create_module('page', ['course' => $course->id, 'visible' => 0, 'content' => '<p>Secret.</p>']);
-        $empty = $generator->create_module('page', ['course' => $course->id, 'intro' => '', 'content' => '<p> </p>']);
+        // The generator gives every Page an introduction of its own, so this one is emptied afterwards.
+        $empty = $generator->create_module('page', ['course' => $course->id, 'content' => '<p> </p>']);
+        $DB->set_field('page', 'intro', '', ['id' => $empty->id]);
         $toolong = $generator->create_module('page', [
             'course' => $course->id,
             'content' => '<p>' . str_repeat('a ', resource_extractor::MAX_TEXT_CHARS / 2 + 1) . '</p>',

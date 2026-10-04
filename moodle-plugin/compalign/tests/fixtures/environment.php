@@ -48,7 +48,7 @@ trait environment {
         $page = $generator->create_module('page', [
             'course' => $course->id,
             'name' => 'Software testing',
-            'intro' => '',
+            'intro' => '<p>Introduction to software testing.</p>',
             'content' => '<p>Unit tests check one function at a time.</p>'
                 . '<p>Integration tests check how the parts of a program work together.</p>',
         ]);

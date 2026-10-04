@@ -218,7 +218,7 @@ final class analysis_manager_test extends advanced_testcase {
         $this->assertEquals(1, $suggestion->bm25rank);
         $this->assertSame([], $suggestion->warningslist);
         $this->assertCount(1, $suggestion->evidence);
-        $this->assertSame('Unit tests check one function at a time.', reset($suggestion->evidence)->evidencetext);
+        $this->assertSame('Introduction to software testing.', reset($suggestion->evidence)->evidencetext);
         $this->assertSame(1, $DB->count_records('local_compalign_evidence'));
     }
 

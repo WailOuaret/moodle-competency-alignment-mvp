@@ -197,26 +197,17 @@ final class competency_catalogue_test extends advanced_testcase {
     }
 
     /**
-     * A repeated ID number, and a parent without one, are problems too.
+     * A parent without an ID number is a problem for each of its children.
      */
-    public function test_duplicate_and_parentless_idnumbers_are_problems(): void {
+    public function test_a_parent_without_an_idnumber_is_a_problem(): void {
         global $DB;
 
         $this->resetAfterTest();
         $environment = $this->create_environment();
-        $ids = array_map(static fn($competency): int => (int) $competency->get('id'), $environment['competencies']);
+        $parentid = (int) $environment['competencies']['T1']->get('id');
 
-        $DB->set_field('competency', 'idnumber', 'T1', ['id' => $ids['T2']]);
-        try {
-            (new competency_catalogue())->build();
-            $this->fail('A repeated ID number was accepted.');
-        } catch (analysis_exception $exception) {
-            $this->assertSame('framework_invalid', $exception->get_error_code());
-            $this->assertStringContainsString('T1', implode(' | ', $exception->get_details()));
-        }
+        $DB->set_field('competency', 'idnumber', '', ['id' => $parentid]);
 
-        $DB->set_field('competency', 'idnumber', 'T2', ['id' => $ids['T2']]);
-        $DB->set_field('competency', 'idnumber', '', ['id' => $ids['T1']]);
         try {
             (new competency_catalogue())->build();
             $this->fail('A parent without an ID number was accepted.');
@@ -224,6 +215,34 @@ final class competency_catalogue_test extends advanced_testcase {
             $this->assertSame('framework_invalid', $exception->get_error_code());
             $this->assertStringContainsString('T1_1', implode(' | ', $exception->get_details()));
         }
+    }
+
+    /**
+     * A repeated ID number is a problem.
+     *
+     * Moodle's database refuses two competencies with the same ID number in one framework, so a real framework
+     * cannot reach this check. It is a safety net, and is tested on competencies that were never saved.
+     */
+    public function test_a_repeated_idnumber_is_a_problem(): void {
+        $this->resetAfterTest();
+
+        $record = static fn(string $name): \stdClass => (object) [
+            'idnumber' => 'DUP',
+            'shortname' => $name,
+            'description' => 'A description.',
+            'descriptionformat' => FORMAT_HTML,
+            'parentid' => 0,
+        ];
+        $first = new \core_competency\competency(0, $record('One'));
+        $second = new \core_competency\competency(0, $record('Two'));
+
+        $describe = new \ReflectionMethod(competency_catalogue::class, 'describe_competencies');
+        [$items, $lookup, $problems] = $describe->invoke(new competency_catalogue(1), [$first, $second], 'TF', 'Framework');
+
+        $this->assertCount(1, $items, 'Only the first competency with the ID number is kept.');
+        $this->assertSame(['DUP'], array_keys($lookup));
+        $this->assertCount(1, $problems);
+        $this->assertStringContainsString('DUP', $problems[0]);
     }
 
     /**

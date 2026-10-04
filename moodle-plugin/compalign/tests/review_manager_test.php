@@ -325,10 +325,21 @@ final class review_manager_test extends advanced_testcase {
         $userid = (int) $environment['teacher']->id;
         $manager = new review_manager();
 
+        // A real competency, but of a framework the assistant is not configured to use.
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_competency');
+        $elsewhere = $generator->create_framework(['idnumber' => 'OTHER', 'shortname' => 'Another framework']);
+        $generator->create_competency([
+            'competencyframeworkid' => $elsewhere->get('id'),
+            'idnumber' => 'O1',
+            'shortname' => 'Elsewhere',
+            'description' => 'Belongs to another framework.',
+        ]);
+
         $attempts = [
             'modify without a competency' => ['modify', null, null, null],
             'modify to the proposed competency' => ['modify', $suggestion->competencyidnumber, null, null],
             'modify to an unknown competency' => ['modify', 'ZZ', null, null],
+            'modify to a competency of another framework' => ['modify', 'O1', null, null],
             'unknown decision' => ['approve', null, null, null],
             'rating out of range' => ['accept', null, '3', null],
             'comment too long' => ['accept', null, null, str_repeat('a', 1001)],
@@ -384,6 +395,138 @@ final class review_manager_test extends advanced_testcase {
         }
 
         $this->assertSame(0, $DB->count_records('local_compalign_review'));
+    }
+
+    /**
+     * Ratings as they may arrive, with what is stored.
+     *
+     * @return array<string, array>
+     */
+    public static function stored_rating_provider(): array {
+        return [
+            'not given' => [null, null],
+            'empty' => ['', null],
+            'zero' => ['0', 0],
+            'zero as an integer' => [0, 0],
+            'one' => ['1', 1],
+            'two' => [2, 2],
+        ];
+    }
+
+    /**
+     * A rating is stored as 0, 1 or 2, and left empty only when none was given.
+     *
+     * @param mixed $given What was submitted.
+     * @param int|null $expected What is stored.
+     */
+    #[DataProvider('stored_rating_provider')]
+    public function test_the_rating_is_stored_as_given(mixed $given, ?int $expected): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $environment = $this->create_environment();
+        $made = $this->create_completed_analysis($environment);
+        $suggestion = reset($made['suggestions']);
+
+        $review = (new review_manager())->save(
+            $made['analysis'],
+            $suggestion,
+            (int) $environment['teacher']->id,
+            'accept',
+            null,
+            $given,
+            null,
+            null,
+            $made['catalogue']
+        );
+
+        $stored = $DB->get_field('local_compalign_review', 'evidenceusefulness', ['id' => $review->id]);
+        if ($expected === null) {
+            $this->assertNull($stored);
+        } else {
+            $this->assertNotNull($stored, 'A rating of zero must not be stored as empty.');
+            $this->assertSame($expected, (int) $stored);
+        }
+    }
+
+    /**
+     * A comment is stored trimmed, in full up to the limit, and as empty when it is only spaces.
+     */
+    public function test_the_comment_is_trimmed_and_kept_whole(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $environment = $this->create_environment();
+        $made = $this->create_completed_analysis($environment);
+        $suggestion = reset($made['suggestions']);
+        $manager = new review_manager();
+        $userid = (int) $environment['teacher']->id;
+        $longest = str_repeat('é', review_manager::MAX_COMMENT_CHARS);
+
+        $cases = [
+            'padded' => ["  Clear match.  \n", 'Clear match.'],
+            'only spaces' => ["   \n ", null],
+            'not given' => [null, null],
+            'the longest allowed' => [$longest, $longest],
+        ];
+
+        foreach ($cases as $label => [$comment, $expected]) {
+            $review = $manager->save(
+                $made['analysis'],
+                $suggestion,
+                $userid,
+                'accept',
+                null,
+                null,
+                $comment,
+                null,
+                $made['catalogue']
+            );
+            $this->assertSame($expected, $DB->get_field('local_compalign_review', 'commenttext', ['id' => $review->id]), $label);
+        }
+    }
+
+    /**
+     * The review time comes from the server clock: unknown, or between zero and four hours.
+     */
+    public function test_the_review_time_is_validated_when_saving(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $environment = $this->create_environment();
+        $made = $this->create_completed_analysis($environment);
+        $suggestion = reset($made['suggestions']);
+        $manager = new review_manager();
+        $userid = (int) $environment['teacher']->id;
+
+        $cases = [
+            'start unknown' => [null, null, null],
+            'one minute ago' => [time() - 60, 60, 65],
+            'longer than four hours ago' => [time() - review_manager::MAX_REVIEW_SECONDS - 600, null, null],
+            'a start in the future' => [time() + 3600, null, null],
+        ];
+
+        foreach ($cases as $label => [$startedat, $least, $most]) {
+            $review = $manager->save(
+                $made['analysis'],
+                $suggestion,
+                $userid,
+                'accept',
+                null,
+                null,
+                null,
+                $startedat,
+                $made['catalogue']
+            );
+            $duration = $DB->get_field('local_compalign_review', 'reviewdurationseconds', ['id' => $review->id]);
+
+            if ($least === null) {
+                $this->assertNull($duration, $label);
+            } else {
+                $this->assertGreaterThanOrEqual($least, (int) $duration, $label);
+                $this->assertLessThanOrEqual($most, (int) $duration, $label);
+            }
+        }
     }
 
     /**
