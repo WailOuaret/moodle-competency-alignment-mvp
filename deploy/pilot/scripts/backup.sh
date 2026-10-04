@@ -61,7 +61,7 @@ gzip -t "$dir/db.sql.gz" || die "the database dump is damaged"
 tar -tzf "$dir/moodledata.tar.gz" >/dev/null || die "the moodledata archive is damaged"
 ( cd "$dir" && sha256sum db.sql.gz moodledata.tar.gz docker-compose.yml pilot.env >SHA256SUMS )
 if [ -f "$dir/nginx-full.conf" ]; then ( cd "$dir" && sha256sum nginx-full.conf >>SHA256SUMS ); fi
-chmod 600 "$dir/SHA256SUMS" "$dir/MANIFEST.txt"
+chmod 600 "$dir/SHA256SUMS"
 
 {
     echo "pilot backup $(basename "$dir")"
