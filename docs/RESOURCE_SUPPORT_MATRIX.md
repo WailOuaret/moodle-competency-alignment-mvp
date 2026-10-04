@@ -11,12 +11,12 @@ The four status columns are separate. A cell is yes only for a check that was ac
 | PDF | one file | yes | yes | yes | no |
 | DOCX | one file | yes | yes | yes | no |
 | PPTX | one file | yes | yes | yes | no |
-| TXT and Markdown | one file | yes | yes | yes, listed on the dashboard | no |
+| TXT and Markdown | one file | yes | yes | yes | no |
 | VTT and SRT | one caption file | yes | yes | yes | no |
-| Book chapter | one visible chapter | yes | yes | yes, listed; hidden chapter omitted by the automated test | no |
-| Assignment | the instructions | yes | yes | yes, listed | no |
-| Lesson page | one content page | yes | yes | yes, listed | no |
-| Folder file | each supported file | yes | yes | yes, listed | no |
+| Book chapter | one visible chapter | yes | yes | yes. A hidden chapter is omitted by the automated test | no |
+| Assignment | the instructions | yes | yes | yes | no |
+| Lesson page | one content page | yes | yes | yes | no |
+| Folder file | each supported file | yes | yes | yes | no |
 | Text and media area | one area | yes | yes | yes, listed | no |
 | Forum introduction | the introduction only | yes | yes | yes | no |
 | URL description | title and description | yes | yes | yes | no |
