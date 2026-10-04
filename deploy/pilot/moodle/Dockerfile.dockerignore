@@ -1,0 +1,7 @@
+# Allow-list: nothing enters the image unless it is named here.
+*
+!deploy/pilot/moodle/
+!deploy/pilot/content/pages/
+!moodle-plugin/compalign/
+!data/processed/competencies.jsonl
+**/__pycache__

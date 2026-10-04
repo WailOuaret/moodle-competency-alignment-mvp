@@ -1,0 +1,82 @@
+# STEP 2 of 2: the pilot's full server blocks (http redirect and https reverse proxy).
+# Rendered by scripts/render-nginx.sh. Install only after the certificate exists, and only after
+# `sudo nginx -T` has shown that no other server block claims ${PILOT_HOST}.
+#
+# This file is included inside nginx's http {} block, so the two rate-limit zones below are legal here.
+
+# Requests that START or CHANGE something in the plugin are POSTs. Limiting POSTs to the plugin's own
+# address, per visitor address, puts a ceiling on how fast anyone can trigger model calls, whatever the
+# application does. An empty key is not limited, so GETs (the review page checks every 5 seconds) are free.
+map $request_method $compalign_plugin_post_key {
+    POST    $binary_remote_addr;
+    default "";
+}
+limit_req_zone $compalign_plugin_post_key zone=compalign_plugin_post:1m rate=20r/m;
+limit_req_zone $binary_remote_addr        zone=compalign_login:1m       rate=30r/m;
+limit_req_status 429;
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${PILOT_HOST};
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name ${PILOT_HOST};
+
+    ssl_certificate     /etc/letsencrypt/live/${PILOT_HOST}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${PILOT_HOST}/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:compalign_tls:5m;
+    ssl_session_tickets off;
+
+    # No includeSubDomains: this is one host on a name the pilot does not own as a whole.
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header Referrer-Policy "same-origin" always;
+    add_header X-Robots-Tag "noindex, nofollow" always;
+
+    client_max_body_size 40m;
+    server_tokens off;
+
+    access_log /var/log/nginx/compalign-pilot.access.log;
+    error_log  /var/log/nginx/compalign-pilot.error.log warn;
+
+    location = /robots.txt {
+        default_type text/plain;
+        return 200 "User-agent: *\nDisallow: /\n";
+    }
+
+    # Brute-force ceiling on the login form.
+    location = /login/index.php {
+        limit_req zone=compalign_login burst=10 nodelay;
+        proxy_pass http://127.0.0.1:${MOODLE_HOST_PORT};
+        include /etc/nginx/snippets/compalign-pilot-proxy.conf;
+    }
+
+    # The plugin: every POST (suggest, reanalyse, save a decision) counts against the ceiling.
+    location ^~ /local/compalign/ {
+        limit_req zone=compalign_plugin_post burst=20 nodelay;
+        proxy_pass http://127.0.0.1:${MOODLE_HOST_PORT};
+        include /etc/nginx/snippets/compalign-pilot-proxy.conf;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:${MOODLE_HOST_PORT};
+        include /etc/nginx/snippets/compalign-pilot-proxy.conf;
+    }
+}

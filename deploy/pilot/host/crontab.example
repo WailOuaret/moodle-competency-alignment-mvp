@@ -1,0 +1,12 @@
+# Cron entries for the pilot's operator account. Install with `crontab -e` as that account.
+# They need no root. The scripts write to $PILOT_HOME/logs/pilot.log, which rotates itself at 5 MB.
+#
+# Replace /opt/compalign-pilot/app with the directory the repository was copied to.
+
+PILOT_HOME=/opt/compalign-pilot
+
+# Every 5 minutes: quick health check. Prints only failures (cron mails them, or they land in the log).
+*/5 * * * *   /opt/compalign-pilot/app/deploy/pilot/scripts/healthcheck.sh --quiet >>/opt/compalign-pilot/logs/cron-health.log 2>&1
+
+# Every night at 03:15 UTC: a verified backup, keeping the newest 14.
+15 3 * * *    /opt/compalign-pilot/app/deploy/pilot/scripts/backup.sh >>/opt/compalign-pilot/logs/cron-backup.log 2>&1

@@ -127,6 +127,18 @@ reports/*
 !reports/reproducibility_manifest.json
 
 # ---------------------------------------------------------------------------
+# Private teacher pilot (deploy/pilot): secrets, credentials, backups and logs never go in Git.
+# (.env and .env.* are already ignored above; .env.example is kept.)
+# ---------------------------------------------------------------------------
+deploy/pilot/private/
+deploy/pilot/backups/
+deploy/pilot/logs/
+deploy/pilot/releases/
+deploy/pilot/PILOT_RECORD.json
+teacher_credentials*.csv
+*.credentials.csv
+
+# ---------------------------------------------------------------------------
 # Deliberately NOT ignored — required for reproducibility
 # ---------------------------------------------------------------------------
 #   data/processed/          normalised corpus, fragments, competencies

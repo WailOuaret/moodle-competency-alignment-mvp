@@ -1,0 +1,163 @@
+# Private teacher pilot: Moodle + the plugin, the alignment service, and one database for Moodle.
+#
+#   Start here:  scripts/init-env.sh, then scripts/compose.sh up -d --build
+#   Read first:  README.md and docs/VPS_DEPLOYMENT_GUIDE.md
+#
+# Networks
+#   compalign_data      internal: true. The database and the two Moodle containers. No route out.
+#   compalign_internal  Moodle to the alignment service, on a fixed subnet so that Moodle can name the
+#                       service by IP address. The service must reach the model provider, so this one is
+#                       not isolated from the outside; nothing on it accepts connections from outside.
+#
+# Published ports
+#   Exactly one: Moodle's web server on 127.0.0.1 (never on a public address). The host's nginx
+#   terminates TLS and forwards to it. The alignment service (80 inside) and PostgreSQL (5432) are
+#   not published at all.
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-moodle-env: &moodle-env
+  MOODLE_DB_HOST: db
+  MOODLE_DB_NAME: ${POSTGRES_DB:-moodle}
+  MOODLE_DB_USER: ${POSTGRES_USER:-moodle}
+  MOODLE_DB_PASSWORD: ${POSTGRES_PASSWORD:?run scripts/init-env.sh}
+  MOODLE_WWWROOT: ${MOODLE_WWWROOT:?set MOODLE_WWWROOT in the env file}
+  MOODLE_TIMEZONE: ${MOODLE_TIMEZONE:-UTC}
+  MOODLE_ALLOW_EMAIL: ${MOODLE_ALLOW_EMAIL:-0}
+  # Moodle's HTTP security rules let this one address through (config.php).
+  ALIGNMENT_IP: ${ALIGNMENT_IP:?set ALIGNMENT_IP in the env file}
+
+services:
+  db:
+    image: postgres:16.14
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-moodle}
+      POSTGRES_USER: ${POSTGRES_USER:-moodle}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run scripts/init-env.sh}
+    command:
+      - postgres
+      - -c
+      - max_connections=60
+      - -c
+      - shared_buffers=256MB
+      - -c
+      - work_mem=8MB
+      - -c
+      - log_min_duration_statement=-1
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    security_opt: ["no-new-privileges:true"]
+    stop_grace_period: 30s
+    mem_limit: 1g
+    logging: *logging
+
+  alignment-api:
+    build:
+      context: ../..
+      dockerfile: deploy/pilot/alignment/Dockerfile
+    image: compalign-alignment:${PILOT_IMAGE_TAG:-pilot}
+    restart: unless-stopped
+    environment:
+      ALIGNMENT_SERVICE_TOKEN: ${ALIGNMENT_SERVICE_TOKEN:?run scripts/init-env.sh}
+      ALIGNMENT_BACKEND: ${ALIGNMENT_BACKEND:-gemini}
+      ALIGNMENT_MODEL: ${ALIGNMENT_MODEL:-}
+      ALIGNMENT_MAX_BODY_BYTES: ${ALIGNMENT_MAX_BODY_BYTES:-2000000}
+      ALIGNMENT_LOG_LEVEL: ${ALIGNMENT_LOG_LEVEL:-INFO}
+      ALIGNMENT_ENABLE_DOCS: "false"
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-}
+    networks:
+      internal:
+        ipv4_address: ${ALIGNMENT_IP:?set ALIGNMENT_IP in the env file}
+    # A read-only root file system, no capabilities, no privilege gain, and a small writable /tmp.
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    # Lets the unprivileged service listen on port 80 in its own network namespace only.
+    sysctls:
+      net.ipv4.ip_unprivileged_port_start: 0
+    pids_limit: 200
+    mem_limit: 1g
+    stop_grace_period: 30s
+    logging: *logging
+
+  moodle:
+    build:
+      context: ../..
+      dockerfile: deploy/pilot/moodle/Dockerfile
+    image: compalign-moodle:${PILOT_IMAGE_TAG:-pilot}
+    command: ["web"]
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      alignment-api:
+        condition: service_started
+    environment:
+      <<: *moodle-env
+      MOODLE_ADMIN_PASSWORD: ${MOODLE_ADMIN_PASSWORD:?run scripts/init-env.sh}
+      MOODLE_ADMIN_EMAIL: ${MOODLE_ADMIN_EMAIL:-admin@pilot.invalid}
+      MOODLE_SITE_NAME: ${MOODLE_SITE_NAME:-Competency Alignment Pilot}
+      MOODLE_SITE_SHORTNAME: ${MOODLE_SITE_SHORTNAME:-CA Pilot}
+      ALIGNMENT_SERVICE_TOKEN: ${ALIGNMENT_SERVICE_TOKEN:?run scripts/init-env.sh}
+      PLUGIN_REQUEST_TIMEOUT: ${PLUGIN_REQUEST_TIMEOUT:-120}
+      PLUGIN_MAX_SUGGESTIONS: ${PLUGIN_MAX_SUGGESTIONS:-3}
+    ports:
+      - "127.0.0.1:${MOODLE_HOST_PORT:-8080}:80"
+    volumes:
+      - moodledata:/var/www/moodledata
+    networks: [data, internal]
+    init: true
+    pids_limit: 400
+    mem_limit: 2g
+    stop_grace_period: 30s
+    logging: *logging
+
+  moodle-cron:
+    image: compalign-moodle:${PILOT_IMAGE_TAG:-pilot}
+    command: ["cron"]
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      moodle:
+        condition: service_started
+    environment:
+      <<: *moodle-env
+      CRON_INTERVAL_SECONDS: ${CRON_INTERVAL_SECONDS:-20}
+    volumes:
+      - moodledata:/var/www/moodledata
+    networks: [data, internal]
+    init: true
+    pids_limit: 400
+    mem_limit: 1g
+    stop_grace_period: 30s
+    logging: *logging
+
+networks:
+  data:
+    name: compalign_data
+    internal: true
+  internal:
+    name: compalign_internal
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${PILOT_SUBNET:?set PILOT_SUBNET in the env file}
+
+volumes:
+  pgdata:
+  moodledata:

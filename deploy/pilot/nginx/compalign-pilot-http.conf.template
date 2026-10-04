@@ -1,0 +1,20 @@
+# STEP 1 of 2: a plain-http server block for the pilot's host name, used only to obtain the TLS
+# certificate. Replace nothing by hand: scripts/render-nginx.sh fills in the two variables.
+#
+# It answers only for ${PILOT_HOST}. Every other host name on this server keeps going to whatever
+# server block served it before. Check that with `sudo nginx -T | grep -n server_name` first.
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${PILOT_HOST};
+
+    # Let's Encrypt's HTTP challenge.
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 404;
+    }
+}

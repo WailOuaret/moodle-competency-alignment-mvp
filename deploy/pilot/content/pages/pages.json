@@ -1,0 +1,8 @@
+[
+  {"idnumber": "PILOT-P01", "file": "p01-testing-and-delivery.html", "name": "Testing and Continuous Delivery of Software", "intro": "How a team checks software and ships it safely."},
+  {"idnumber": "PILOT-P02", "file": "p02-usable-interfaces.html", "name": "Designing Usable and Accessible Interfaces", "intro": "From user needs to a tested interface."},
+  {"idnumber": "PILOT-P03", "file": "p03-networks-and-security.html", "name": "Networks, Cloud Services and Security Basics", "intro": "How systems talk to each other and how to protect them."},
+  {"idnumber": "PILOT-P04", "file": "p04-databases-and-sql.html", "name": "Relational Databases and SQL Queries", "intro": "Modelling data and asking questions of it."},
+  {"idnumber": "PILOT-P05", "file": "p05-machine-learning.html", "name": "Introduction to Machine Learning on Text", "intro": "Turning documents into data and learning from it."},
+  {"idnumber": "PILOT-P06", "file": "p06-scalable-systems.html", "name": "Scalable and Fault-Tolerant Distributed Systems", "intro": "Keeping a service fast and available as it grows."}
+]

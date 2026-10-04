@@ -1,0 +1,8 @@
+# Allow-list: nothing enters the image unless it is named here.
+*
+!deploy/pilot/alignment/requirements.txt
+!service/
+!src/moodle_competency/
+**/__pycache__
+**/*.pyc
+service/README.md
