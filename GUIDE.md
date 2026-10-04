@@ -860,5 +860,19 @@ verification is pending** until someone reports the result.
 administrative blocker, not a code one. The plugin's PHP files carry GPL v3 or later headers,
 which is Moodle's convention and is fine for development. The repository has no root LICENSE
 file on purpose. Until the ownership and licence of the plugin are confirmed, do not publish
-it to the Moodle Plugins Directory or to Packagist, do not build a release archive, and do not
-add a repository-wide licence.
+it to the Moodle Plugins Directory or to Packagist, do not build a public release archive, and do
+not add a repository-wide licence. (A private package for the private pilot is allowed; see below.)
+
+### Private teacher pilot (draft)
+
+`deploy/pilot/` holds Docker Compose files and scripts for a private pilot of the plugin with seven
+named teachers on a server: Moodle, the plugin, the alignment service, one database for Moodle only,
+and the host's nginx for HTTPS. Start with [docs/VPS_DEPLOYMENT_GUIDE.md](docs/VPS_DEPLOYMENT_GUIDE.md);
+the other documents are [docs/PILOT_OPERATIONS_RUNBOOK.md](docs/PILOT_OPERATIONS_RUNBOOK.md),
+[docs/TEACHER_PILOT_GUIDE.md](docs/TEACHER_PILOT_GUIDE.md),
+[docs/PLUGIN_ADMIN_GUIDE.md](docs/PLUGIN_ADMIN_GUIDE.md),
+[docs/PLUGIN_PACKAGING_GUIDE.md](docs/PLUGIN_PACKAGING_GUIDE.md) and the gates in
+[docs/TEACHER_PILOT_CHECKLIST.md](docs/TEACHER_PILOT_CHECKLIST.md). **Status: drafted and tried on a
+development machine only.** It has not been run on a server, the browser checklist above is still
+pending, no teacher has used it and no live model has been called through it. Write-back stays off.
+Nothing in it is a secret, and nothing in it is a release.

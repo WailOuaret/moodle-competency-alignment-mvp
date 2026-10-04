@@ -266,12 +266,18 @@ A type is listed as supported only after it has been run end to end.
   administrative blocker, not a code one. The plugin's PHP files carry GPL v3 or later headers for
   development, and the repository has no root licence on purpose. Until the ownership and licence
   of the plugin are confirmed, do not publish it to the Moodle Plugins Directory or to Packagist,
-  do not build a release archive, and do not add a repository-wide licence.
+  do not build a public release archive, and do not add a repository-wide licence. A **private**
+  pilot package (`dist/local_compalign-<release>-pilot.zip`, built by
+  `deploy/pilot/scripts/package-plugin.sh`, ignored by Git, never uploaded) is allowed for the
+  private teacher pilot only: see docs/PLUGIN_PACKAGING_GUIDE.md.
 - Browser verification by a person has not happened.
 - Cron has to run automatically, at least once a minute, before anyone outside the project uses the
-  sandbox.
-- Outside the sandbox the service has to be reached over HTTPS on port 443. The sandbox's narrow
-  HTTP-security exception is not a production setting.
+  site. The pilot's `moodle-cron` container does this (a run every 20 seconds); that it survives a
+  reboot is still to be shown on the server.
+- Across a network the service has to be reached over HTTPS. The pilot's plain-http hop stays inside
+  one host, on a private Docker network, to one fixed address that Moodle's HTTP-security rules
+  open on purpose (`deploy/pilot/moodle/config.php`). It is not a setting for a service on another
+  machine.
 
 ## Known limitations
 

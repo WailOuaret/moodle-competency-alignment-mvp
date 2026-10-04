@@ -195,6 +195,7 @@ python -m pytest -q tests/test_core_result_regression.py
 | `sql/` | Read-only quiz export used in the research environment |
 | `service/` | Development HTTP service around the engine (branch `feature/moodle-plugin`) |
 | `moodle-plugin/compalign/` | Moodle plugin prototype `local_compalign`, under development (branch `feature/moodle-plugin`) |
+| `deploy/pilot/` | Docker Compose deployment files for a private pilot of the plugin (branch `feature/moodle-plugin`). Placeholders only, no secrets |
 | `docs/` | Architecture, connectors, evaluation, reproducibility |
 | `data/processed/`, `data/interim/`, `data/gold/` | Frozen corpus, responses, and reference |
 | `reports/metrics/`, `reports/tables/`, `reports/figures/` | Measured results |
@@ -226,6 +227,10 @@ run against a live Canvas site.
 - The Moodle plugin is under development on the `feature/moodle-plugin` branch. It has only been run with
   the mock backend on one local sandbox, has not been validated by teachers, and does not write competency
   links. It is not a released or production plugin. There is no LTI launch implementation.
+- A private Moodle sandbox deployment is supported for pilot evaluation (`deploy/pilot/`, `docs/VPS_DEPLOYMENT_GUIDE.md`).
+  It is drafted and has been tried only on a development machine. It has not been run on a server, no teacher has
+  used it, and no live model has been called through it. It is not production-ready, and public distribution requires
+  licensing/IP confirmation.
 - There is no live second-LMS validation.
 - Teacher/supervisor review of the frozen mappings is waiting: 0 / 34.
 
