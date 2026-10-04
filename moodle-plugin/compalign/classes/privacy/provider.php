@@ -60,9 +60,19 @@ class provider implements
         $collection->add_database_table('local_compalign_analysis', [
             'courseid' => 'privacy:metadata:local_compalign_analysis:courseid',
             'cmid' => 'privacy:metadata:local_compalign_analysis:cmid',
+            'sourceitemid' => 'privacy:metadata:local_compalign_analysis:sourceitemid',
+            'provenance' => 'privacy:metadata:local_compalign_analysis:provenance',
             'requestedby' => 'privacy:metadata:local_compalign_analysis:requestedby',
             'timecreated' => 'privacy:metadata:local_compalign_analysis:timecreated',
         ], 'privacy:metadata:local_compalign_analysis');
+
+        // Extracted document text has no user id. It is cached so the same file is not parsed twice.
+        // A teacher file could still contain a name, so the table is declared.
+        $collection->add_database_table('local_compalign_extract', [
+            'contenthash' => 'privacy:metadata:local_compalign_extract:contenthash',
+            'canonicaltext' => 'privacy:metadata:local_compalign_extract:canonicaltext',
+            'timecreated' => 'privacy:metadata:local_compalign_extract:timecreated',
+        ], 'privacy:metadata:local_compalign_extract');
 
         $collection->add_database_table('local_compalign_review', [
             'userid' => 'privacy:metadata:local_compalign_review:userid',

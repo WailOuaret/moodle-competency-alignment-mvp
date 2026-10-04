@@ -10,6 +10,9 @@
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Course module of the analysed resource."/>
         <FIELD NAME="resourceid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Stable resource id sent to the service, for example moodle:page:42."/>
+        <FIELD NAME="sourceitemid" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="Same stable id, kept so a course module can hold many items."/>
+        <FIELD NAME="extractorversion" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="Document extractor version. Empty for HTML activities."/>
+        <FIELD NAME="provenance" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON describing where the evidence sits: page, question, file, chapter."/>
         <FIELD NAME="resourcetype" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="resourcehash" TYPE="char" LENGTH="80" NOTNULL="false" SEQUENCE="false" COMMENT="sha256 of the text that was analysed. The text itself is not stored."/>
         <FIELD NAME="cataloguehash" TYPE="char" LENGTH="80" NOTNULL="false" SEQUENCE="false" COMMENT="Digest of the competency catalogue that was sent."/>
@@ -39,6 +42,7 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="course_cm" UNIQUE="false" FIELDS="courseid, cmid"/>
+        <INDEX NAME="cm_resource" UNIQUE="false" FIELDS="cmid, resourceid"/>
         <INDEX NAME="cm_hashes" UNIQUE="false" FIELDS="cmid, resourcehash, cataloguehash"/>
         <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
       </INDEXES>
@@ -108,6 +112,22 @@
       <INDEXES>
         <INDEX NAME="suggestion_user_revision" UNIQUE="true" FIELDS="suggestionid, userid, revision"/>
         <INDEX NAME="analysis_user" UNIQUE="false" FIELDS="analysisid, userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_compalign_extract" COMMENT="Cached plain text of a file, keyed by content hash and extractor version.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="contenthash" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="extractorversion" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="canonicaltext" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="provenance" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="hash_version" UNIQUE="true" FIELDS="contenthash, extractorversion"/>
       </INDEXES>
     </TABLE>
   </TABLES>

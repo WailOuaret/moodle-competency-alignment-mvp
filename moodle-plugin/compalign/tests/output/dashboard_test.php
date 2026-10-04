@@ -117,7 +117,7 @@ final class dashboard_test extends advanced_testcase {
         $this->resetAfterTest();
         $environment = $this->create_environment();
         $this->configure_service();
-        $this->getDataGenerator()->create_module('forum', ['course' => $environment['course']->id, 'name' => 'News']);
+        $this->getDataGenerator()->create_module('choice', ['course' => $environment['course']->id, 'name' => 'News']);
 
         $text = $this->dashboard_text($environment['course']);
 
@@ -126,7 +126,7 @@ final class dashboard_test extends advanced_testcase {
         $this->assertStringContainsString('Not analysed', $text);
         $this->assertSame(1, substr_count($text, 'Suggest competencies'), 'Only the Page offers to start an analysis.');
         $this->assertStringContainsString('News', $text);
-        $this->assertSame(1, substr_count($text, 'Resource type not supported in this prototype.'));
+        $this->assertSame(1, substr_count($text, 'Unsupported resource type.'));
 
         $this->create_completed_analysis($environment);
         $text = $this->dashboard_text($environment['course']);

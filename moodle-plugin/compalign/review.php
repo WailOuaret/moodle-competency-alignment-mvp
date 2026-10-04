@@ -40,14 +40,22 @@ use local_compalign\service\resource_extractor;
 use local_compalign\service\review_manager;
 
 $cmid = required_param('cmid', PARAM_INT);
+$item = optional_param('item', '', PARAM_RAW_TRIMMED);
 $action = optional_param('action', '', PARAM_ALPHA);
+if ($item !== '' && !preg_match('/^moodle:[a-z0-9:_-]{1,220}$/', $item)) {
+    throw new moodle_exception('invalidparameter', 'error');
+}
 
 [$course, $cm] = get_course_and_cm_from_cmid($cmid);
 require_login($course, false, $cm);
 $context = context_module::instance($cm->id);
 require_capability('local/compalign:view', $context);
 
-$url = new moodle_url('/local/compalign/review.php', ['cmid' => $cm->id]);
+$urlparams = ['cmid' => $cm->id];
+if ($item !== '') {
+    $urlparams['item'] = $item;
+}
+$url = new moodle_url('/local/compalign/review.php', $urlparams);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_compalign'));
@@ -70,7 +78,7 @@ if ($supported && in_array($action, ['analyse', 'reanalyse'], true) && data_subm
     require_capability('local/compalign:analyse', $context);
 
     try {
-        $result = $manager->request_analysis($cm, (int) $USER->id, $action === 'reanalyse');
+        $result = $manager->request_analysis($cm, (int) $USER->id, $action === 'reanalyse', $item);
         $messages = [
             analysis_manager::OUTCOME_QUEUED => ['analysisqueued', notification::NOTIFY_SUCCESS],
             analysis_manager::OUTCOME_ACTIVE => ['analysisactive', notification::NOTIFY_INFO],
@@ -83,7 +91,7 @@ if ($supported && in_array($action, ['analyse', 'reanalyse'], true) && data_subm
     }
 }
 
-$analysis = $supported ? $manager->get_latest((int) $cm->id) : null;
+$analysis = $supported ? $manager->get_latest((int) $cm->id, $item) : null;
 $notices = [];
 $catalogue = null;
 $suggestions = [];

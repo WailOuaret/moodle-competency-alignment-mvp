@@ -17,6 +17,7 @@
 namespace local_compalign\service;
 
 use cm_info;
+use local_compalign\resource\registry;
 
 /**
  * Turns a Moodle Page into the plain-text resource the alignment service analyses.
@@ -44,65 +45,27 @@ final class resource_extractor {
      * @return bool
      */
     public static function supports(cm_info $cm): bool {
-        return $cm->modname === 'page';
+        return registry::supports($cm);
     }
 
     /**
      * Read a Page and describe it as a service resource.
      *
-     * @param cm_info $cm The Page course module, as visible to the current user.
+     * @param cm_info $cm The course module, as visible to the current user.
+     * @param string $resourceid Empty when the activity has exactly one analytical item.
      * @return array{resource: array<string, string>, hash: string} The resource for the request, and a
      *         digest of everything in it that can change the analysis.
-     * @throws analysis_exception When the Page cannot or should not be analysed.
+     * @throws analysis_exception When the resource cannot or should not be analysed.
      */
-    public function extract(cm_info $cm): array {
-        global $CFG, $DB;
-
-        require_once($CFG->dirroot . '/course/lib.php');
-
+    public function extract(cm_info $cm, string $resourceid = ''): array {
         if (!self::supports($cm)) {
             throw new analysis_exception('unsupported_resource_type');
         }
-
         if (!$cm->uservisible) {
             throw new analysis_exception('resource_not_accessible');
         }
 
-        $page = $DB->get_record('page', ['id' => $cm->instance], 'id, name, intro, content');
-        if (!$page) {
-            throw new analysis_exception('resource_missing');
-        }
-
-        $title = self::collapse($page->name);
-        $text = self::combine_text(self::html_to_text($page->intro), self::html_to_text($page->content));
-
-        if ($text === '') {
-            throw new analysis_exception('resource_empty');
-        }
-
-        if (mb_strlen($text) > self::MAX_TEXT_CHARS) {
-            throw new analysis_exception('resource_too_large');
-        }
-
-        $course = $cm->get_course();
-        $resource = [
-            'resource_id' => 'moodle:page:' . $page->id,
-            'resource_type' => self::TYPE_PAGE,
-            'course_id' => (string) $cm->course,
-            'course_module_id' => (string) $cm->id,
-            'title' => $title,
-            'text' => $text,
-            'search_text' => self::combine_text($title, $text),
-            'course_shortname' => self::collapse((string) $course->shortname),
-            'course_fullname' => self::collapse((string) $course->fullname),
-            'section_name' => self::collapse((string) get_section_name($course, $cm->sectionnum)),
-            'activity_name' => $title,
-        ];
-
-        return [
-            'resource' => array_filter($resource, static fn(string $value): bool => $value !== ''),
-            'hash' => self::hash($resource),
-        ];
+        return registry::extract($cm, $resourceid);
     }
 
     /**
@@ -114,14 +77,26 @@ final class resource_extractor {
      * @return string sha256: followed by the hex digest.
      */
     public static function hash(array $resource): string {
-        $content = [
-            $resource['resource_type'] ?? '',
-            $resource['title'] ?? '',
-            $resource['text'] ?? '',
-            $resource['course_fullname'] ?? '',
-            $resource['section_name'] ?? '',
-            $resource['activity_name'] ?? '',
-        ];
+        // A file is fingerprinted from its bytes and the extractor version, so a
+        // parser change can invalidate an analysis even when the file is unchanged.
+        // A Page still hashes the words only. Identifiers stay out of both.
+        if (!empty($resource['content_hash'])) {
+            $content = [
+                $resource['resource_type'] ?? '',
+                $resource['content_hash'],
+                $resource['extractor_version'] ?? '',
+                $resource['filename'] ?? '',
+            ];
+        } else {
+            $content = [
+                $resource['resource_type'] ?? '',
+                $resource['title'] ?? '',
+                $resource['text'] ?? '',
+                $resource['course_fullname'] ?? '',
+                $resource['section_name'] ?? '',
+                $resource['activity_name'] ?? '',
+            ];
+        }
 
         return 'sha256:' . hash('sha256', json_encode(
             $content,

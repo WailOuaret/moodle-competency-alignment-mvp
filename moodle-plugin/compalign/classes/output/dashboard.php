@@ -24,15 +24,16 @@ use local_compalign\service\analysis_exception;
 use local_compalign\service\analysis_manager;
 use local_compalign\service\competency_catalogue;
 use local_compalign\service\competency_links;
+use local_compalign\resource\registry;
 use local_compalign\service\resource_extractor;
 use local_compalign\service\service_exception;
 
 /**
  * The course dashboard: every resource of a course with its analysis status and official links.
  *
- * Only Pages can be analysed in this prototype. Every other resource type says so instead of being
- * processed in silence. When the assistant is not ready (no framework, no service address, and so
- * on) the page says why and offers no analysis button.
+ * Each supported item is one row: a Page, a quiz question, a chapter, a file, and so on.
+ * An unsupported item says why, and does not stop the others. When the assistant is not ready
+ * (no framework, no service address, and so on) the page says why and offers no analysis button.
  *
  * @package    local_compalign
  * @copyright  2026 Wail Ouaret
@@ -48,7 +49,12 @@ class dashboard implements renderable, named_templatable {
         'nosuggestion' => 'secondary',
         'reviewed' => 'success',
         'failed' => 'danger',
+        'stale' => 'warning',
+        'unsupported' => 'secondary',
     ];
+
+    /** Most items one batch may send to the model. */
+    public const MAX_BATCH = 20;
 
     /**
      * Constructor.
@@ -63,6 +69,8 @@ class dashboard implements renderable, named_templatable {
         private array $issues,
         private array $rows,
         private bool $showoverviewlink,
+        private string $filter = 'all',
+        private string $type = 'all',
     ) {
     }
 
@@ -73,40 +81,63 @@ class dashboard implements renderable, named_templatable {
      * @param int $userid The logged-in user: whose resources are visible and whose reviews are counted.
      * @return self
      */
-    public static function create(\stdClass $course, int $userid): self {
+    public static function create(\stdClass $course, int $userid, string $filter = 'all', string $type = 'all'): self {
         $canmanage = has_capability('local/compalign:manage', \context_system::instance());
         $issues = self::find_issues($canmanage);
         $modinfo = get_fast_modinfo($course, $userid);
 
         $cms = array_filter(
             $modinfo->get_cms(),
-            static fn(\cm_info $cm): bool => $cm->uservisible && !$cm->deletioninprogress && $cm->modname !== 'label'
+            static fn(\cm_info $cm): bool => $cm->uservisible && !$cm->deletioninprogress
         );
         $latest = self::latest_analyses((int) $course->id);
         [$totals, $reviewed] = self::review_progress(
             array_map(static fn(\stdClass $analysis): int => (int) $analysis->id, $latest),
             $userid
         );
-        $byanalysis = [];
-        foreach ($latest as $cmid => $analysis) {
-            $byanalysis[$cmid] = [
-                'analysis' => $analysis,
-                'total' => (int) ($totals[$analysis->id] ?? 0),
-                'reviewed' => (int) ($reviewed[$analysis->id] ?? 0),
-            ];
-        }
 
         $rows = [];
         foreach ($cms as $cm) {
-            $rows[] = [
-                'cm' => $cm,
-                'state' => $byanalysis[$cm->id] ?? null,
-                'links' => competency_links::list_for_cm($cm),
-                'canstart' => !$issues && has_capability('local/compalign:analyse', \context_module::instance($cm->id)),
-            ];
+            $canstart = !$issues && has_capability('local/compalign:analyse', \context_module::instance($cm->id));
+            $links = competency_links::list_for_cm($cm);
+            foreach (registry::enumerate($cm) as $item) {
+                $analysis = $latest[$item->resourceid] ?? null;
+                $state = null;
+                if ($analysis) {
+                    $state = [
+                        'analysis' => $analysis,
+                        'total' => (int) ($totals[$analysis->id] ?? 0),
+                        'reviewed' => (int) ($reviewed[$analysis->id] ?? 0),
+                    ];
+                }
+                $stale = false;
+                if ($item->supported && $analysis && $analysis->status === analysis_manager::STATUS_COMPLETED) {
+                    try {
+                        $current = (new resource_extractor())->extract($cm, $item->resourceid);
+                        $stale = !hash_equals((string) $analysis->resourcehash, $current['hash']);
+                    } catch (analysis_exception) {
+                        $stale = true;
+                    }
+                }
+                $key = $item->supported
+                    ? self::status_key($analysis, $state['total'] ?? 0, $state['reviewed'] ?? 0, $stale)
+                    : 'unsupported';
+                if (!self::matches_filter($filter, $key) || !self::matches_type($type, $item->resourcetype)) {
+                    continue;
+                }
+                $rows[] = [
+                    'cm' => $cm,
+                    'item' => $item,
+                    'state' => $state,
+                    'links' => $links,
+                    'canstart' => $canstart && $item->supported,
+                    'stale' => $stale,
+                    'statuskey' => $key,
+                ];
+            }
         }
 
-        return new self($course, $issues, $rows, $canmanage);
+        return new self($course, $issues, $rows, $canmanage, $filter, $type);
     }
 
     /**
@@ -117,7 +148,10 @@ class dashboard implements renderable, named_templatable {
      * @param int $reviewed How many of them the user has reviewed.
      * @return string none, queued, running, ready, nosuggestion, reviewed or failed.
      */
-    public static function status_key(?\stdClass $analysis, int $total, int $reviewed): string {
+    public static function status_key(?\stdClass $analysis, int $total, int $reviewed, bool $stale = false): string {
+        if ($analysis !== null && $stale && $analysis->status === analysis_manager::STATUS_COMPLETED) {
+            return 'stale';
+        }
         if ($analysis === null) {
             return 'none';
         }
@@ -163,6 +197,15 @@ class dashboard implements renderable, named_templatable {
             'rows' => $rows,
             'showoverviewlink' => $this->showoverviewlink,
             'overviewurl' => (new \moodle_url('/local/compalign/index.php'))->out(false),
+            'selectable' => array_values(array_filter(
+                $rows,
+                static fn(array $row): bool => !empty($row['canselect'])
+            )),
+            'hasselectable' => (bool) array_filter($rows, static fn(array $row): bool => !empty($row['canselect'])),
+            'filters' => $this->filter_links(),
+            'sesskey' => sesskey(),
+            'batchurl' => (new \moodle_url('/local/compalign/index.php', ['courseid' => $this->course->id]))->out(false),
+            'maxbatch' => self::MAX_BATCH,
         ];
     }
 
@@ -176,15 +219,21 @@ class dashboard implements renderable, named_templatable {
     private function export_row(renderer_base $output, array $row): array {
         /** @var \cm_info $cm */
         $cm = $row['cm'];
+        /** @var \local_compalign\resource\item $item */
+        $item = $row['item'];
         $analysis = $row['state']['analysis'] ?? null;
         $total = $row['state']['total'] ?? 0;
         $reviewed = $row['state']['reviewed'] ?? 0;
-        $key = self::status_key($analysis, $total, $reviewed);
-        $reviewurl = new \moodle_url('/local/compalign/review.php', ['cmid' => $cm->id]);
+        $key = $row['statuskey'];
+        $reviewurl = new \moodle_url('/local/compalign/review.php', [
+            'cmid' => $cm->id,
+            'item' => $item->resourceid,
+        ]);
 
         $action = [];
-        if (!resource_extractor::supports($cm)) {
-            $action['text'] = get_string('unsupportedtype', 'local_compalign');
+        if (!$item->supported) {
+            $reason = $item->reason !== '' ? $item->reason : 'unsupportedtype';
+            $action['text'] = get_string($reason, 'local_compalign');
         } else if ($analysis !== null) {
             $action = ['url' => $reviewurl->out(false), 'label' => get_string('viewsuggestions', 'local_compalign')];
         } else if ($row['canstart']) {
@@ -197,9 +246,15 @@ class dashboard implements renderable, named_templatable {
         }
 
         return [
-            'name' => $cm->get_formatted_name(),
+            'name' => $item->title !== '' ? $item->title : $cm->get_formatted_name(),
+            'groupname' => $cm->get_formatted_name(),
             'url' => $cm->url ? $cm->url->out(false) : '',
             'typename' => $cm->get_module_type_name(),
+            'provenance' => $item->provenance,
+            'showgroup' => $item->title !== '' && $item->title !== $cm->get_formatted_name(),
+            'resourceid' => $item->resourceid,
+            'domid' => 'compalign-item-' . substr(sha1($item->resourceid), 0, 12),
+            'canselect' => $row['canstart'] && $analysis === null,
             'statuskey' => $key,
             'statuslabel' => get_string('analysis_' . $key, 'local_compalign'),
             'statustype' => self::BADGES[$key],
@@ -252,14 +307,14 @@ class dashboard implements renderable, named_templatable {
 
         $sql = "SELECT a.*
                   FROM {local_compalign_analysis} a
-                  JOIN (SELECT cmid, MAX(id) AS maxid
+                  JOIN (SELECT resourceid, MAX(id) AS maxid
                           FROM {local_compalign_analysis}
                          WHERE courseid = :courseid
-                      GROUP BY cmid) latest ON latest.maxid = a.id";
+                      GROUP BY resourceid) latest ON latest.maxid = a.id";
 
         $byresource = [];
         foreach ($DB->get_records_sql($sql, ['courseid' => $courseid]) as $analysis) {
-            $byresource[(int) $analysis->cmid] = $analysis;
+            $byresource[(string) $analysis->resourceid] = $analysis;
         }
 
         return $byresource;
@@ -291,5 +346,89 @@ class dashboard implements renderable, named_templatable {
         );
 
         return [$totals, $reviewed];
+    }
+
+    /**
+     * Whether a status belongs in the selected filter.
+     *
+     * @param string $filter all, supported, none, ready, reviewed, stale or failed.
+     * @param string $key The status key.
+     * @return bool
+     */
+    private static function matches_filter(string $filter, string $key): bool {
+        return match ($filter) {
+            'supported' => $key !== 'unsupported',
+            'none' => $key === 'none',
+            'ready' => $key === 'ready',
+            'reviewed' => $key === 'reviewed',
+            'stale' => $key === 'stale',
+            'failed' => $key === 'failed',
+            default => true,
+        };
+    }
+
+    /**
+     * Whether a resource type belongs in the selected type filter.
+     *
+     * @param string $type all, page, quiz, document, transcript or other.
+     * @param string $resourcetype The service type.
+     * @return bool
+     */
+    private static function matches_type(string $type, string $resourcetype): bool {
+        $documents = ['pdf', 'docx', 'pptx', 'text', 'markdown'];
+        return match ($type) {
+            'page' => $resourcetype === 'page',
+            'quiz' => $resourcetype === 'quiz_question',
+            'document' => in_array($resourcetype, $documents, true),
+            'transcript' => $resourcetype === 'transcript',
+            'other' => !in_array($resourcetype, array_merge(['page', 'quiz_question', 'transcript'], $documents), true),
+            default => true,
+        };
+    }
+
+    /**
+     * Status and type filters for the course dashboard.
+     *
+     * @return array[] Each with url, label, classes and typefilter.
+     */
+    private function filter_links(): array {
+        $base = new \moodle_url('/local/compalign/index.php', ['courseid' => $this->course->id]);
+        $status = [
+            'all' => 'filter_all',
+            'supported' => 'filter_supported',
+            'none' => 'filter_none',
+            'ready' => 'filter_ready',
+            'reviewed' => 'filter_reviewed',
+            'stale' => 'filter_stale',
+            'failed' => 'filter_failed',
+        ];
+        $types = [
+            'all' => 'type_all',
+            'page' => 'type_page',
+            'quiz' => 'type_quiz',
+            'document' => 'type_document',
+            'transcript' => 'type_transcript',
+            'other' => 'type_other',
+        ];
+        $links = [];
+        foreach ($status as $key => $string) {
+            $links[] = [
+                'url' => (new \moodle_url($base, ['filter' => $key, 'type' => $this->type]))->out(false),
+                'label' => get_string($string, 'local_compalign'),
+                'classes' => 'btn btn-sm me-1 mb-1 ' . ($this->filter === $key ? 'btn-primary' : 'btn-outline-secondary'),
+                'active' => $this->filter === $key,
+                'typefilter' => false,
+            ];
+        }
+        foreach ($types as $key => $string) {
+            $links[] = [
+                'url' => (new \moodle_url($base, ['filter' => $this->filter, 'type' => $key]))->out(false),
+                'label' => get_string($string, 'local_compalign'),
+                'classes' => 'btn btn-sm me-1 mb-1 ' . ($this->type === $key ? 'btn-primary' : 'btn-outline-secondary'),
+                'active' => $this->type === $key,
+                'typefilter' => true,
+            ];
+        }
+        return $links;
     }
 }

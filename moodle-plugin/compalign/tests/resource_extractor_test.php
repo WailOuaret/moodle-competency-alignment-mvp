@@ -114,20 +114,20 @@ final class resource_extractor_test extends advanced_testcase {
     }
 
     /**
-     * Only a Page can be analysed in this prototype.
+     * A choice activity has no teacher-authored body the plugin can align.
      */
-    public function test_only_pages_are_supported(): void {
+    public function test_choice_is_not_supported(): void {
         $this->resetAfterTest();
         $environment = $this->create_environment();
-        $forum = $this->getDataGenerator()->create_module('forum', ['course' => $environment['course']->id]);
-        $forumcm = get_fast_modinfo($environment['course'])->get_cm((int) $forum->cmid);
+        $choice = $this->getDataGenerator()->create_module('choice', ['course' => $environment['course']->id]);
+        $choicecm = get_fast_modinfo($environment['course'])->get_cm((int) $choice->cmid);
 
         $this->assertTrue(resource_extractor::supports($environment['cm']));
-        $this->assertFalse(resource_extractor::supports($forumcm));
+        $this->assertFalse(resource_extractor::supports($choicecm));
 
         try {
-            (new resource_extractor())->extract($forumcm);
-            $this->fail('A forum was read.');
+            (new resource_extractor())->extract($choicecm);
+            $this->fail('A choice activity was read.');
         } catch (analysis_exception $exception) {
             $this->assertSame('unsupported_resource_type', $exception->get_error_code());
         }

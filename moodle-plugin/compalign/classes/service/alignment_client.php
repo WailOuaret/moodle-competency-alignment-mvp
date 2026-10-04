@@ -288,6 +288,53 @@ final class alignment_client {
     }
 
     /**
+     * Ask the service to turn one teacher file into plain text.
+     *
+     * The bytes are not logged. A parser failure becomes a stable error code.
+     *
+     * @param string $bytes File contents.
+     * @param string $format pdf, docx, pptx, text, markdown, vtt or srt.
+     * @param string $filename Original file name, sent only as the upload name.
+     * @param string $requestid Correlation id.
+     * @return array{text: string, segments: array}
+     * @throws service_exception When extraction fails.
+     */
+    public function extract_document(string $bytes, string $format, string $filename, string $requestid): array {
+        try {
+            $response = $this->http->request('POST', $this->baseurl . '/v1/extractions', [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . $this->token,
+                    'X-Request-ID' => $requestid,
+                ],
+                'multipart' => [
+                    ['name' => 'declared_format', 'contents' => $format],
+                    ['name' => 'upload', 'contents' => $bytes, 'filename' => $filename],
+                ],
+                'http_errors' => false,
+                'allow_redirects' => false,
+                'timeout' => $this->timeout,
+                'connect_timeout' => min(self::CONNECT_TIMEOUT, $this->timeout),
+            ]);
+        } catch (GuzzleException | \RuntimeException $exception) {
+            $failure = $this->classify_failure($exception);
+            throw new service_exception($failure->status, 'The alignment service could not be reached.', $exception);
+        }
+
+        $body = $this->decode($response);
+        if ($response->getStatusCode() === 200 && is_array($body) && is_string($body['text'] ?? null) && $body['text'] !== '') {
+            return [
+                'text' => $body['text'],
+                'segments' => is_array($body['segments'] ?? null) ? $body['segments'] : [],
+            ];
+        }
+
+        $errorcode = $body['error']['code'] ?? 'document_malformed';
+        $errorcode = is_string($errorcode) && preg_match('/^[a-z][a-z0-9_]{0,59}$/', $errorcode) ? $errorcode : 'document_malformed';
+        throw new service_exception($errorcode, 'The document could not be read.');
+    }
+
+    /**
      * Turn the answer to the credentials probe into a connection result.
      *
      * @param ResponseInterface $probe The answer to the empty analysis request.

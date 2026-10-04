@@ -88,7 +88,12 @@ final class provider_test extends provider_testcase {
         $items = provider::get_metadata(new collection('local_compalign'))->get_collection();
 
         $names = array_map(static fn($item): string => $item->get_name(), $items);
-        $this->assertEqualsCanonicalizing(['local_compalign_analysis', 'local_compalign_review', 'alignmentservice'], $names);
+        $this->assertEqualsCanonicalizing([
+            'local_compalign_analysis',
+            'local_compalign_review',
+            'local_compalign_extract',
+            'alignmentservice',
+        ], $names);
 
         foreach ($items as $item) {
             $keys = array_merge([$item->get_summary()], array_values($item->get_privacy_fields()));

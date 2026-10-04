@@ -88,6 +88,8 @@ class review_page implements renderable, named_templatable {
         return [
             'heading' => get_string('reviewheading', 'local_compalign', $this->cm->get_formatted_name()),
             'typename' => $this->cm->get_module_type_name(),
+            'provenance' => $this->provenance_label(),
+            'hasprovenance' => $this->provenance_label() !== '',
             'coursename' => format_string($this->cm->get_course()->fullname),
             'backurl' => (new \moodle_url('/local/compalign/index.php', ['courseid' => $this->cm->course]))->out(false),
             'links' => array_map(static fn(array $link): array => [
@@ -194,7 +196,7 @@ class review_page implements renderable, named_templatable {
             'englishlabel' => $display['englishlabel'],
             'sourceuri' => $display['sourceuri'],
             'extraid' => $display['extraid'],
-            'evidence' => array_map(static fn(\stdClass $item): array => ['quote' => $item->evidencetext], $suggestion->evidence),
+            'evidence' => $this->evidence_rows($suggestion->evidence),
             'haswarnings' => (bool) $warnings,
             'warnings' => $warnings,
             'bm25rank' => $suggestion->bm25rank !== null
@@ -216,6 +218,63 @@ class review_page implements renderable, named_templatable {
      * @param \stdClass|null $review The review, if any.
      * @return array|null Summary and when it was saved, or null when not yet reviewed.
      */
+    /**
+     * The human provenance stored with the analysis, such as a chapter or a file name.
+     *
+     * @return string
+     */
+    private function provenance_label(): string {
+        if ($this->analysis === null || empty($this->analysis->provenance)) {
+            return '';
+        }
+        $decoded = json_decode((string) $this->analysis->provenance, true);
+        if (!is_array($decoded)) {
+            return '';
+        }
+        return isset($decoded['label']) ? (string) $decoded['label'] : '';
+    }
+
+    /**
+     * Quotations, each with the page, slide, heading or timestamp that contains it.
+     *
+     * @param \stdClass[] $evidence Stored evidence rows.
+     * @return array[]
+     */
+    private function evidence_rows(array $evidence): array {
+        $segments = [];
+        if ($this->analysis !== null && !empty($this->analysis->provenance)) {
+            $decoded = json_decode((string) $this->analysis->provenance, true);
+            if (is_array($decoded) && isset($decoded['segments']) && is_array($decoded['segments'])) {
+                $segments = $decoded['segments'];
+            }
+        }
+
+        $rows = [];
+        foreach ($evidence as $item) {
+            $quote = (string) $item->evidencetext;
+            $source = '';
+            foreach ($segments as $segment) {
+                if (!is_array($segment) || !isset($segment['text']) || !str_contains((string) $segment['text'], $quote)) {
+                    continue;
+                }
+                $source = match ($segment['kind'] ?? '') {
+                    'page' => get_string('evidence_page', 'local_compalign', $segment['number'] ?? ''),
+                    'slide' => get_string('evidence_slide', 'local_compalign', $segment['number'] ?? ''),
+                    'paragraph', 'table' => get_string('evidence_section', 'local_compalign', $segment['heading'] ?? ''),
+                    'cue' => get_string('evidence_time', 'local_compalign', (object) [
+                        'start' => $segment['start'] ?? '',
+                        'end' => $segment['end'] ?? '',
+                    ]),
+                    default => '',
+                };
+                break;
+            }
+            $rows[] = ['quote' => $quote, 'source' => $source];
+        }
+
+        return $rows;
+    }
+
     private function export_review(?\stdClass $review): ?array {
         if ($review === null) {
             return null;

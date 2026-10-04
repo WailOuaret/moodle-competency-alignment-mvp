@@ -82,10 +82,11 @@ final class analysis_manager {
      * @param \cm_info $cm The resource.
      * @param int $userid The teacher asking. The background task runs as this user.
      * @param bool $force Analyse again even when an identical completed analysis exists.
+     * @param string $resourceid Which item inside the activity. Empty when there is only one.
      * @return array{analysis: \stdClass, outcome: string} The analysis and what happened.
      * @throws analysis_exception When the resource or the framework cannot be used, or the plugin is not configured.
      */
-    public function request_analysis(\cm_info $cm, int $userid, bool $force = false): array {
+    public function request_analysis(\cm_info $cm, int $userid, bool $force = false, string $resourceid = ''): array {
         global $DB;
 
         // Fail early, and visibly, when nothing could possibly run. This makes no network call.
@@ -95,19 +96,20 @@ final class analysis_manager {
             throw new analysis_exception($exception->get_error_code(), $exception->getMessage());
         }
 
-        $extracted = (new resource_extractor())->extract($cm);
+        $extracted = (new resource_extractor())->extract($cm, $resourceid);
+        $resourceid = $extracted['resource']['resource_id'];
         $catalogue = (new competency_catalogue())->build();
         $maxsuggestions = self::configured_max_suggestions();
         $topk = alignment_client::SUPPORTED_TOP_K;
 
         $lock = \core\lock\lock_config::get_lock_factory('local_compalign')
-            ->get_lock('request_' . $cm->id, self::LOCK_TIMEOUT);
+            ->get_lock('request_' . $cm->id . '_' . substr(sha1($resourceid), 0, 12), self::LOCK_TIMEOUT);
         if (!$lock) {
             throw new analysis_exception('busy');
         }
 
         try {
-            $active = $this->find_active((int) $cm->id);
+            $active = $this->find_active((int) $cm->id, $resourceid);
             if ($active) {
                 return ['analysis' => $active, 'outcome' => self::OUTCOME_ACTIVE];
             }
@@ -115,6 +117,7 @@ final class analysis_manager {
             if (!$force) {
                 $reusable = $this->find_reusable(
                     (int) $cm->id,
+                    $resourceid,
                     $extracted['hash'],
                     $catalogue->hash,
                     $catalogue->frameworkid,
@@ -130,6 +133,9 @@ final class analysis_manager {
                 'courseid' => (int) $cm->course,
                 'cmid' => (int) $cm->id,
                 'resourceid' => $extracted['resource']['resource_id'],
+                'sourceitemid' => $extracted['resource']['resource_id'],
+                'extractorversion' => $extracted['resource']['extractor_version'] ?? '',
+                'provenance' => json_encode($extracted['provenance'] ?? [], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
                 'resourcetype' => $extracted['resource']['resource_type'],
                 'resourcehash' => $extracted['hash'],
                 'cataloguehash' => $catalogue->hash,
@@ -155,6 +161,35 @@ final class analysis_manager {
         } finally {
             $lock->release();
         }
+    }
+
+    /**
+     * Say whether an item would be reused or would call the model, without queueing it.
+     *
+     * @param \cm_info $cm The activity.
+     * @param string $resourceid The item id from the dashboard.
+     * @return string active, reused or new.
+     */
+    public function preview_analysis(\cm_info $cm, string $resourceid): string {
+        ($this->clientfactory)();
+        $extracted = (new resource_extractor())->extract($cm, $resourceid);
+        $resourceid = $extracted['resource']['resource_id'];
+        if ($this->find_active((int) $cm->id, $resourceid)) {
+            return self::OUTCOME_ACTIVE;
+        }
+
+        $catalogue = (new competency_catalogue())->build();
+        $reusable = $this->find_reusable(
+            (int) $cm->id,
+            $resourceid,
+            $extracted['hash'],
+            $catalogue->hash,
+            $catalogue->frameworkid,
+            alignment_client::SUPPORTED_TOP_K,
+            self::configured_max_suggestions()
+        );
+
+        return $reusable ? self::OUTCOME_REUSED : 'new';
     }
 
     /**
@@ -195,10 +230,14 @@ final class analysis_manager {
      * @param int $cmid The course module.
      * @return \stdClass|null
      */
-    public function get_latest(int $cmid): ?\stdClass {
+    public function get_latest(int $cmid, string $resourceid = ''): ?\stdClass {
         global $DB;
 
-        $records = $DB->get_records('local_compalign_analysis', ['cmid' => $cmid], 'id DESC', '*', 0, 1);
+        $conditions = ['cmid' => $cmid];
+        if ($resourceid !== '') {
+            $conditions['resourceid'] = $resourceid;
+        }
+        $records = $DB->get_records('local_compalign_analysis', $conditions, 'id DESC', '*', 0, 1);
 
         return $records ? reset($records) : null;
     }
@@ -220,7 +259,7 @@ final class analysis_manager {
         $changes = [];
 
         try {
-            $extracted = (new resource_extractor())->extract($cm);
+            $extracted = (new resource_extractor())->extract($cm, (string) $analysis->resourceid);
             if (!hash_equals((string) $analysis->resourcehash, $extracted['hash'])) {
                 $changes[] = self::CHANGE_PAGE;
             }
@@ -275,14 +314,20 @@ final class analysis_manager {
      * @param int $cmid The course module.
      * @return \stdClass|null
      */
-    public function find_active(int $cmid): ?\stdClass {
+    public function find_active(int $cmid, string $resourceid = ''): ?\stdClass {
         global $DB;
 
         [$sql, $params] = $DB->get_in_or_equal([self::STATUS_QUEUED, self::STATUS_RUNNING], SQL_PARAMS_NAMED, 'status');
+        $where = "cmid = :cmid AND status $sql";
+        $params['cmid'] = $cmid;
+        if ($resourceid !== '') {
+            $where .= ' AND resourceid = :resourceid';
+            $params['resourceid'] = $resourceid;
+        }
         $records = $DB->get_records_select(
             'local_compalign_analysis',
-            "cmid = :cmid AND status $sql",
-            ['cmid' => $cmid] + $params,
+            $where,
+            $params,
             'id DESC',
             '*',
             0,
@@ -305,6 +350,7 @@ final class analysis_manager {
      */
     public function find_reusable(
         int $cmid,
+        string $resourceid,
         string $resourcehash,
         string $cataloguehash,
         int $frameworkid,
@@ -315,10 +361,12 @@ final class analysis_manager {
 
         $records = $DB->get_records_select(
             'local_compalign_analysis',
-            'cmid = :cmid AND status = :status AND resourcehash = :resourcehash AND cataloguehash = :cataloguehash '
-                . 'AND frameworkid = :frameworkid AND topk = :topk AND maxsuggestions = :maxsuggestions',
+            'cmid = :cmid AND resourceid = :resourceid AND status = :status AND resourcehash = :resourcehash '
+                . 'AND cataloguehash = :cataloguehash AND frameworkid = :frameworkid AND topk = :topk '
+                . 'AND maxsuggestions = :maxsuggestions',
             [
                 'cmid' => $cmid,
+                'resourceid' => $resourceid,
                 'status' => self::STATUS_COMPLETED,
                 'resourcehash' => $resourcehash,
                 'cataloguehash' => $cataloguehash,
@@ -359,14 +407,20 @@ final class analysis_manager {
             throw new analysis_exception('resource_missing', 'The resource no longer exists.', [], $exception);
         }
 
-        $extracted = (new resource_extractor())->extract($cm);
+        $extracted = (new resource_extractor())->extract($cm, (string) $analysis->resourceid);
         $catalogue = (new competency_catalogue((int) $analysis->frameworkid))->build();
 
         // The analysis describes what was actually sent, which may differ from when it was requested.
         $analysis->resourcehash = $extracted['hash'];
         $analysis->cataloguehash = $catalogue->hash;
+        if (!empty($extracted['provenance'])) {
+            $analysis->provenance = json_encode($extracted['provenance'], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        }
 
-        $resource = $extracted['resource'];
+        [$resource, $provenance] = $this->service_resource($extracted, (string) $analysis->requestid);
+        if ($provenance !== null) {
+            $analysis->provenance = $provenance;
+        }
         $request = [
             'schema_version' => alignment_client::SCHEMA_VERSION,
             'resource' => $resource,
@@ -449,6 +503,78 @@ final class analysis_manager {
             // Roll back first, so the failure update that follows is not swallowed with the transaction.
             $transaction->rollback($exception);
         }
+    }
+
+    /**
+     * The resource fields the service accepts, after a file has been turned into text.
+     *
+     * @param array $extracted The adapter result.
+     * @param string $requestid Correlation id for the extraction call.
+     * @return array{0: array<string, string>, 1: string|null} Resource body, and provenance JSON when a file was read.
+     */
+    private function service_resource(array $extracted, string $requestid): array {
+        $resource = $extracted['resource'];
+        $provenance = null;
+
+        if (!empty($extracted['file'])) {
+            $filetext = $this->file_text($extracted['file'], $requestid);
+            $resource['text'] = $filetext['text'];
+            $resource['search_text'] = resource_extractor::combine_text($resource['title'] ?? '', $filetext['text']);
+            $details = $extracted['provenance'] ?? [];
+            $details['segments'] = $filetext['segments'];
+            $provenance = json_encode($details, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        }
+
+        $allowed = [
+            'resource_id', 'resource_type', 'course_id', 'course_module_id', 'title', 'text',
+            'search_text', 'course_shortname', 'course_fullname', 'section_name', 'activity_name',
+        ];
+
+        return [array_intersect_key($resource, array_flip($allowed)), $provenance];
+    }
+
+    /**
+     * Plain text for a teacher file, from the extraction cache or the service.
+     *
+     * @param array<string, string> $file File identity from the adapter.
+     * @param string $requestid Correlation id.
+     * @return array{text: string, segments: array}
+     */
+    private function file_text(array $file, string $requestid): array {
+        global $DB;
+
+        $cached = $DB->get_record('local_compalign_extract', [
+            'contenthash' => $file['contenthash'],
+            'extractorversion' => \local_compalign\resource\file_item::EXTRACTOR_VERSION,
+        ]);
+        if ($cached) {
+            $segments = json_decode((string) $cached->provenance, true);
+            return [
+                'text' => (string) $cached->canonicaltext,
+                'segments' => is_array($segments) ? $segments : [],
+            ];
+        }
+
+        $stored = get_file_storage()->get_file_by_id((int) $file['fileid']);
+        if (!$stored) {
+            throw new analysis_exception('resource_missing');
+        }
+
+        $result = ($this->clientfactory)()->extract_document(
+            $stored->get_content(),
+            $file['format'],
+            $file['filename'],
+            $requestid
+        );
+        $DB->insert_record('local_compalign_extract', (object) [
+            'contenthash' => $file['contenthash'],
+            'extractorversion' => \local_compalign\resource\file_item::EXTRACTOR_VERSION,
+            'canonicaltext' => $result['text'],
+            'provenance' => json_encode($result['segments'], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+            'timecreated' => time(),
+        ]);
+
+        return $result;
     }
 
     /**

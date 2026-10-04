@@ -45,5 +45,32 @@ function xmldb_local_compalign_upgrade(int $oldversion): bool {
         upgrade_plugin_savepoint(true, 2026100301, 'local', 'compalign');
     }
 
+    if ($oldversion < 2026100402) {
+        $table = new xmldb_table('local_compalign_analysis');
+        $source = new xmldb_field('sourceitemid', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, '', 'resourceid');
+        if (!$dbman->field_exists($table, $source)) {
+            $dbman->add_field($table, $source);
+        }
+        $extractor = new xmldb_field('extractorversion', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, '', 'sourceitemid');
+        if (!$dbman->field_exists($table, $extractor)) {
+            $dbman->add_field($table, $extractor);
+        }
+        $provenance = new xmldb_field('provenance', XMLDB_TYPE_TEXT, null, null, null, null, null, 'extractorversion');
+        if (!$dbman->field_exists($table, $provenance)) {
+            $dbman->add_field($table, $provenance);
+        }
+        $index = new xmldb_index('cm_resource', XMLDB_INDEX_NOTUNIQUE, ['cmid', 'resourceid']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        $cache = new xmldb_table('local_compalign_extract');
+        if (!$dbman->table_exists($cache)) {
+            $dbman->install_one_table_from_xmldb_file(__DIR__ . '/install.xml', 'local_compalign_extract');
+        }
+
+        upgrade_plugin_savepoint(true, 2026100402, 'local', 'compalign');
+    }
+
     return true;
 }

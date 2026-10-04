@@ -71,6 +71,23 @@
         </div>
     {{/hasissues}}
 
+    <nav class="mb-3" aria-label="{{#str}} filter_all, local_compalign {{/str}}">
+        <div class="mb-1">
+            {{#filters}}
+                {{^typefilter}}
+                    <a class="{{classes}}" href="{{{url}}}" {{#active}}aria-current="page"{{/active}}>{{label}}</a>
+                {{/typefilter}}
+            {{/filters}}
+        </div>
+        <div>
+            {{#filters}}
+                {{#typefilter}}
+                    <a class="{{classes}}" href="{{{url}}}" {{#active}}aria-current="page"{{/active}}>{{label}}</a>
+                {{/typefilter}}
+            {{/filters}}
+        </div>
+    </nav>
+
     {{#hasrows}}
         <div class="table-responsive">
             <table class="generaltable table table-striped align-middle">
@@ -87,8 +104,10 @@
                     {{#rows}}
                         <tr>
                             <th scope="row">
+                                {{#showgroup}}<span class="text-muted">{{groupname}}</span><br>{{/showgroup}}
                                 {{#url}}<a href="{{{url}}}">{{name}}</a>{{/url}}
                                 {{^url}}{{name}}{{/url}}
+                                {{#provenance}}<br><small>{{provenance}}</small>{{/provenance}}
                             </th>
                             <td>{{typename}}</td>
                             <td>
@@ -117,6 +136,24 @@
     {{^hasrows}}
         <p class="text-muted">{{#str}} dashboard_noresources, local_compalign {{/str}}</p>
     {{/hasrows}}
+
+    {{#hasselectable}}
+        <form method="post" action="{{{batchurl}}}" class="mt-3">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <input type="hidden" name="action" value="batch">
+            <fieldset>
+                <legend>{{#str}} batch_legend, local_compalign {{/str}}</legend>
+                <p>{{#str}} batch_help, local_compalign, maxbatch {{/str}}</p>
+                {{#selectable}}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="items[]" value="{{resourceid}}" id="{{domid}}">
+                        <label class="form-check-label" for="{{domid}}">{{groupname}} — {{name}}</label>
+                    </div>
+                {{/selectable}}
+                <button type="submit" class="btn btn-secondary mt-2">{{#str}} batch_submit, local_compalign {{/str}}</button>
+            </fieldset>
+        </form>
+    {{/hasselectable}}
 
     {{#showoverviewlink}}
         <p><a href="{{{overviewurl}}}">{{#str}} plugin_overview, local_compalign {{/str}}</a></p>

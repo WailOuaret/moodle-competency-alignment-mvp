@@ -44,9 +44,81 @@ if ($courseid) {
     $PAGE->set_context($context);
     $PAGE->set_title(get_string('pluginname', 'local_compalign'));
 
+    $action = optional_param('action', '', PARAM_ALPHA);
+    if ($action === 'batch' && data_submitted()) {
+        require_sesskey();
+        require_capability('local/compalign:analyse', $context);
+        $items = optional_param_array('items', [], PARAM_RAW);
+        $items = array_values(array_filter($items, static fn(string $id): bool => (bool) preg_match('/^moodle:[a-z0-9:_-]{1,220}$/', $id)));
+        if (!$items) {
+            redirect($PAGE->url, get_string('batch_none', 'local_compalign'), null, \core\output\notification::NOTIFY_ERROR);
+        }
+        if (count($items) > dashboard::MAX_BATCH) {
+            redirect($PAGE->url, get_string('batch_toomany', 'local_compalign', dashboard::MAX_BATCH), null, \core\output\notification::NOTIFY_ERROR);
+        }
+        $manager = new \local_compalign\service\analysis_manager();
+        $modinfo = get_fast_modinfo($course);
+        $matches = [];
+        foreach ($items as $resourceid) {
+            foreach ($modinfo->get_cms() as $cm) {
+                foreach (\local_compalign\resource\registry::enumerate($cm) as $candidate) {
+                    if ($candidate->resourceid === $resourceid && $candidate->supported) {
+                        $matches[] = [$cm, $resourceid];
+                    }
+                }
+            }
+        }
+        $confirm = optional_param('confirm', 0, PARAM_BOOL);
+        if (!$confirm) {
+            $cached = 0;
+            $fresh = 0;
+            $active = 0;
+            foreach ($matches as [$cm, $resourceid]) {
+                $preview = $manager->preview_analysis($cm, $resourceid);
+                if ($preview === \local_compalign\service\analysis_manager::OUTCOME_REUSED) {
+                    $cached++;
+                } else if ($preview === \local_compalign\service\analysis_manager::OUTCOME_ACTIVE) {
+                    $active++;
+                } else {
+                    $fresh++;
+                }
+            }
+            echo $OUTPUT->header();
+            echo $OUTPUT->heading(get_string('batch_confirm', 'local_compalign'));
+            echo html_writer::tag('p', get_string('batch_preview', 'local_compalign', (object) [
+                'cached' => $cached,
+                'fresh' => $fresh,
+                'active' => $active,
+            ]));
+            echo html_writer::start_tag('form', ['method' => 'post', 'action' => $PAGE->url->out(false)]);
+            echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+            echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'batch']);
+            echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'confirm', 'value' => '1']);
+            foreach ($items as $resourceid) {
+                echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'items[]', 'value' => $resourceid]);
+            }
+            echo html_writer::empty_tag('input', [
+                'type' => 'submit',
+                'class' => 'btn btn-primary',
+                'value' => get_string('batch_confirm', 'local_compalign'),
+            ]);
+            echo html_writer::end_tag('form');
+            echo $OUTPUT->footer();
+            exit;
+        }
+        $queued = 0;
+        foreach ($matches as [$cm, $resourceid]) {
+            $manager->request_analysis($cm, (int) $USER->id, false, $resourceid);
+            $queued++;
+        }
+        redirect($PAGE->url, get_string('batch_queued', 'local_compalign', $queued), null, \core\output\notification::NOTIFY_SUCCESS);
+    }
+
+    $filter = optional_param('filter', 'all', PARAM_ALPHA);
+    $type = optional_param('type', 'all', PARAM_ALPHA);
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('competencyalignment', 'local_compalign'));
-    echo $OUTPUT->render(dashboard::create($course, (int) $USER->id));
+    echo $OUTPUT->render(dashboard::create($course, (int) $USER->id, $filter, $type));
     echo $OUTPUT->footer();
     exit;
 }
