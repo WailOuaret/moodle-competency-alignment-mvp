@@ -33,8 +33,18 @@ pilot_default('maxsuggestions', (int) (getenv('PLUGIN_MAX_SUGGESTIONS') ?: 3), '
 
 // The token goes through the plugin's own setting, so it is stored encrypted exactly as it would
 // be if it were typed into the settings page.
+// Individual settings live on the page, not as nodes the admin tree can locate by name.
 $root = admin_get_root(true, true);
-$setting = $root->locate('local_compalign/servicetoken');
+$page = $root->locate('local_compalign');
+$setting = null;
+if ($page instanceof admin_settingpage) {
+    foreach ($page->settings as $candidate) {
+        if ($candidate->name === 'servicetoken' && $candidate->plugin === 'local_compalign') {
+            $setting = $candidate;
+            break;
+        }
+    }
+}
 if (!$setting) {
     pilot_say('plugin: the token setting was not found. Is the plugin installed?');
     exit(1);

@@ -31,11 +31,13 @@ RUN set -eux; \
         libfreetype6-dev libjpeg62-turbo-dev libpng-dev libicu-dev libzip-dev libpq-dev libxml2-dev; \
     docker-php-ext-configure gd --with-freetype --with-jpeg; \
     docker-php-ext-install -j"$(nproc)" gd intl zip pgsql soap exif; \
+    saved="$(apt-mark showmanual)"; \
     apt-mark auto '.*' >/dev/null; \
+    apt-mark manual $saved >/dev/null; \
     find /usr/local -type f -executable -exec ldd '{}' ';' 2>/dev/null \
       | awk '/=>/ { so = $(NF-1); if (index(so, "/usr/local/") == 1) { next }; gsub("^/(usr/)?", "", so); print so }' \
       | sort -u | xargs -r dpkg-query --search | cut -d: -f1 | sort -u | xargs -r apt-mark manual; \
-    apt-mark manual ca-certificates >/dev/null; \
+    apt-mark manual ca-certificates apache2 >/dev/null; \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
     rm -rf /var/lib/apt/lists/*; \
     php -m | tr '\n' ' ' | grep -q pgsql
@@ -59,7 +61,6 @@ RUN rm -rf /var/www/html/public/local/compalign/tests
 
 COPY deploy/pilot/moodle/config.php /var/www/html/config.php
 COPY deploy/pilot/moodle/provision /opt/pilot/provision
-COPY deploy/pilot/moodle/data /opt/pilot/data
 COPY data/processed/competencies.jsonl /opt/pilot/data/competencies.jsonl
 COPY deploy/pilot/content/pages /opt/pilot/content/pages
 COPY deploy/pilot/moodle/entrypoint.sh /usr/local/bin/pilot-entrypoint
