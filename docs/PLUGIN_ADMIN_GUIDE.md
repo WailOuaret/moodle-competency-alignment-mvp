@@ -1,9 +1,9 @@
 # Competency Alignment Assistant (local_compalign): administrator guide
 
-**Status: DRAFT for the private teacher pilot.** The plugin is version 0.2.0, maturity ALPHA. It has
-been verified on one Moodle build only (5.2.1+, 22 July 2026) by 295 PHPUnit tests, and a browser
-check of the hosted screens by a person is **still pending** (docs/HOSTED_BROWSER_CHECKLIST.md). It has
-not been used by any teacher. Nothing here is a claim of production readiness.
+**Status: private pilot, not a public release.** The plugin is version 0.2.0, maturity ALPHA. It has
+been verified on Moodle 5.2.1+ (build 20260722). The hosted browser walk-through is recorded in
+docs/LIVE_GEMINI_VERIFICATION.md. No teacher has used it for the study yet. Nothing here is a claim
+of production readiness.
 
 **PUBLIC DISTRIBUTION REQUIRES LICENSING/IP CONFIRMATION.** This guide covers installing the plugin on
 a site you control for the private pilot. It does not cover, and nothing in this repository authorises,

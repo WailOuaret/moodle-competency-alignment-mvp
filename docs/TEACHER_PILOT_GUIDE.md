@@ -1,8 +1,8 @@
 # Competency Alignment Assistant: guide for pilot teachers
 
-**Status: DRAFT.** The private pilot site is online at https://srv1872740.hstgr.cloud/ .
-Teachers have not been invited, and a person still has to walk through the screens
-(docs/HOSTED_BROWSER_CHECKLIST.md). There is no reference or correct answer shown.
+**Status: ready for the private pilot.** The site is https://srv1872740.hstgr.cloud/ .
+You have not been invited until the organiser sends you a username and a temporary password.
+There is no reference answer and no correct competency shown in the tool.
 Please make your own judgement.
 
 You have been invited to try a small tool and tell us honestly whether it helps. You are testing the

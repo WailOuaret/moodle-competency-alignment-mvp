@@ -32,6 +32,11 @@ LMS resource
 
 The system is assistive. A suggestion is not an official Moodle link.
 
+The same engine is now available inside Moodle through the local plugin
+`local_compalign` and the HTTP service in `service/`. A private pilot site is
+prepared for seven teachers. The teacher study has not started. Details are in
+[docs/SUPERVISOR_HANDOFF.md](docs/SUPERVISOR_HANDOFF.md).
+
 ## Motivation
 
 Moodle can store a competency framework and can store links between activities
@@ -193,9 +198,9 @@ python -m pytest -q tests/test_core_result_regression.py
 | `scripts/` | Extraction, retrieval, evaluation, verification |
 | `tests/` | Automated tests |
 | `sql/` | Read-only quiz export used in the research environment |
-| `service/` | Development HTTP service around the engine (branch `feature/moodle-plugin`) |
-| `moodle-plugin/compalign/` | Moodle plugin prototype `local_compalign`, under development (branch `feature/moodle-plugin`) |
-| `deploy/pilot/` | Docker Compose deployment files for a private pilot of the plugin (branch `feature/moodle-plugin`). Placeholders only, no secrets |
+| `service/` | HTTP service the Moodle plugin calls. Credentials come from the environment |
+| `moodle-plugin/compalign/` | Moodle local plugin `local_compalign`, release 0.2.0, maturity alpha |
+| `deploy/pilot/` | Docker Compose files for the private pilot. Placeholders only, no secrets |
 | `docs/` | Architecture, connectors, evaluation, reproducibility |
 | `data/processed/`, `data/interim/`, `data/gold/` | Frozen corpus, responses, and reference |
 | `reports/metrics/`, `reports/tables/`, `reports/figures/` | Measured results |
@@ -223,27 +228,42 @@ run against a live Canvas site.
 - The reference has no genuine `NONE` fragments, so abstention was not measured on that case.
 - Only Pages and quiz questions were evaluated.
 - Quiz text depends on a local SQL export.
-- There is no production service. `service/` is a development adapter with no queue and no result store.
-- The Moodle plugin is under development on the `feature/moodle-plugin` branch. It has only been run with
-  the mock backend on one local sandbox, has not been validated by teachers, and does not write competency
-  links. It is not a released or production plugin. There is no LTI launch implementation.
-- A private Moodle sandbox deployment is supported for pilot evaluation (`deploy/pilot/`, `docs/VPS_DEPLOYMENT_GUIDE.md`).
-  It is drafted and has been tried only on a development machine. It has not been run on a server, no teacher has
-  used it, and no live model has been called through it. It is not production-ready, and public distribution requires
-  licensing/IP confirmation.
+- `service/` stores nothing. Moodle keeps the suggestions and the teacher's decisions. The service has no queue of its own: Moodle cron runs each analysis.
+- The Moodle plugin suggests competencies for Pages. It does not write Moodle competency links. Quiz support and official write-back are not part of this pilot. There is no LTI launch.
+- A private hosted pilot is prepared. Six controlled Pages were analysed once with Gemini. That check is a development verification, not a new benchmark, and no teacher has reviewed those pages for the study. Public distribution requires licensing/IP confirmation. The plugin has not been published to the Moodle Plugins Directory.
 - There is no live second-LMS validation.
 - Teacher/supervisor review of the frozen mappings is waiting: 0 / 34.
 
+## Moodle plugin and private pilot
+
+Teachers open **Competency Alignment** from the course menu, ask for suggestions
+on a Page, and accept, reject, or modify each one. The plugin sends the Page
+text and the selected competency framework to `service/`. The service runs the
+frozen pipeline (BM25 Top-5, constrained selection, exact-quote checks) and
+returns suggestions. Moodle stores them. Saving a decision does not create a
+Moodle competency link.
+
+Guides:
+
+- [docs/SUPERVISOR_HANDOFF.md](docs/SUPERVISOR_HANDOFF.md) — what changed, and how to try the pilot
+- [docs/SUPERVISOR_SUMMARY.md](docs/SUPERVISOR_SUMMARY.md) — short summary
+- [docs/LIVE_GEMINI_VERIFICATION.md](docs/LIVE_GEMINI_VERIFICATION.md) — the six-page live check
+- [docs/TEACHER_PILOT_GUIDE.md](docs/TEACHER_PILOT_GUIDE.md) — the teacher instructions
+- [docs/PLUGIN_ADMIN_GUIDE.md](docs/PLUGIN_ADMIN_GUIDE.md) — installation on a Moodle site
+- [service/README.md](service/README.md) — running the Python service locally
+- [docs/VPS_DEPLOYMENT_GUIDE.md](docs/VPS_DEPLOYMENT_GUIDE.md) — the Docker pilot
+
+Live backend verification on six controlled Moodle Pages is complete. Teacher
+evaluation has not started. This is a private pilot.
+
 ## Roadmap
 
-An HTTP service around the existing engine and a Moodle plugin prototype that
-returns suggestions only are under development on the `feature/moodle-plugin`
-branch. Not yet built or done: a run of a live model through the plugin, a study
-with teachers, and a study export. Write-back of a link is not implemented and
-would happen only after an explicit accept or modify. Framework-size and LBG checks in
-`scaling_checks.py` measure retrieval behaviour. They are not a licence to
-reuse the 13-competency Gemini scores on a new catalogue. K = 5 was selected
-on this reference. It is not a universal setting.
+Still to do: the seven-teacher study, a study export, Quiz support, and
+write-back of an accepted or modified competency. Write-back is off and is not
+part of the first pilot. Framework-size checks in `scaling_checks.py` measure
+retrieval behaviour. They are not a licence to reuse the 13-competency Gemini
+scores on a new catalogue. K = 5 was selected on this reference. It is not a
+universal setting.
 
 ## Citation
 

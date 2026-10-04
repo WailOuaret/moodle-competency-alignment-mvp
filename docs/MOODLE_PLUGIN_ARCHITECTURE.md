@@ -14,16 +14,17 @@ Branch: `feature/moodle-plugin`, created from `public-clean-2026-09-30`.
 | Part | Status |
 |---|---|
 | Frozen research experiment | Unchanged. The 21 protected artefacts are byte-identical to the base commit. |
-| Python alignment service (`service/`) | **Implemented.** Tested with the mock backend and with parity tests against the frozen artefacts. The live Gemini and Ollama backends have not been exercised through it. |
+| Python alignment service (`service/`) | **Implemented.** Tested with the mock backend, with parity tests against the frozen artefacts, and with six live Gemini analyses through the hosted plugin. |
 | Moodle plugin (`moodle-plugin/compalign/`) | **Implemented as a prototype.** Service settings and connection check, Page analysis against the selected framework, response validation, teacher review, Privacy API. Not production-ready. |
 | Review workflow | **Implemented.** ACCEPT, REJECT or MODIFY, evidence rating, comment, server-side review time, append-only revisions. |
-| Moodle PHPUnit tests | **Run and passing:** 295 tests, 955 assertions in thirteen test classes, on 4 October 2026 in the sandbox. |
-| Browser verification | **Pending.** A person has to check the pages in a browser. See [`MOODLE_PLUGIN_BROWSER_CHECKLIST.md`](MOODLE_PLUGIN_BROWSER_CHECKLIST.md). |
+| Moodle PHPUnit tests | **Run and passing** on 4 October 2026 on Moodle 5.2.1+. See the supervisor handoff for the count from the latest run. |
+| Browser verification | **Recorded** on the hosted pilot, 4 October 2026. See [`LIVE_GEMINI_VERIFICATION.md`](LIVE_GEMINI_VERIFICATION.md). |
 | Write-back to Moodle competency links | **Not implemented.** No code path creates or changes a link. A decision records a write-back status of `disabled` or `none`. |
 | Study export | Not started. |
 
-No model has been called through the plugin. Every analysis made so far used the
-service's mock backend, and the review page says so.
+Six controlled Pages were analysed once each through the hosted plugin with Gemini
+(`gemini-3.5-flash`). That record is `development_live_verification`. It is not
+part of the frozen experiment. See [`LIVE_GEMINI_VERIFICATION.md`](LIVE_GEMINI_VERIFICATION.md).
 
 Tested Moodle version: 5.2.1+ (build 20260722, `$version` 2026042001.07), in the local
 Docker sandbox with PHP 8.3 and PostgreSQL 16. No other Moodle version is claimed.
@@ -41,9 +42,10 @@ Docker sandbox with PHP 8.3 and PostgreSQL 16. No other Moodle version is claime
   Moodle competency link and queue no write-back task, that the original suggestions
   are byte-identical after decisions, the privacy export and deletion, and the
   permission checks.
-- **Moodle PHPUnit:** 295 tests and 955 assertions in thirteen test classes
-  (`moodle-plugin/compalign/tests/`), all passing on 4 October 2026 on Moodle 5.2.1+, PHP 8.3.32,
-  PostgreSQL 16 and PHPUnit 11.5.55. They use Moodle's own test database (table prefix `t_`)
+- **Moodle PHPUnit:** the suite that included the review-form and catalogue-display tests
+  passed on 4 October 2026 on Moodle 5.2.1+, PHP 8.3, PostgreSQL 16 and PHPUnit 11.5.55
+  (300 tests, 972 assertions, in `moodle-plugin/compalign/tests/`). An earlier run the same day,
+  before those tests, was 295 tests and 955 assertions. They use Moodle's own test database (table prefix `t_`)
   and data generators, never the site's tables, and they render the dashboard and the review page
   with Moodle's renderer and templates. The first run found four mistakes in the tests, which were
   fixed without weakening an assertion. To check that the tests can fail, deliberate faults were put
@@ -270,7 +272,7 @@ A type is listed as supported only after it has been run end to end.
   pilot package (`dist/local_compalign-<release>-pilot.zip`, built by
   `deploy/pilot/scripts/package-plugin.sh`, ignored by Git, never uploaded) is allowed for the
   private teacher pilot only: see docs/PLUGIN_PACKAGING_GUIDE.md.
-- Browser verification by a person has not happened.
+- A hosted browser walk-through is recorded in `docs/LIVE_GEMINI_VERIFICATION.md`. A failed-analysis screen was not produced during that walk-through.
 - Cron has to run automatically, at least once a minute, before anyone outside the project uses the
   site. The pilot's `moodle-cron` container does this (a run every 20 seconds); that it survives a
   reboot is still to be shown on the server.

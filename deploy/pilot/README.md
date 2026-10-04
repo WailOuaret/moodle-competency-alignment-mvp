@@ -3,8 +3,9 @@
 Docker Compose files and scripts for running Moodle, the Competency Alignment Assistant plugin and the alignment
 service for a **private pilot with seven named teachers**.
 
-**Status: DRAFT.** Tried on a development machine only. Not run on a server, not used by any teacher, no live model
-called. Not production-ready. **Public distribution requires licensing/IP confirmation.** Start with
+**Status: used for the private hosted pilot.** The stack has been brought up on one VPS, with cron,
+backups, and a live Gemini backend. Teachers have not yet been invited. It is not production-ready.
+**Public distribution requires licensing/IP confirmation.** Start with
 [docs/VPS_DEPLOYMENT_GUIDE.md](../../docs/VPS_DEPLOYMENT_GUIDE.md).
 
 Nothing in this directory is a secret: `.env.example` holds placeholders, and the real env file, the teacher
