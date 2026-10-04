@@ -37,6 +37,11 @@ The same engine is now available inside Moodle through the local plugin
 prepared for seven teachers. The teacher study has not started. Details are in
 [docs/SUPERVISOR_HANDOFF.md](docs/SUPERVISOR_HANDOFF.md).
 
+The hosted pilot is the Page-only release 0.2.0. Branch `feature/moodle-multiresource`
+adds adapters for quiz questions, documents, transcripts, books, assignments and
+lessons. It is not deployed on the pilot. See
+[docs/RESOURCE_SUPPORT_MATRIX.md](docs/RESOURCE_SUPPORT_MATRIX.md).
+
 ## Motivation
 
 Moodle can store a competency framework and can store links between activities

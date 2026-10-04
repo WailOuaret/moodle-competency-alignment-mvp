@@ -40,6 +40,10 @@ Whether the suggestion was usable, whether the quotation justified it, how long 
 
 ## Limits
 
-Pages only. Quiz questions are not analysed by the plugin. Write-back is off. Seven teachers have accounts and have not been invited yet. The six-page model check is not a teacher study. A repository-wide licence is not decided, so the plugin is not published to the Moodle Plugins Directory.
+The hosted pilot analyses Pages only. Quiz questions are not analysed there. Write-back is off. Seven teachers have accounts and have not been invited yet. The six-page model check is not a teacher study. A repository-wide licence is not decided, so the plugin is not published to the Moodle Plugins Directory.
+
+## Multi-resource extension
+
+Branch `feature/moodle-multiresource` (release 0.3.0) reuses the same alignment engine for other teacher-authored Moodle items through adapters. It is not deployed, and those types have not been reviewed by teachers. The Page pilot on the hosted site is unchanged.
 
 Passwords are not in this file. They are sent separately.

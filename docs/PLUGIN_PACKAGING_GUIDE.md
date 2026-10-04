@@ -12,6 +12,8 @@ GPL; that is not a decision to publish.
 
 ## What the package is
 
+The hosted pilot package is `dist/local_compalign-0.2.0-pilot.zip`. A later local package may be `dist/local_compalign-0.3.0-pilot.zip` from branch `feature/moodle-multiresource`. Do not install the 0.3.0 zip on the hosted pilot.
+
 `dist/local_compalign-0.2.0-pilot.zip`: the plugin folder `compalign/`, as Git has it at the current commit,
 without its tests. It is what Moodle's **Site administration, Plugins, Install plugins** accepts, and what
 the pilot's Docker image copies into `public/local/compalign`.

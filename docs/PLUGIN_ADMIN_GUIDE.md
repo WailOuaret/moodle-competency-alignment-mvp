@@ -20,8 +20,9 @@ What it does not do, by design in this release:
 
 - It **never writes** to Moodle competency links. The write-back setting is reserved and has no
   effect. No role holds the write-back capability.
-- It handles **Pages only**. Forums, quizzes and every other module say "Resource type not supported
-  in this prototype".
+- The hosted pilot handles **Pages only**. Release 0.3.0, which is not installed on the pilot, also
+  reads quiz questions, text-layer PDFs, DOCX, PPTX, plain text, Markdown, caption files, Book
+  chapters, assignment instructions and Lesson pages. See docs/RESOURCE_SUPPORT_MATRIX.md.
 - It never sends student data. Only the text of the Page and the framework's competencies leave Moodle.
 
 ## Requirements
@@ -142,3 +143,17 @@ Site administration, Plugins, Plugins overview, find the plugin, Uninstall. This
 | **Not configured** | No service URL or no framework set | Open the settings page |
 
 The service log never contains the Page text, the token or the model key.
+
+## Release 0.3.0 (not installed on the pilot)
+
+Branch `feature/moodle-multiresource` is release 0.3.0, version `2026100402`. Do not install it over the 0.2.0 teacher pilot.
+
+It adds quiz questions, PDF, DOCX, PPTX, TXT, Markdown, VTT, SRT, Book chapters, assignment instructions, Lesson pages and files inside a Folder. Parsing of PDF, DOCX and PPTX happens in the Python service (`POST /v1/extractions`), using pypdf, python-docx and python-pptx. The plugin then sends the extracted text to the existing analysis endpoint.
+
+Limits in the extractor: 20 MB per file, 200 PDF pages, 200 slides, 200,000 extracted characters, 50 MB uncompressed OOXML, 400 files inside an Office package. A scanned PDF is reported as having no extractable text. OCR is off. A video without a VTT, SRT or plain transcript is not analysed. Automatic transcription is off.
+
+The service still rejects bodies larger than `ALIGNMENT_MAX_BODY_BYTES` (2 MB on the pilot). A file near 20 MB needs that setting raised on a future 0.3.0 deployment. Do not change it on the current pilot.
+
+Cron is still required. A batch asks the teacher to confirm and shows how many items would call the model. At most 20 items can be submitted together.
+
+Upgrade from 0.2.0 adds columns on the analysis table and a cache table `local_compalign_extract`. Existing Page analyses stay readable. Write-back stays off. Study export is `local/compalign/export.php` for users with `local/compalign:viewallreviews`.

@@ -283,6 +283,10 @@ fix the file or remove the symlink. Certificate renewal is certbot's existing ti
 Then continue with docs/TEACHER_PILOT_CHECKLIST.md: V7, the one authorised live-model test; V8, clearing the test records; V9, the
 seven teacher accounts; V10, the readiness review.
 
+## 7b. Do not replace the Page pilot with 0.3.0
+
+The multi-resource branch is developed locally. Installing it on this host would change the plugin and the database under the teachers. Leave https://srv1872740.hstgr.cloud/ on release 0.2.0 until that upgrade is explicitly approved, and do not change the plugin or the backend version during the teacher study.
+
 ## 8. If something goes wrong: undoing the deployment completely
 
 Nothing the pilot does touches the existing site, so removing it is also contained:

@@ -19,6 +19,11 @@ The assistant reads one Page and **suggests** which competencies the Page suppor
 suggestion it shows the **exact sentences from your Page** that it relied on, so you can check the
 reasoning in a few seconds instead of taking its word for it.
 
+The site you were invited to analyses Pages. A later version, not installed on this site, can also
+review one quiz question at a time, a PDF page, a presentation slide, a caption timestamp, a Book
+chapter, assignment instructions and a Lesson page. Evidence then names that place. Scanned PDFs
+and videos without a transcript are not analysed.
+
 **You decide.** The assistant never decides and never changes anything in Moodle. In this pilot,
 saving a decision does **not** create or change any Moodle competency link. It only records what you
 decided so that we can learn from it.

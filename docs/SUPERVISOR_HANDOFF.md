@@ -263,3 +263,15 @@ Top-K is fixed at 5. The service rejects any other value. Across a public networ
 The original measurements were not recomputed and were not mixed with the live pilot. Twenty-one protected files are byte-identical to `public-clean-2026-09-30`: the frozen corpus, fragments, and competency catalogue; the BM25 candidate lists and the exact model tasks; the frozen Gemini responses and the validated responses; the human reference and the Moodle link table; the evidence review and the earlier teacher reviews; and the published metric files under `reports/metrics/`.
 
 `src/moodle_competency` was not edited to chase the six live Pages. Top-K is still 5. The prompt version is still 1.0.
+
+## 19. Multi-resource extension
+
+Pages were the first Moodle activity. Branch `feature/moodle-multiresource` (plugin release 0.3.0, version `2026100402`) keeps the same alignment engine and adds adapters. Each adapter turns one teacher-authored item into the resource the service already accepts. Quiz questions, text-layer PDFs, DOCX, PPTX, plain text, Markdown, VTT and SRT transcripts, Book chapters, assignment instructions, Lesson pages, and supported files inside a Folder are in that set. Forum posts, student submissions, URL fetching, scanned-PDF OCR and automatic transcription are not.
+
+This branch is local. It has not been deployed to https://srv1872740.hstgr.cloud/. The Page pilot remains 0.2.0. No teacher has reviewed a quiz question, a document or a transcript with this plugin. Do not treat the new types as validated.
+
+Python tests on this branch: 575 passed. Moodle PHPUnit was not run here: this environment has no Docker and the hosted pilot must not be used as the test site. The earlier Page-pilot PHPUnit result (300 tests, 972 assertions) belongs to release 0.2.0.
+
+Quiz suggestions, if write-back is enabled later, can be attached only to the Quiz activity. Moodle does not store a competency on a question. Write-back stays off.
+
+Study export is `local/compalign/export.php`, capability `local/compalign:viewallreviews`. It pseudonymises the teacher and can include the free-text comment.

@@ -113,6 +113,8 @@ scripts/update.sh                         # backs up, builds new images, restart
 scripts/rollback.sh --yes-replace-live-data      # previous images AND the pre-update data
 ```
 
+Do not deploy branch `feature/moodle-multiresource` (plugin 0.3.0) onto this pilot while the Page study is being prepared or run. The hosted release stays 0.2.0.
+
 `update.sh` refuses to start unless the pilot is healthy now. A plugin version bump upgrades Moodle's database on start-up; that cannot be
 undone by starting older code, which is why rollback restores the backup taken just before. Do not update while teachers are working. Do not update
 during the pilot unless a defect requires it, and record why in `logs/pilot.log` notes: the study treats the system as fixed.
