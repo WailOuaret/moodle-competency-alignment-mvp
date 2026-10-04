@@ -57,9 +57,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-    security_opt: ["no-new-privileges:true"]
-    stop_grace_period: 30s
-    mem_limit: 1g
     logging: *logging
 
   alignment-api:
@@ -145,6 +142,14 @@ services:
     pids_limit: 400
     mem_limit: 1g
     stop_grace_period: 30s
+    # The image health check requests a web page. This container never starts Apache.
+    # Healthy means the cron worker process is the main process.
+    healthcheck:
+      test: ["CMD-SHELL", "grep -a -q pilot-cron /proc/1/cmdline || grep -a -q pilot-entrypoint /proc/1/cmdline"]
+      interval: 30s
+      timeout: 5s
+      start_period: 180s
+      retries: 3
     logging: *logging
 
 networks:
