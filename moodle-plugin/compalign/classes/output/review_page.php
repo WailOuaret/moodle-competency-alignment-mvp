@@ -181,11 +181,19 @@ class review_page implements renderable, named_templatable {
             $warnings[] = ['text' => $this->warning_text($warning)];
         }
 
+        $display = competency_display::split(
+            is_array($competency) ? (string) $competency['description'] : '',
+            $idnumber
+        );
+
         return [
             'id' => (int) $suggestion->id,
             'code' => $idnumber,
             'name' => $competency['shortname'] ?? $idnumber,
-            'description' => $competency['description'] ?? '',
+            'description' => $display['main'],
+            'englishlabel' => $display['englishlabel'],
+            'sourceuri' => $display['sourceuri'],
+            'extraid' => $display['extraid'],
             'evidence' => array_map(static fn(\stdClass $item): array => ['quote' => $item->evidencetext], $suggestion->evidence),
             'haswarnings' => (bool) $warnings,
             'warnings' => $warnings,

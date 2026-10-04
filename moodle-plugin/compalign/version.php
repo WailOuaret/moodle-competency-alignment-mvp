@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_compalign';
-$plugin->version = 2026100301;
+$plugin->version = 2026100401;
 // Tested only on the Moodle 5.2 sandbox (5.2.1+, build 20260722). No other release is claimed.
 $plugin->requires = 2026042001;
 $plugin->maturity = MATURITY_ALPHA;

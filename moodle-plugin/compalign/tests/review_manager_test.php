@@ -212,6 +212,48 @@ final class review_manager_test extends advanced_testcase {
     }
 
     /**
+     * A replacement sent with Accept or Reject is not stored and does not block the decision.
+     */
+    public function test_accept_and_reject_ignore_a_replacement_competency(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $environment = $this->create_environment();
+        $made = $this->create_completed_analysis($environment);
+        $suggestion = reset($made['suggestions']);
+        $other = $this->other_idnumber($made['catalogue'], $suggestion->competencyidnumber);
+        $manager = new review_manager();
+
+        $accepted = $manager->save(
+            $made['analysis'],
+            $suggestion,
+            (int) $environment['teacher']->id,
+            review_manager::DECISION_ACCEPT,
+            $other,
+            null,
+            null,
+            null,
+            $made['catalogue']
+        );
+        $stored = $DB->get_record('local_compalign_review', ['id' => $accepted->id], '*', MUST_EXIST);
+        $this->assertSame($suggestion->competencyidnumber, $stored->finalcompetencyidnumber);
+
+        $rejected = $manager->save(
+            $made['analysis'],
+            $suggestion,
+            (int) $environment['teacher']->id,
+            review_manager::DECISION_REJECT,
+            $other,
+            null,
+            null,
+            null,
+            $made['catalogue']
+        );
+        $stored = $DB->get_record('local_compalign_review', ['id' => $rejected->id], '*', MUST_EXIST);
+        $this->assertNull($stored->finalcompetencyidnumber);
+    }
+
+    /**
      * Rejecting creates no Moodle competency link and queues no task.
      */
     public function test_reject_creates_no_link_and_no_task(): void {

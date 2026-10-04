@@ -67,6 +67,9 @@ class review_form extends \moodleform {
         $choices = ['' => get_string('choosecompetency', 'local_compalign')] + $custom['choices'];
         $mform->addElement('select', 'finalcompetency', get_string('finalcompetency', 'local_compalign'), $choices);
         $mform->addHelpButton('finalcompetency', 'finalcompetency', 'local_compalign');
+        // Moodle hides this once Accept or Reject is chosen. It does not hide it while no radio is
+        // checked, so styles.css keeps the row hidden until Modify is selected. Saving still checks
+        // the decision on the server, whether or not the row was visible.
         $mform->hideIf('finalcompetency', 'decision', 'neq', review_manager::DECISION_MODIFY);
 
         // The rating is optional and nothing is preselected. The values are strings on purpose: with the

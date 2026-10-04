@@ -1,0 +1,9 @@
+/* Hide the replacement competency until Modify is selected.
+   Moodle's hideIf "neq" rule does not hide a field when no radio in the group is
+   checked, so the list would be visible on a new review. This rule covers that
+   case, including the moment before Moodle's form script runs. The select stays
+   in the page, so it is a normal control once Modify is chosen. */
+
+.local-compalign-card form:not(:has(input[type="radio"][name="decision"][value="modify"]:checked)) .fitem:has(select[name="finalcompetency"]) {
+    display: none !important;
+}

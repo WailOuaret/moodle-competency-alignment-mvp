@@ -24,7 +24,10 @@
     * id - Suggestion id
     * code - Competency idnumber
     * name - Competency name
-    * description - Competency description
+    * description - The pedagogical description, without catalogue metadata
+    * englishlabel - Alternate English label, when the catalogue has one
+    * sourceuri - Source address from the catalogue, when present
+    * extraid - A catalogue identifier that is not the id already shown as code
     * evidence - Exact quotations, each with quote
     * haswarnings - Whether there is a hierarchy note
     * warnings - Each with text
@@ -87,6 +90,18 @@
                 <dd class="col-sm-8">{{supportcount}}</dd>
                 <dt class="col-sm-4">{{#str}} passages, local_compalign {{/str}}</dt>
                 <dd class="col-sm-8">{{passages}}</dd>
+                {{#englishlabel}}
+                    <dt class="col-sm-4">{{#str}} englishlabel, local_compalign {{/str}}</dt>
+                    <dd class="col-sm-8">{{englishlabel}}</dd>
+                {{/englishlabel}}
+                {{#extraid}}
+                    <dt class="col-sm-4">{{#str}} catalogueid, local_compalign {{/str}}</dt>
+                    <dd class="col-sm-8">{{extraid}}</dd>
+                {{/extraid}}
+                {{#sourceuri}}
+                    <dt class="col-sm-4">{{#str}} sourceuri, local_compalign {{/str}}</dt>
+                    <dd class="col-sm-8">{{sourceuri}}</dd>
+                {{/sourceuri}}
             </dl>
         </details>
 

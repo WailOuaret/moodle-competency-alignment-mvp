@@ -140,6 +140,21 @@ final class review_form_test extends advanced_testcase {
         $this->assertSame([], array_keys(array_filter($radios['decision'])), 'No decision is preselected.');
         $this->assertSame([], array_keys(array_filter($radios['usefulness'])), 'No rating is preselected, not even zero.');
         $this->assertSame([], self::chosen($html, 'finalcompetency'), 'No replacement is preselected.');
+        $this->assertStringContainsString('name="finalcompetency"', $html, 'The replacement control stays in the form.');
+    }
+
+    /**
+     * The replacement row is hidden in CSS until Modify is selected.
+     *
+     * Moodle's own hideIf rule does not hide the row while no decision radio is checked, which is
+     * what a new review shows. The stylesheet covers that case without removing the control.
+     */
+    public function test_the_replacement_row_is_hidden_until_modify_is_checked(): void {
+        $css = file_get_contents(\core_component::get_plugin_directory('local', 'compalign') . '/styles.css');
+        $this->assertNotFalse($css);
+        $this->assertStringContainsString('input[type="radio"][name="decision"][value="modify"]:checked', $css);
+        $this->assertStringContainsString('select[name="finalcompetency"]', $css);
+        $this->assertStringContainsString('display: none', $css);
     }
 
     /**
