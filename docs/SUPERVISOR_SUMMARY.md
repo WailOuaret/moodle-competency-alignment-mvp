@@ -44,6 +44,8 @@ The hosted pilot analyses Pages only. Quiz questions are not analysed there. Wri
 
 ## Multi-resource extension
 
-Branch `feature/moodle-multiresource` (release 0.3.0) reuses the same alignment engine for other teacher-authored Moodle items through adapters. It is not deployed, and those types have not been reviewed by teachers. The Page pilot on the hosted site is unchanged.
+Release 0.2.0 is the stable hosted Page pilot at the academy site. Teachers are on that release.
+
+Release 0.3.0 is the local multi-resource branch `feature/moodle-multiresource`. It is not installed on the hosted site, and no teacher is using it. The same alignment engine is reused through adapters. Moodle PHPUnit on an isolated database passed (321 tests, 1155 assertions). Python tests passed (577). A throwaway Moodle on the same server, not the pilot, was opened in a browser for the new dashboard. No Gemini call was made for 0.3.0.
 
 Passwords are not in this file. They are sent separately.

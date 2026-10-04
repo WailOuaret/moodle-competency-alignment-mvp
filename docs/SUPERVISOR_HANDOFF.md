@@ -266,11 +266,11 @@ The original measurements were not recomputed and were not mixed with the live p
 
 ## 19. Multi-resource extension
 
-Pages were the first Moodle activity. Branch `feature/moodle-multiresource` (plugin release 0.3.0, version `2026100402`) keeps the same alignment engine and adds adapters. Each adapter turns one teacher-authored item into the resource the service already accepts. Quiz questions, text-layer PDFs, DOCX, PPTX, plain text, Markdown, VTT and SRT transcripts, Book chapters, assignment instructions, Lesson pages, and supported files inside a Folder are in that set. Forum posts, student submissions, URL fetching, scanned-PDF OCR and automatic transcription are not.
+Release 0.2.0 is the hosted Page-only pilot. It is still what a teacher would see. Release 0.3.0 (plugin version `2026100403`) is local development on `feature/moodle-multiresource`. It has not been deployed to https://srv1872740.hstgr.cloud/. No teacher has used 0.3.0.
 
-This branch is local. It has not been deployed to https://srv1872740.hstgr.cloud/. The Page pilot remains 0.2.0. No teacher has reviewed a quiz question, a document or a transcript with this plugin. Do not treat the new types as validated.
+0.3.0 keeps the same alignment engine and adds adapters for quiz questions, text-layer PDFs, DOCX, PPTX, plain text, Markdown, VTT and SRT, Book chapters, assignment instructions, Lesson pages, Folder files, text and media areas, the forum introduction, and the URL description. Forum posts, student submissions, URL fetching, scanned-PDF OCR and automatic transcription are not included.
 
-Python tests on this branch: 575 passed. Moodle PHPUnit was not run here: this environment has no Docker and the hosted pilot must not be used as the test site. The earlier Page-pilot PHPUnit result (300 tests, 972 assertions) belongs to release 0.2.0.
+Moodle PHPUnit for `local_compalign` was run on an isolated database on the same machine as the pilot, not on the pilot database: 321 tests, 1155 assertions, 0 failures, 0 errors, 0 warnings. Python tests: 577 passed. A throwaway site, bound only on that machine, was used for the browser checks of the new dashboard, including a mock essay-question review. The quotation check uses the same text the engine fragments, which for a quiz question includes the question name. Gemini was not called. The live multi-resource matrix is prepared and not executed.
 
 Quiz suggestions, if write-back is enabled later, can be attached only to the Quiz activity. Moodle does not store a competency on a question. Write-back stays off.
 

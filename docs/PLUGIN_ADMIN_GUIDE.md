@@ -146,13 +146,13 @@ The service log never contains the Page text, the token or the model key.
 
 ## Release 0.3.0 (not installed on the pilot)
 
-Branch `feature/moodle-multiresource` is release 0.3.0, version `2026100402`. Do not install it over the 0.2.0 teacher pilot.
+Branch `feature/moodle-multiresource` is release 0.3.0, version `2026100403`. Do not install it over the 0.2.0 teacher pilot.
 
 It adds quiz questions, PDF, DOCX, PPTX, TXT, Markdown, VTT, SRT, Book chapters, assignment instructions, Lesson pages and files inside a Folder. Parsing of PDF, DOCX and PPTX happens in the Python service (`POST /v1/extractions`), using pypdf, python-docx and python-pptx. The plugin then sends the extracted text to the existing analysis endpoint.
 
 Limits in the extractor: 20 MB per file, 200 PDF pages, 200 slides, 200,000 extracted characters, 50 MB uncompressed OOXML, 400 files inside an Office package. A scanned PDF is reported as having no extractable text. OCR is off. A video without a VTT, SRT or plain transcript is not analysed. Automatic transcription is off.
 
-The service still rejects bodies larger than `ALIGNMENT_MAX_BODY_BYTES` (2 MB on the pilot). A file near 20 MB needs that setting raised on a future 0.3.0 deployment. Do not change it on the current pilot.
+JSON analysis requests stay capped by `ALIGNMENT_MAX_BODY_BYTES` (2,000,000 bytes). Document extraction uses a separate cap, `ALIGNMENT_MAX_EXTRACT_BODY_BYTES` (22,020,096 bytes: 20 MiB of file bytes plus 1 MiB of multipart overhead). The Moodle plugin refuses a file over 20 MiB before upload. The pilot nginx `client_max_body_size` of 40m is for the Moodle site and already covers a 20 MiB extraction. Do not raise the hosted JSON limit, and do not change the hosted environment for 0.3.0.
 
 Cron is still required. A batch asks the teacher to confirm and shows how many items would call the model. At most 20 items can be submitted together.
 

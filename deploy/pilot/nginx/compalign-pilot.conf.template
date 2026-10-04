@@ -49,6 +49,9 @@ server {
     add_header Referrer-Policy "same-origin" always;
     add_header X-Robots-Tag "noindex, nofollow" always;
 
+    # Moodle web uploads. The alignment service is not behind this server.
+    # JSON analyses are capped at 2 MB by the service. Document extraction allows
+    # 20 MiB plus multipart overhead (ALIGNMENT_MAX_EXTRACT_BODY_BYTES). 40m covers both.
     client_max_body_size 40m;
     server_tokens off;
 
