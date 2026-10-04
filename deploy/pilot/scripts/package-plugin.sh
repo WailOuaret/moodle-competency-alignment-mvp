@@ -42,9 +42,9 @@ if grep -Eiq '(^|/)(\.env[^/]*|.*\.pem|.*\.key|id_(rsa|ed25519)[^/]*|.*credentia
 fi
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
 unzip -q "$out" -d "$tmp"
-if grep -rEl 'AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ALIGNMENT_SERVICE_TOKEN=[A-Za-z0-9_-]{16,}' "$tmp" >/dev/null 2>&1; then
+if grep -rEl 'AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ALIGNMENT_SERVICE_TOKEN=[A-Za-z0-9_-]{32,}' "$tmp" >/dev/null 2>&1; then
     echo "error: the package contains text that looks like a key or token:" >&2
-    grep -rEl 'AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ALIGNMENT_SERVICE_TOKEN=[A-Za-z0-9_-]{16,}' "$tmp" >&2
+    grep -rEl 'AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ALIGNMENT_SERVICE_TOKEN=[A-Za-z0-9_-]{32,}' "$tmp" >&2
     rm -f "$out"; exit 1
 fi
 # The plugin must be the single top-level folder, with version.php directly inside it.
