@@ -17,6 +17,8 @@ Branch: `feature/moodle-plugin`, created from `public-clean-2026-09-30`.
 | Python alignment service (`service/`) | **Implemented.** Tested with the mock backend and with parity tests against the frozen artefacts. The live Gemini and Ollama backends have not been exercised through it. |
 | Moodle plugin (`moodle-plugin/compalign/`) | **Implemented as a prototype.** Service settings and connection check, Page analysis against the selected framework, response validation, teacher review, Privacy API. Not production-ready. |
 | Review workflow | **Implemented.** ACCEPT, REJECT or MODIFY, evidence rating, comment, server-side review time, append-only revisions. |
+| Moodle PHPUnit tests | **Run and passing:** 295 tests, 955 assertions in thirteen test classes, on 4 October 2026 in the sandbox. |
+| Browser verification | **Pending.** A person has to check the pages in a browser. See [`MOODLE_PLUGIN_BROWSER_CHECKLIST.md`](MOODLE_PLUGIN_BROWSER_CHECKLIST.md). |
 | Write-back to Moodle competency links | **Not implemented.** No code path creates or changes a link. A decision records a write-back status of `disabled` or `none`. |
 | Study export | Not started. |
 
@@ -39,12 +41,21 @@ Docker sandbox with PHP 8.3 and PostgreSQL 16. No other Moodle version is claime
   Moodle competency link and queue no write-back task, that the original suggestions
   are byte-identical after decisions, the privacy export and deletion, and the
   permission checks.
-- **PHPUnit tests are written but have not been run.** They are in
-  `moodle-plugin/compalign/tests/`. Moodle's PHPUnit dependencies are not installed in
-  the sandbox, so no PHPUnit result exists. Their pure-logic cases were also run with a
-  small stand-in assertion runner, which is not PHPUnit. The tests that need Moodle's
-  database and generators have not been executed in any form.
-- Not tested: a browser, other Moodle versions, a live model through the plugin, Behat.
+- **Moodle PHPUnit:** 295 tests and 955 assertions in thirteen test classes
+  (`moodle-plugin/compalign/tests/`), all passing on 4 October 2026 on Moodle 5.2.1+, PHP 8.3.32,
+  PostgreSQL 16 and PHPUnit 11.5.55. They use Moodle's own test database (table prefix `t_`)
+  and data generators, never the site's tables, and they render the dashboard and the review page
+  with Moodle's renderer and templates. The first run found four mistakes in the tests, which were
+  fixed without weakening an assertion. To check that the tests can fail, deliberate faults were put
+  into the plugin one at a time (a REJECT that writes a link, a validator that skips the quotation
+  check, a privacy deletion that keeps the reviews, evidence printed without escaping, a rating
+  radio that brings back the pre-selected zero, and so on). The suite caught every fault that
+  PHPUnit can see, and the files were restored afterwards. One fault it cannot see is the browser
+  script that hides the replacement dropdown unless Modify is chosen; that is item 17 of the
+  browser checklist.
+- Not tested: a browser (pending), concurrent users, a continuously running cron, other Moodle
+  versions, a live model through the plugin, Behat, write-back (not implemented), quiz
+  questions, the study export.
 
 ## Design constraints
 
@@ -248,6 +259,19 @@ separate from real teacher reviews.
 | Other types | not evaluated | not accepted | not yet |
 
 A type is listed as supported only after it has been run end to end.
+
+## Release blockers
+
+- **LICENSING / IP CONFIRMATION REQUIRED BEFORE PUBLIC PLUGIN DISTRIBUTION.** This is an
+  administrative blocker, not a code one. The plugin's PHP files carry GPL v3 or later headers for
+  development, and the repository has no root licence on purpose. Until the ownership and licence
+  of the plugin are confirmed, do not publish it to the Moodle Plugins Directory or to Packagist,
+  do not build a release archive, and do not add a repository-wide licence.
+- Browser verification by a person has not happened.
+- Cron has to run automatically, at least once a minute, before anyone outside the project uses the
+  sandbox.
+- Outside the sandbox the service has to be reached over HTTPS on port 443. The sandbox's narrow
+  HTTP-security exception is not a production setting.
 
 ## Known limitations
 

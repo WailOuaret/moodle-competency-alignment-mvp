@@ -662,6 +662,28 @@ site. Production should use HTTPS, a normal host name and port 443. If Docker
 Desktop changes its host address the plugin reports "Blocked by Moodle": repeat the
 lookup and adjust the carve-out.
 
+**Restoring the original settings.** Do this only when local testing of the plugin is over,
+because the plugin cannot reach the service without the exception. The values from before
+the change are in `~/moodle-dev/backups/sandbox_http_security_before_compalign_20261003-220326.txt`.
+From `~/moodle-dev/moodle-docker`, after `source ../moodle-env.sh`:
+
+```bash
+bin/moodle-docker-compose exec -u www-data webserver php /var/www/html/admin/cli/cfg.php \
+  --name=curlsecurityblockedhosts --set='127.0.0.0/8
+192.168.0.0/16
+10.0.0.0/8
+172.16.0.0/12
+0.0.0.0
+localhost
+169.254.169.254
+0000::1'
+bin/moodle-docker-compose exec -u www-data webserver php /var/www/html/admin/cli/cfg.php \
+  --name=curlsecurityallowedport --set='443
+80'
+```
+
+Afterwards the connection page reports "Blocked by Moodle", which is the expected result.
+
 ### Test the connection
 
 Open `http://localhost:8000/local/compalign/index.php` as an administrator. It is
@@ -682,19 +704,29 @@ and the review page says so.
 3. Open **View suggestions** for a Page and press **Suggest competencies**. The page
    says the analysis is queued. Forums, quizzes and other types are not supported yet.
 4. **Run Moodle's background tasks.** The analysis starts when cron runs, and the sandbox
-   does not run cron by itself:
+   does not run cron by itself. For development run Moodle's own cron script in a spare
+   terminal. **Press Ctrl+C to stop it.**
 
    ```bash
    cd ~/moodle-dev/moodle-docker && source ../moodle-env.sh
-   bin/moodle-docker-compose exec -T -u www-data webserver php /var/www/html/admin/cli/adhoc_task.php --execute
+   while true; do
+     bin/moodle-docker-compose exec -T -u www-data webserver php /var/www/html/admin/cli/cron.php
+     sleep 2
+   done
    ```
 
-   For a longer session leave this running in a spare terminal:
-
-   ```bash
-   while true; do bin/moodle-docker-compose exec -T -u www-data webserver \
-     php /var/www/html/admin/cli/adhoc_task.php --execute > /dev/null; sleep 10; done
-   ```
+   The script is `/var/www/html/admin/cli/cron.php` inside the container. Moodle 5.2 has no
+   `public/admin/cli/cron.php`. Each run stays alive for about three minutes (Moodle's default
+   keep-alive window) and keeps checking for new tasks: an analysis queued while cron was running
+   finished 3 seconds later. **The very first run is slow**, about 4 minutes 30 seconds here: it
+   runs about 90 overdue scheduled tasks, several of which reach out over the internet, and two of
+   them (the update check and the Moodle Apps portal) report a failure in this sandbox that does
+   not involve the plugin. Ctrl+C stops the loop, but a run already in progress lives on in the
+   container for up to three minutes; adding `--stop` to the `cron.php` command ends it at once. A
+   lighter loop that only runs the queued analyses uses
+   `php /var/www/html/admin/cli/adhoc_task.php --execute` with `sleep 5` instead.
+   Moodle recommends cron at least once a minute. Before teachers outside the project use the
+   sandbox, cron has to run automatically; that is not set up yet.
 
 5. The page refreshes itself while the analysis waits. When it completes there is one
    card per suggested competency: the competency and its description, the exact
@@ -738,9 +770,95 @@ cd moodle-plugin/compalign
 for f in $(find . -name '*.php'); do docker exec -i moodle_comp_mvp-webserver-1 php -l < "$f"; done
 ```
 
-Moodle PHPUnit is not set up in this sandbox, because Moodle's `vendor/` directory
-is not installed. The plugin's PHPUnit tests are in `moodle-plugin/compalign/tests/`,
-but **no plugin PHPUnit test has been run**, so none of them is claimed to pass. Setting
-PHPUnit up means installing Moodle's Composer dependencies and running
-`php admin/tool/phpunit/cli/init.php`; the sandbox's `config.php` already carries the
-`phpunit_prefix` and `phpunit_dataroot` settings it needs.
+#### Moodle PHPUnit: the plugin's own tests
+
+The tests are in `moodle-plugin/compalign/tests/`: thirteen test classes and three fixture
+files. They were run for the first time on 4 October 2026 on Moodle 5.2.1+, PHP 8.3.32,
+PostgreSQL 16 and PHPUnit 11.5.55: **295 tests, 955 assertions, no failures, errors, skips or
+warnings.** The first run found four mistakes in the tests themselves, which were fixed
+without weakening any assertion. Tests added afterwards for the form, the review page, the
+dashboard and the settings found one redundant hidden field in the plugin, which was removed.
+To run them (about a minute):
+
+```bash
+cd ~/moodle-dev/moodle-docker && source ../moodle-env.sh
+docker exec -u root -w /var/www/html moodle_comp_mvp-webserver-1 \
+  php vendor/bin/phpunit --testsuite local_compalign_testsuite --testdox
+```
+
+Run PHPUnit as root, as Moodle Docker's own documentation does. Moodle's bootstrap needs the
+live data root writable and writes `phpunit.xml` into the Moodle root, and no single
+unprivileged user in the container can do both. Hand the generated file back to yourself
+afterwards: `docker exec -u root moodle_comp_mvp-webserver-1 chown 1000:1000 /var/www/html/phpunit.xml`.
+
+**The tests do not use the sandbox's data.** They use tables with the prefix `t_` (the site uses
+`m_`) and the data root `/var/www/phpunitdata` (the site uses `/var/www/moodledata`), in the same
+PostgreSQL database. Moodle's PHPUnit bootstrap refuses to start if the two prefixes or the two
+data roots are the same. This was checked row by row. Against a backup taken before PHPUnit was
+installed, the site's tables differed only by last-access times, two log rows and some sessions
+written by scripted page requests made before PHPUnit was initialised. Initialising PHPUnit and
+running the suite changed nothing in the site's tables.
+
+**One-time setup, done in this sandbox.** Skip it unless the sandbox is rebuilt.
+
+1. Composer is not in the web container. Install it with its official installer, checking the
+   installer against the hash that Composer publishes on a second host. `init.php` would
+   otherwise download an unverified development snapshot of Composer:
+
+   ```bash
+   docker exec -u 1000:1000 -e HOME=/tmp/composer-home moodle_comp_mvp-webserver-1 sh -c '
+     mkdir -p /tmp/composer-tool /tmp/composer-home && cd /tmp/composer-tool &&
+     curl -4 -sS --retry 5 --retry-all-errors -o installer.php https://getcomposer.org/installer &&
+     [ "$(curl -4 -sS --retry 5 --retry-all-errors https://composer.github.io/installer.sig)" = "$(php -r "echo hash_file(\"sha384\", \"installer.php\");")" ] &&
+     php installer.php --install-dir=/tmp/composer-tool --filename=composer.phar && rm installer.php'
+   ```
+
+2. Install the development dependencies from Moodle's own `composer.lock`. **Never run
+   `composer update`**: the lock file and `composer.json` must stay unchanged.
+
+   ```bash
+   docker exec -u 1000:1000 -e HOME=/tmp/composer-home -w /var/www/html moodle_comp_mvp-webserver-1 \
+     php -d memory_limit=-1 /tmp/composer-tool/composer.phar install --no-interaction
+   docker exec -u 1000:1000 moodle_comp_mvp-webserver-1 cp /tmp/composer-tool/composer.phar /var/www/html/composer.phar
+   ```
+
+   This creates `~/moodle-dev/moodle/vendor/` and the copy of `composer.phar`, both ignored by
+   Moodle's `.gitignore`. Running as uid 1000 keeps the files yours.
+3. Initialise PHPUnit. `--disable-composer` stops `init.php` from running Composer itself:
+
+   ```bash
+   docker exec -u root -w /var/www/html moodle_comp_mvp-webserver-1 \
+     php public/admin/tool/phpunit/cli/init.php --disable-composer
+   ```
+
+   It installs a full test Moodle in the `t_` tables and writes `phpunit.xml`.
+4. **After changing the plugin's database schema or version** (`db/install.xml`, `db/upgrade.php`,
+   `version.php`) run step 3 again, so the test tables match. Adding or editing test files needs
+   no new initialisation.
+
+**Side effects to know about.** With `vendor/` present Moodle loads the libraries it bundles
+(Guzzle, the PSR interfaces, Mustache, Slim, Monolog and others) from `vendor/` instead of
+`public/lib/`, at the versions pinned in the lock file, which are the bundled ones. The site was
+checked afterwards and works. To undo everything, drop the test site first, while `vendor/` still
+exists, then delete the generated files. The site's own tables are not touched:
+
+```bash
+docker exec -u root -w /var/www/html moodle_comp_mvp-webserver-1 php public/admin/tool/phpunit/cli/util.php --drop
+rm -rf ~/moodle-dev/moodle/vendor ~/moodle-dev/moodle/phpunit.xml ~/moodle-dev/moodle/composer.phar ~/moodle-dev/moodle/.phpunit.cache
+```
+
+### Browser verification
+
+A person has to look at the plugin in a browser: the scripted checks cannot see Moodle's theme.
+The exact checklist, with the commands to start the service and cron, is
+[docs/MOODLE_PLUGIN_BROWSER_CHECKLIST.md](docs/MOODLE_PLUGIN_BROWSER_CHECKLIST.md). **Browser
+verification is pending** until someone reports the result.
+
+### Release blockers
+
+**LICENSING / IP CONFIRMATION REQUIRED BEFORE PUBLIC PLUGIN DISTRIBUTION.** This is an
+administrative blocker, not a code one. The plugin's PHP files carry GPL v3 or later headers,
+which is Moodle's convention and is fine for development. The repository has no root LICENSE
+file on purpose. Until the ownership and licence of the plugin are confirmed, do not publish
+it to the Moodle Plugins Directory or to Packagist, do not build a release archive, and do not
+add a repository-wide licence.
