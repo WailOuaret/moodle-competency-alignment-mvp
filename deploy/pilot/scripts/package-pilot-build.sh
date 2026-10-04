@@ -55,9 +55,10 @@ if grep -Eiq "$private" "dist/compalign-pilot-build-${commit}.files.txt"; then
 fi
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
 tar -xzf "$out" -C "$tmp"
-if grep -rEl 'AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ALIGNMENT_SERVICE_TOKEN=[A-Za-z0-9_-]{16,}' "$tmp" >/dev/null 2>&1; then
+# 32 characters or more: the placeholder in .env.example is shorter than a generated token.
+if grep -rEl 'AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ALIGNMENT_SERVICE_TOKEN=[A-Za-z0-9_-]{32,}' "$tmp" >/dev/null 2>&1; then
     echo "error: the build contains text that looks like a key or a token:" >&2
-    grep -rEl 'AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ALIGNMENT_SERVICE_TOKEN=[A-Za-z0-9_-]{16,}' "$tmp" >&2
+    grep -rEl 'AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ALIGNMENT_SERVICE_TOKEN=[A-Za-z0-9_-]{32,}' "$tmp" >&2
     rm -f "$out"; exit 1
 fi
 
