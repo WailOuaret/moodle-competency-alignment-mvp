@@ -15,7 +15,7 @@ import re
 import uuid
 from typing import Any
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -24,6 +24,8 @@ from service.alignment_adapter import AlignmentAdapter, BackendFactory
 from service.auth import authenticate
 from service.config import Settings, load_settings
 from service.errors import ErrorCode, ServiceError, error_payload
+from service.extraction.errors import DocumentError
+from service.extraction.extract import extract_document
 from service.schemas import (
     API_VERSION,
     SERVICE_NAME,
@@ -249,6 +251,36 @@ def create_app(
             payload,
             request_id=_state_request_id(request) or "",
         )
+
+    @app.post("/v1/extractions")
+    async def create_extraction(
+        request: Request,
+        declared_format: str = Form(...),
+        upload: UploadFile = File(...),
+    ) -> dict[str, Any]:
+        """Extract plain text from one teacher file. The bytes are not stored."""
+
+        data = await upload.read()
+        try:
+            result = extract_document(data, declared_format)
+        except DocumentError as error:
+            code = {
+                "document_unsupported": ErrorCode.DOCUMENT_UNSUPPORTED,
+                "document_no_text": ErrorCode.DOCUMENT_NO_TEXT,
+                "document_encrypted": ErrorCode.DOCUMENT_ENCRYPTED,
+                "document_malformed": ErrorCode.DOCUMENT_MALFORMED,
+                "document_too_large": ErrorCode.DOCUMENT_TOO_LARGE,
+            }.get(error.code, ErrorCode.DOCUMENT_MALFORMED)
+            status = 413 if code == ErrorCode.DOCUMENT_TOO_LARGE else 422
+            raise ServiceError(code, error.message, status_code=status) from None
+
+        logger.info(
+            "extraction completed request_id=%s format=%s chars=%s",
+            _state_request_id(request),
+            declared_format,
+            len(result["text"]),
+        )
+        return result
 
     return app
 

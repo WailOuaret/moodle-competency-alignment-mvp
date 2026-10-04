@@ -16,3 +16,10 @@ uvicorn>=0.53,<1
 # emits a deprecation warning when it falls back to httpx. Plain httpx (already
 # installed for google-genai) still works, with that warning.
 httpx2>=2.13,<3
+
+# Document extractors. They read Office Open XML and PDF text. They do not
+# execute macros, follow links, or run OCR.
+# pypdf: BSD-3-Clause. python-docx: MIT. python-pptx: MIT.
+pypdf>=5.4,<6
+python-docx>=1.1.2,<2
+python-pptx>=1.0.2,<2

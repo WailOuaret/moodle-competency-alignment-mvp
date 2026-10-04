@@ -32,6 +32,11 @@ class ErrorCode:
     ANALYSIS_FAILED = "analysis_failed"
     RESPONSE_VALIDATION_FAILED = "response_validation_failed"
     INTERNAL_ERROR = "internal_error"
+    DOCUMENT_UNSUPPORTED = "document_unsupported"
+    DOCUMENT_NO_TEXT = "document_no_text"
+    DOCUMENT_ENCRYPTED = "document_encrypted"
+    DOCUMENT_MALFORMED = "document_malformed"
+    DOCUMENT_TOO_LARGE = "document_too_large"
 
 
 # Bound the number of located problems returned for one request.

@@ -18,7 +18,25 @@ SERVICE_NAME = "moodle-competency-alignment"
 # A resource type is listed here only after it has been exercised end to end
 # through this service. The engine can chunk other types, but the contract does
 # not claim support for them until they are tested.
-SUPPORTED_RESOURCE_TYPES: tuple[str, ...] = ("page",)
+# Every type is the same alignment input: plain text plus a stable id.
+# Adapters in the Moodle plugin produce these values. The engine does not
+# branch on them.
+SUPPORTED_RESOURCE_TYPES: tuple[str, ...] = (
+    "page",
+    "quiz_question",
+    "pdf",
+    "docx",
+    "pptx",
+    "text",
+    "markdown",
+    "transcript",
+    "book_chapter",
+    "assignment",
+    "lesson_page",
+    "label",
+    "forum_intro",
+    "url",
+)
 
 MAX_ID_CHARS = 255
 MAX_TITLE_CHARS = 500

@@ -82,8 +82,16 @@ def test_unsupported_schema_version(client) -> None:
     assert error_of(result)["code"] == "unsupported_schema_version"
 
 
-@pytest.mark.parametrize("resource_type", ["quiz_question", "assignment", "scorm"])
-def test_resource_types_not_yet_tested_are_refused(client, resource_type: str) -> None:
+@pytest.mark.parametrize("resource_type", ["quiz_question", "assignment", "pdf", "transcript"])
+def test_adapter_resource_types_use_the_same_analysis(client, resource_type: str) -> None:
+    result = post(client, with_resource(resource_type=resource_type))
+
+    assert result.status_code == 200
+    assert result.json()["status"] == "completed"
+
+
+@pytest.mark.parametrize("resource_type", ["scorm", "h5p", "forum_post"])
+def test_undeclared_resource_types_are_refused(client, resource_type: str) -> None:
     result = post(client, with_resource(resource_type=resource_type))
 
     assert result.status_code == 422
