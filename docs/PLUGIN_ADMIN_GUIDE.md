@@ -2,7 +2,7 @@
 
 **Status: DRAFT for the private teacher pilot.** The plugin is version 0.2.0, maturity ALPHA. It has
 been verified on one Moodle build only (5.2.1+, 22 July 2026) by 295 PHPUnit tests, and a browser
-check of the screens by a person is **still pending** (docs/MOODLE_PLUGIN_BROWSER_CHECKLIST.md). It has
+check of the hosted screens by a person is **still pending** (docs/HOSTED_BROWSER_CHECKLIST.md). It has
 not been used by any teacher. Nothing here is a claim of production readiness.
 
 **PUBLIC DISTRIBUTION REQUIRES LICENSING/IP CONFIRMATION.** This guide covers installing the plugin on

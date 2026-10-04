@@ -1,8 +1,9 @@
 # Competency Alignment Assistant: guide for pilot teachers
 
-**Status: DRAFT, written before any teacher has used the system. The pilot site is not open yet.**
-Every step below describes how the plugin behaves in the development sandbox. It has not yet been
-walked through by a teacher on the pilot site. Wording may change after the first walkthrough.
+**Status: DRAFT.** The private pilot site is online at https://srv1872740.hstgr.cloud/ .
+Teachers have not been invited, and a person still has to walk through the screens
+(docs/HOSTED_BROWSER_CHECKLIST.md). There is no reference or correct answer shown.
+Please make your own judgement.
 
 You have been invited to try a small tool and tell us honestly whether it helps. You are testing the
 tool. You are not being tested, and there are no wrong answers.
@@ -29,7 +30,7 @@ judgement is the point of the exercise. Treat each suggestion as a colleague's p
 
 You will receive, from the pilot organiser:
 
-- the address of the site,
+- the address https://srv1872740.hstgr.cloud/ ,
 - a **username** such as `teacher03` and a **temporary password**.
 
 At your first login Moodle asks you to choose a new password. Choose one only you know, and do

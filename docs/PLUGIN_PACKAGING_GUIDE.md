@@ -2,7 +2,7 @@
 
 **Status: DRAFT.** The packaging script exists and was tried locally (see the end of this page for the
 result). The package has **not** been installed through Moodle's "Install plugins" screen, and it has
-not been put on the pilot server.
+installed inside the private pilot image on the VPS. The zip is not published.
 
 **PUBLIC DISTRIBUTION REQUIRES LICENSING/IP CONFIRMATION.** The package is for the private pilot. Do not
 upload it to the Moodle Plugins Directory, Packagist, GitHub Releases or anywhere public, and do not add a

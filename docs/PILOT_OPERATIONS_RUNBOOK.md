@@ -1,14 +1,13 @@
 # Private teacher pilot: operations runbook
 
-**Status: DRAFT. Every procedure below is written but has not been run on the VPS.** The ones marked
-"tried locally" were run against a disposable copy of the stack on a development machine. Mark each
-procedure here as verified on the VPS the first time you run it.
+**Status: the pilot is online.** Commands below are for the `claude` account on srv1872740.
+The reboot test has not been done. See the note under section 4.
 
 All commands are run as the `claude` operator account on the server, from the pilot's scripts
 directory, with `PILOT_HOME` set:
 
 ```bash
-export PILOT_HOME=/opt/compalign-pilot
+export PILOT_HOME=/home/claude/compalign-pilot
 cd $PILOT_HOME/app/deploy/pilot
 ```
 
@@ -73,7 +72,16 @@ scripts/compose.sh exec -T -u www-data moodle php /opt/pilot/provision/report.ph
 ```
 
 If analyses stay "Queued": check that `moodle-cron` is running and healthy; look at Site administration, Server, Tasks, Ad hoc tasks for
-failures; restart it with `scripts/compose.sh restart moodle-cron`. The healthcheck fails when cron has not started in 5 minutes.
+failures; restart it with `scripts/compose.sh restart moodle-cron`.
+
+The cron container does not serve web pages. Its Docker health check looks at the worker process
+(`/usr/local/bin/pilot-cron`, or the entrypoint while it is still waiting for Moodle). It does not
+open port 80. `docker compose ps` should show `moodle-cron` as healthy once that process is up.
+
+**REBOOT TEST: DEFERRED — REQUIRES MAINTENANCE WINDOW.** Do not reboot this VPS to test it.
+The academy site shares the machine. Docker, nginx and MySQL are enabled at boot, and the four
+pilot containers use `restart: unless-stopped`, so they are expected to return after a reboot.
+That has not been tested.
 
 ## 5. Backup and restore
 
@@ -85,9 +93,7 @@ scripts/restore.sh $PILOT_HOME/backups/<name> --yes-replace-live-data
 ```
 
 A backup is the database (`db.sql.gz`), Moodle's data directory (`moodledata.tar.gz`, without caches and sessions), a manifest and checksums. It
-is **verified** when written: the files are tested and the database dump is loaded into a scratch database and its tables counted. It does **not**
-contain the env file or the teacher credentials, which are secrets: keep a copy of those two files in your password manager or an encrypted
-store. **Copy backups off the server too** (the provider's VPS snapshot, or `scp` of a backup directory): a backup on the same disk does not
+is **verified** when written: the files are tested and the database dump is loaded into a scratch database and its tables counted. The backup also keeps docker-compose.yml and pilot.env. pilot.env is mode 600 inside the mode 700 backup directory and is never printed. Teacher passwords are not in the backup. Copy backups off the server as well. The same env file remains in private/. **Copy backups off the server too** (the provider's VPS snapshot, or `scp` of a backup directory): a backup on the same disk does not
 survive the disk.
 
 A restore **replaces** the live data with the backup's. It first takes a safety backup (`before-restore`). Teacher decisions saved after the

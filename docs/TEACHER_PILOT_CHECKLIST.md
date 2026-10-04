@@ -11,16 +11,16 @@ Companion documents: docs/VPS_DEPLOYMENT_GUIDE.md, docs/PILOT_OPERATIONS_RUNBOOK
 
 | Phase | What | State |
 |---|---|---|
-| V1 | Audit the VPS, read-only | **BLOCKED**: the assistant could not log in (key not accepted). Only an outside-in look was possible. A live production site shares the server |
-| V2 | Deployment files and documents | written and tried locally (a local trial on a development machine, not on the server) |
-| V3 | Checkpoint E: a person checks the screens in a browser | **PENDING** (docs/MOODLE_PLUGIN_BROWSER_CHECKLIST.md). PHPUnit passed (295 tests) |
-| V4 | Checkpoint F (write-back) or keep write-back off | **write-back stays off for the pilot.** F has not started, and only starts after V3 passes |
-| V5 | Install on the VPS | not started |
-| V6 | HTTPS, cron, backup, firewall, reboot test | not started |
-| V7 | One authorised live-model test | **not authorised**, preconditions not met |
-| V8 | Clear test records, record the start | not started |
-| V9 | Create the seven teacher accounts, test access | not started |
-| V10 | Readiness review, then invite | not started |
+| V1 | Audit the VPS, read-only | Done for ports, HTTPS, academy health and container restart policy. UFW was not readable (`sudo` needs a password). No firewall change. |
+| V2 | Deployment files and documents | On the server under `/home/claude/compalign-pilot`. Not pushed. |
+| V3 | Checkpoint E: a person checks the hosted screens | **PENDING.** Checklist: docs/HOSTED_BROWSER_CHECKLIST.md. Do not mark passed until Wail records the rows. |
+| V4 | Checkpoint F (write-back) | **NOT STARTED.** Write-back stays off. F waits until V3 passes. |
+| V5 | Install on the VPS | Moodle 5.2.1+ and local_compalign are installed. Mock backend. Gemini is not configured. |
+| V6 | HTTPS, cron, backup, firewall, reboot | HTTPS and cron execution work. Cron Docker health is a worker-process check. A verified backup is required before teachers. **Reboot test deferred.** |
+| V7 | One authorised live-model test | **NOT CALLED.** Not authorised. |
+| V8 | Clear development analyses, record the start | Not done. Do this only after the browser checklist passes, and do not clear frozen research files or the six Pages. |
+| V9 | Create the seven teacher accounts, test access | **0 / 7.** Not created. |
+| V10 | Readiness review, then invite | **NO.** Teachers are not invited. |
 
 ## 1. Gates: all must be true before the first invitation
 

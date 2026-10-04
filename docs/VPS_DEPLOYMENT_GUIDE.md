@@ -1,9 +1,17 @@
 # Private teacher pilot: VPS deployment guide
 
-**Status: DRAFT. Nothing in this guide has been run on the VPS.** The files it describes were built and
-tested on a development machine with Docker (see "What has been tested"). The audit of the VPS itself is
-**not complete**: the assistant could not log in (the public key was not accepted), so everything about
-the inside of the server below is marked UNKNOWN until the audit in section 3 has been run.
+**Status: the private pilot is online at https://srv1872740.hstgr.cloud/ .** This is not a public
+release and it is not claimed to be production ready. The academy site on the same VPS was left
+unchanged. **REBOOT TEST: DEFERRED — REQUIRES MAINTENANCE WINDOW.**
+
+What was checked on the server on 4 October 2026, without a reboot and without changing the academy:
+
+- HTTPS on the pilot host answers (HTTP 303 to the login flow). The academy site answers HTTP 200.
+- Host nginx is 1.24.0, so the pilot server block uses `listen 443 ssl http2` (this nginx has no `http2 on;`).
+- PostgreSQL and the alignment API are not published on a host port. Moodle is published only on 127.0.0.1:8080.
+- Public listeners seen: 22, 80, 443, and 3000. Port 3000 is the academy and was not changed.
+- UFW could not be read: `sudo` asks for a password. No firewall rule was changed.
+- Docker, nginx and MySQL are enabled at boot. The four pilot containers use `restart: unless-stopped`.
 
 **PUBLIC DISTRIBUTION REQUIRES LICENSING/IP CONFIRMATION.** This is a private pilot for a handful of
 named teachers. It is not a release, and "production ready" is not claimed anywhere.

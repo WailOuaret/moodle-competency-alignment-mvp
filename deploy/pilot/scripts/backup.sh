@@ -7,12 +7,11 @@
 #   db.sql.gz           pg_dump of Moodle's database (plain SQL, no owners)
 #   moodledata.tar.gz   Moodle's data directory without caches, sessions and temporary files
 #   MANIFEST.txt        versions, sizes and what is in the backup (no secrets)
-#   SHA256SUMS          checksums of the two files
+#   SHA256SUMS          checksums of the backup files
 #
-# It does NOT contain the env file or the teacher credentials. Those are secrets: keep them in
-# your password manager or an encrypted store, not next to the backup. Without the env file a
-# restored site cannot be started, and without moodledata (which holds the key that encrypts the
-# service token) a restored site cannot read that token: re-applying the env file restores it.
+# It also keeps the files needed to start the stack again: docker-compose.yml and the env file.
+# The env file is a secret. It is stored mode 600 inside this mode 700 directory and is never
+# printed. Teacher credential passwords are not included.
 #
 # After writing the backup it is checked: the files are tested, and the database dump is loaded into
 # a scratch database and the plugin's tables are counted. --no-verify skips that.
@@ -45,9 +44,24 @@ chmod 700 "$PILOT_BACKUP_DIR" "$dir"
       -czf - . >"$dir/moodledata.tar.gz" )
 chmod 600 "$dir"/*
 
+
+# Deployment files required to start the stack again. The env file stays mode 600.
+( umask 077
+  cp "$PILOT_DIR/docker-compose.yml" "$dir/docker-compose.yml"
+  cp "$PILOT_ENV_FILE" "$dir/pilot.env"
+  if [ -n "${PILOT_HOME:-}" ] && [ -f "$PILOT_HOME/nginx-full.conf" ]; then
+      cp "$PILOT_HOME/nginx-full.conf" "$dir/nginx-full.conf"
+  fi
+)
+chmod 600 "$dir"/docker-compose.yml "$dir"/pilot.env
+if [ -f "$dir/nginx-full.conf" ]; then chmod 600 "$dir/nginx-full.conf"; fi
+
+
 gzip -t "$dir/db.sql.gz" || die "the database dump is damaged"
 tar -tzf "$dir/moodledata.tar.gz" >/dev/null || die "the moodledata archive is damaged"
-( cd "$dir" && sha256sum db.sql.gz moodledata.tar.gz >SHA256SUMS )
+( cd "$dir" && sha256sum db.sql.gz moodledata.tar.gz docker-compose.yml pilot.env >SHA256SUMS )
+if [ -f "$dir/nginx-full.conf" ]; then ( cd "$dir" && sha256sum nginx-full.conf >>SHA256SUMS ); fi
+chmod 600 "$dir/SHA256SUMS" "$dir/MANIFEST.txt"
 
 {
     echo "pilot backup $(basename "$dir")"
@@ -59,7 +73,8 @@ tar -tzf "$dir/moodledata.tar.gz" >/dev/null || die "the moodledata archive is d
     echo "db.sql.gz: $(stat -c %s "$dir/db.sql.gz") bytes"
     echo "moodledata.tar.gz: $(stat -c %s "$dir/moodledata.tar.gz") bytes"
     echo "excluded from moodledata: cache localcache temp sessions trashdir"
-    echo "not included: the env file, the teacher credentials file"
+    echo "pilot.env: included, mode 600, not printed"
+    echo "not included: teacher credential passwords"
 } >"$dir/MANIFEST.txt"
 chmod 600 "$dir/MANIFEST.txt"
 
@@ -83,4 +98,4 @@ done
 
 plog "backup written to $dir (verify=$verify)"
 say "Backup written: $dir"
-say "  $(cut -d' ' -f1 <<<"$(du -sh "$dir")") on disk. Contains no secrets from the env file."
+say "  $(cut -d' ' -f1 <<<"$(du -sh "$dir")") on disk. pilot.env is included and is mode 600. It is not printed."
