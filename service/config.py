@@ -37,6 +37,12 @@ DEFAULT_MAX_BODY_BYTES = 2_000_000
 MIN_MAX_BODY_BYTES = 1_000
 MAX_MAX_BODY_BYTES = 50_000_000
 
+# JSON analyses stay at the small limit above. Extraction is a separate upload:
+# the file ceiling is 20 MiB, plus 1 MiB for the multipart boundary, part headers
+# and the declared_format field. Measured overhead for a one-file form is a few
+# kilobytes; the extra mebibyte is the margin, not a larger document.
+DEFAULT_MAX_EXTRACT_BODY_BYTES = 20 * 1024 * 1024 + 1024 * 1024
+
 _TRUE_VALUES = frozenset({"1", "true", "yes", "on"})
 
 
@@ -53,6 +59,7 @@ class Settings:
     backend: str = DEFAULT_BACKEND
     model: str | None = None
     max_body_bytes: int = DEFAULT_MAX_BODY_BYTES
+    max_extract_body_bytes: int = DEFAULT_MAX_EXTRACT_BODY_BYTES
     enable_docs: bool = False
     log_level: str = "INFO"
 
@@ -150,6 +157,13 @@ def load_settings(
             environ,
             "ALIGNMENT_MAX_BODY_BYTES",
             DEFAULT_MAX_BODY_BYTES,
+            minimum=MIN_MAX_BODY_BYTES,
+            maximum=MAX_MAX_BODY_BYTES,
+        ),
+        max_extract_body_bytes=_integer(
+            environ,
+            "ALIGNMENT_MAX_EXTRACT_BODY_BYTES",
+            DEFAULT_MAX_EXTRACT_BODY_BYTES,
             minimum=MIN_MAX_BODY_BYTES,
             maximum=MAX_MAX_BODY_BYTES,
         ),

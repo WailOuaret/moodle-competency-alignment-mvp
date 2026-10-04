@@ -143,7 +143,12 @@ def create_app(
         request.state.request_id = request_id
         declared = request.headers.get("content-length", "")
 
-        if declared.isdigit() and int(declared) > settings.max_body_bytes:
+        limit = (
+            settings.max_extract_body_bytes
+            if request.url.path == "/v1/extractions"
+            else settings.max_body_bytes
+        )
+        if declared.isdigit() and int(declared) > limit:
             response: Response = _error_response(
                 ServiceError(
                     ErrorCode.PAYLOAD_TOO_LARGE,

@@ -150,6 +150,45 @@ def test_boolean_identifier_is_refused(client) -> None:
     assert post(client, with_resource(course_id=True)).status_code == 422
 
 
+def test_extraction_uses_its_own_body_limit(make_client) -> None:
+    from service_support import AUTH
+
+    client = make_client(max_body_bytes=1_000, max_extract_body_bytes=8_000)
+    analysis = post(client, with_resource(text="word " * 400))
+    assert analysis.status_code == 413
+    assert error_of(analysis)["code"] == "payload_too_large"
+
+    accepted = client.post(
+        "/v1/extractions",
+        data={"declared_format": "text"},
+        files={"upload": ("notes.txt", b"Transactions protect groups of related operations.\n", "text/plain")},
+        headers=AUTH,
+    )
+    assert accepted.status_code == 200
+    assert "Transactions protect" in accepted.json()["text"]
+
+    refused = client.post(
+        "/v1/extractions",
+        data={"declared_format": "text"},
+        files={"upload": ("notes.txt", b"word " * 3_000, "text/plain")},
+        headers=AUTH,
+    )
+    assert refused.status_code == 413
+
+
+def test_malformed_multipart_is_refused(make_client) -> None:
+    from service_support import AUTH
+
+    client = make_client()
+    result = client.post(
+        "/v1/extractions",
+        content=b"this is not a multipart body",
+        headers={**AUTH, "Content-Type": "multipart/form-data; boundary=missing"},
+    )
+    assert result.status_code == 400
+    assert "Traceback" not in result.text
+
+
 def test_oversized_body_is_refused_before_parsing(make_client) -> None:
     client = make_client(max_body_bytes=1_000)
 

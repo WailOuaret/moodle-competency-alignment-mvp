@@ -20,6 +20,7 @@ def test_defaults_require_an_explicit_backend_choice_for_mock() -> None:
     assert settings.model is None
     assert settings.enable_docs is False
     assert settings.max_body_bytes == 2_000_000
+    assert settings.max_extract_body_bytes == 20 * 1024 * 1024 + 1024 * 1024
 
 
 def test_values_are_read_and_normalised() -> None:
