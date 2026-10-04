@@ -125,6 +125,7 @@ reports/*
 !reports/tables/
 !reports/figures/
 !reports/reproducibility_manifest.json
+!reports/live_gemini_verification.json
 
 # ---------------------------------------------------------------------------
 # Private teacher pilot (deploy/pilot): secrets, credentials, backups and logs never go in Git.

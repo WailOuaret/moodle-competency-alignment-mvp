@@ -1,0 +1,363 @@
+{
+  "research_status": "development_live_verification",
+  "purpose": "Controlled live-model check of the hosted pilot. Not a frozen research metric and not a teacher-study result.",
+  "recorded_at": "2026-10-04T19:35:00Z",
+  "technical_readiness": "pass",
+  "model_behaviour_note": "Descriptive labels only. No accuracy threshold was applied, and no prompt, retrieval, or hierarchy setting was changed after the results.",
+  "manifest": {
+    "backend": "gemini",
+    "model": "gemini-3.5-flash",
+    "model_source": "GEMINI_MODEL and ALIGNMENT_MODEL were empty, so the service default was used.",
+    "prompt_version": "1.0",
+    "schema_version": "1.0",
+    "api_version": "1",
+    "top_k": 5,
+    "max_suggestions": 3,
+    "max_selections_per_fragment": 3,
+    "plugin_version": "2026100401",
+    "plugin_release": "0.2.0",
+    "repository_commit": "9713453",
+    "service_files_match_repository": [
+      "src/moodle_competency/runtime_analysis.py",
+      "service/alignment_adapter.py",
+      "service/schemas.py"
+    ],
+    "plugin_catalogue_hash": "sha256:2308a1b9d476fd636069ec435eba32fc91c825c7b75b7be27be97cc90fd88ab6",
+    "service_catalogue_hash": "sha256:cb2e07b436426c0718ec7ba9ea43dd8081aa5ee32d39699605c2b525e7d6fd04",
+    "hash_note": "The plugin hash covers the Moodle catalogue JSON, or the resource type, title, body, course name, section name, and activity name. The service hash covers the adapter's canonical catalogue, or the engine's normalized page text. Both are recorded. They are not expected to be equal.",
+    "requester": "devteacher",
+    "write_back": "off",
+    "calls": 6,
+    "retries": 0,
+    "failed": 0,
+    "quotes_checked": 24,
+    "invalid_quotes": 0,
+    "invalid_competency_ids": 0,
+    "key_in_alignment_logs": false,
+    "alignment_log_completed_lines": 6
+  },
+  "counts": {
+    "EXACT": 2,
+    "PARTIAL": 1,
+    "WRONG": 0,
+    "EXTRA_LABELS": 3,
+    "ABSTAINED": 0,
+    "TECHNICAL_FAILURE": 0
+  },
+  "hierarchy": {
+    "parent_child_pairs_returned": 1,
+    "pages_with_stored_warning": ["Designing Usable and Accessible Interfaces"],
+    "live_warning": "triggered",
+    "pair": {"parent": "GI_C1", "child": "GI_C1_3"}
+  },
+  "pages": [
+    {
+      "order": 1,
+      "title": "Relational Databases and SQL Queries",
+      "cmid": 5,
+      "resource_id": "moodle:page:4",
+      "action": "suggest",
+      "force": false,
+      "analysis_id": 5,
+      "status": "completed",
+      "backend": "gemini",
+      "model": "gemini-3.5-flash",
+      "queued_at": "2026-10-04T19:22:02Z",
+      "started_at": "2026-10-04T19:22:03Z",
+      "completed_at": "2026-10-04T19:22:11Z",
+      "analysed_at": "2026-10-04T19:22:03+00:00",
+      "duration_ms": 8442,
+      "fragment_count": 2,
+      "completeness": "complete",
+      "abstained": false,
+      "plugin_resource_hash": "sha256:c59eed25e40642e9b2caccbf5982e7bd7f71e3838920b9058a926c826317b77a",
+      "service_resource_hash": "sha256:51fd65ed430d9632d79cff6a9925241526aac765b36fac3a2223fed33ef340ca",
+      "expected": ["GI_C3_2"],
+      "suggested": ["GI_C3_2"],
+      "classification": "EXACT",
+      "suggestions": [
+        {
+          "idnumber": "GI_C3_2",
+          "parent": "GI_C3",
+          "moodle_id_matches": true,
+          "confidence": "1.00000",
+          "bm25_rank": 1,
+          "support_count": 2,
+          "warnings": [],
+          "evidence": [
+            {"fragment_id": "moodle:page:4#f001", "exact": true, "quote": "Modelling data and asking questions of it."},
+            {"fragment_id": "moodle:page:4#f001", "exact": true, "quote": "SQL provides operations for defining, inserting, updating, deleting, and retrieving data."},
+            {"fragment_id": "moodle:page:4#f002", "exact": true, "quote": "Constraints, permissions, backups, and audit records help protect data quality and security."},
+            {"fragment_id": "moodle:page:4#f002", "exact": true, "quote": "Query results can also support reporting and decision making"}
+          ]
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Testing and Continuous Delivery of Software",
+      "cmid": 2,
+      "resource_id": "moodle:page:1",
+      "action": "reanalyse",
+      "force": true,
+      "reason_for_force": "Completed mock analyses already existed for this page. Reanalyse was required so the live call was not replaced by the stored mock result.",
+      "analysis_id": 6,
+      "status": "completed",
+      "backend": "gemini",
+      "model": "gemini-3.5-flash",
+      "queued_at": "2026-10-04T19:27:51Z",
+      "started_at": "2026-10-04T19:27:52Z",
+      "completed_at": "2026-10-04T19:28:01Z",
+      "analysed_at": "2026-10-04T19:27:52+00:00",
+      "duration_ms": 8923,
+      "fragment_count": 2,
+      "completeness": "complete",
+      "abstained": false,
+      "plugin_resource_hash": "sha256:8db6eb9769697e6065cd114b3deb39b815e497a519ed6c6402f78395b990292c",
+      "service_resource_hash": "sha256:705ec32cdf70fa79de229ee66ddb2944b677a0c5cb06fc6611a70ffd83c05b2b",
+      "expected": ["GI_C1_2"],
+      "suggested": ["GI_C1_2", "GI_C1_1"],
+      "classification": "EXTRA_LABELS",
+      "note": "GI_C1_2 is present. GI_C1_1 is an extra sibling, not a parent of GI_C1_2. No hierarchy warning was stored, and none was due.",
+      "suggestions": [
+        {
+          "idnumber": "GI_C1_2",
+          "parent": "GI_C1",
+          "moodle_id_matches": true,
+          "confidence": "0.95000",
+          "bm25_rank": 1,
+          "support_count": 2,
+          "warnings": [],
+          "evidence": [
+            {"fragment_id": "moodle:page:1#f001", "exact": true, "quote": "Quality assurance starts when requirements are written and continues throughout design, implementation, integration, and deployment."},
+            {"fragment_id": "moodle:page:1#f001", "exact": true, "quote": "Automated unit tests verify small components, while integration tests check whether services and modules interact correctly."},
+            {"fragment_id": "moodle:page:1#f002", "exact": true, "quote": "Sustainable engineering also requires maintainable code, clear documentation, controlled technical debt, and attention to the long-term cost of operating the software."}
+          ]
+        },
+        {
+          "idnumber": "GI_C1_1",
+          "parent": "GI_C1",
+          "moodle_id_matches": true,
+          "confidence": "0.90000",
+          "bm25_rank": 2,
+          "support_count": 1,
+          "warnings": [],
+          "evidence": [
+            {"fragment_id": "moodle:page:1#f002", "exact": true, "quote": "Continuous delivery extends this process by making releases small, repeatable, and reversible. Teams can use staging environments, versioned artifacts, deployment approvals, monitoring, and rollback procedures."}
+          ]
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "title": "Designing Usable and Accessible Interfaces",
+      "cmid": 3,
+      "resource_id": "moodle:page:2",
+      "action": "reanalyse",
+      "force": true,
+      "reason_for_force": "A completed mock analysis already existed for this page.",
+      "analysis_id": 7,
+      "status": "completed",
+      "backend": "gemini",
+      "model": "gemini-3.5-flash",
+      "queued_at": "2026-10-04T19:28:07Z",
+      "started_at": "2026-10-04T19:28:08Z",
+      "completed_at": "2026-10-04T19:28:18Z",
+      "analysed_at": "2026-10-04T19:28:08+00:00",
+      "duration_ms": 10184,
+      "fragment_count": 2,
+      "completeness": "complete",
+      "abstained": false,
+      "plugin_resource_hash": "sha256:aae706bc12b48a3986bf2e2b4f1c1bd1e29b3e4dbf11f363c4dc8f1d14204ed9",
+      "service_resource_hash": "sha256:56abdbeb6edb417161346f3cf7d696b2f079655f2c005112e50a5cd96d097e8e",
+      "expected": ["GI_C1_3"],
+      "suggested": ["GI_C1_3", "GI_C1"],
+      "classification": "EXTRA_LABELS",
+      "note": "GI_C1_3 is present. GI_C1 is its parent. Both suggestions store a parent_child_redundancy warning. This is the live hierarchy case.",
+      "suggestions": [
+        {
+          "idnumber": "GI_C1_3",
+          "parent": "GI_C1",
+          "moodle_id_matches": true,
+          "confidence": "0.95000",
+          "bm25_rank": 1,
+          "support_count": 2,
+          "warnings": [
+            {
+              "code": "parent_child_redundancy",
+              "role": "child",
+              "related": "GI_C1",
+              "message": "Its parent competency (GI_C1) is also suggested for this resource."
+            }
+          ],
+          "evidence": [
+            {"fragment_id": "moodle:page:2#f001", "exact": true, "quote": "Early prototypes are useful because they allow a team to test navigation, layout, terminology, and interaction before investing in full implementation."},
+            {"fragment_id": "moodle:page:2#f001", "exact": true, "quote": "Accessibility is part of usability. Interfaces should support keyboard navigation, readable contrast, understandable structure, text alternatives for meaningful images, and clear form labels."},
+            {"fragment_id": "moodle:page:2#f002", "exact": true, "quote": "Responsive layouts should remain usable on different screen sizes."},
+            {"fragment_id": "moodle:page:2#f002", "exact": true, "quote": "Security and privacy decisions should also be reflected in interface design"}
+          ]
+        },
+        {
+          "idnumber": "GI_C1",
+          "parent": null,
+          "moodle_id_matches": true,
+          "confidence": "0.85000",
+          "bm25_rank": 4,
+          "support_count": 1,
+          "warnings": [
+            {
+              "code": "parent_child_redundancy",
+              "role": "parent",
+              "related": "GI_C1_3",
+              "message": "A more specific child competency (GI_C1_3) is also suggested for this resource."
+            }
+          ],
+          "evidence": [
+            {"fragment_id": "moodle:page:2#f001", "exact": true, "quote": "Interface design begins with understanding the people who will use a system, the tasks they need to complete, and the context in which those tasks happen."}
+          ]
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "title": "Networks, Cloud Services and Security Basics",
+      "cmid": 4,
+      "resource_id": "moodle:page:3",
+      "action": "reanalyse",
+      "force": true,
+      "reason_for_force": "A completed mock analysis already existed for this page.",
+      "analysis_id": 8,
+      "status": "completed",
+      "backend": "gemini",
+      "model": "gemini-3.5-flash",
+      "queued_at": "2026-10-04T19:28:24Z",
+      "started_at": "2026-10-04T19:28:24Z",
+      "completed_at": "2026-10-04T19:28:33Z",
+      "analysed_at": "2026-10-04T19:28:24+00:00",
+      "duration_ms": 8620,
+      "fragment_count": 2,
+      "completeness": "complete",
+      "abstained": false,
+      "plugin_resource_hash": "sha256:5504e596d00c32912b7c5cb6aa08c94aa9e75d4337c6ffdff8ad8d6986c540d4",
+      "service_resource_hash": "sha256:6ebea17bcf55492ab1353b9e8fffaec02a42bb7f68808b3e718688e813f7f56b",
+      "expected": ["GI_C2_2", "GI_C2_3"],
+      "suggested": ["GI_C2_2"],
+      "classification": "PARTIAL",
+      "note": "GI_C2_2 is present. GI_C2_3 was not suggested. No extra label was added. The stored quotes cover networks, cloud, and edge or IoT. They do not quote a security sentence.",
+      "suggestions": [
+        {
+          "idnumber": "GI_C2_2",
+          "parent": "GI_C2",
+          "moodle_id_matches": true,
+          "confidence": "0.95000",
+          "bm25_rank": 1,
+          "support_count": 1,
+          "warnings": [],
+          "evidence": [
+            {"fragment_id": "moodle:page:3#f001", "exact": true, "quote": "Computers exchange data over networks using agreed rules called protocols."},
+            {"fragment_id": "moodle:page:3#f001", "exact": true, "quote": "Cloud providers rent computing resources over the network."},
+            {"fragment_id": "moodle:page:3#f001", "exact": true, "quote": "Edge and fog computing move part of the work closer to sensors and devices, which reduces delay and the amount of data sent over long distances. Internet of Things devices rely on this model."}
+          ]
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "title": "Introduction to Machine Learning on Text",
+      "cmid": 6,
+      "resource_id": "moodle:page:5",
+      "action": "suggest",
+      "force": false,
+      "analysis_id": 9,
+      "status": "completed",
+      "backend": "gemini",
+      "model": "gemini-3.5-flash",
+      "queued_at": "2026-10-04T19:28:40Z",
+      "started_at": "2026-10-04T19:28:40Z",
+      "completed_at": "2026-10-04T19:29:12Z",
+      "analysed_at": "2026-10-04T19:28:40+00:00",
+      "duration_ms": 31972,
+      "fragment_count": 2,
+      "completeness": "complete",
+      "abstained": false,
+      "plugin_resource_hash": "sha256:24a5ad6a36f0e962dccf7c7f215015d470183de18fc7119c88187a76d7261da7",
+      "service_resource_hash": "sha256:619613aaeabe3d0013e5c0f71471d97e4382864c435809ab68b7e4d3cddabf33",
+      "expected": ["GI_C3_3"],
+      "suggested": ["GI_C3_3", "GI_C3_2"],
+      "classification": "EXTRA_LABELS",
+      "note": "GI_C3_3 is present. GI_C3_2 is an extra sibling. No hierarchy warning was stored, and none was due.",
+      "suggestions": [
+        {
+          "idnumber": "GI_C3_3",
+          "parent": "GI_C3",
+          "moodle_id_matches": true,
+          "confidence": "0.95000",
+          "bm25_rank": 1,
+          "support_count": 2,
+          "warnings": [],
+          "evidence": [
+            {"fragment_id": "moodle:page:5#f001", "exact": true, "quote": "Machine learning can be used to classify, rank, cluster, or search textual information."},
+            {"fragment_id": "moodle:page:5#f001", "exact": true, "quote": "while more recent approaches can represent sentences or documents using dense embeddings."},
+            {"fragment_id": "moodle:page:5#f001", "exact": true, "quote": "Text models can reproduce bias present in their data, and apparently strong accuracy can hide poor performance for a minority class."},
+            {"fragment_id": "moodle:page:5#f002", "exact": true, "quote": "Responsible evaluation therefore includes error analysis, representative test data, and documentation of limitations."}
+          ]
+        },
+        {
+          "idnumber": "GI_C3_2",
+          "parent": "GI_C3",
+          "moodle_id_matches": true,
+          "confidence": "0.80000",
+          "bm25_rank": 1,
+          "support_count": 1,
+          "warnings": [],
+          "evidence": [
+            {"fragment_id": "moodle:page:5#f002", "exact": true, "quote": "Predictions should be treated as evidence to support a decision rather than as unquestionable truth."}
+          ]
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "title": "Scalable and Fault-Tolerant Distributed Systems",
+      "cmid": 7,
+      "resource_id": "moodle:page:6",
+      "action": "suggest",
+      "force": false,
+      "analysis_id": 10,
+      "status": "completed",
+      "backend": "gemini",
+      "model": "gemini-3.5-flash",
+      "queued_at": "2026-10-04T19:29:20Z",
+      "started_at": "2026-10-04T19:29:20Z",
+      "completed_at": "2026-10-04T19:29:29Z",
+      "analysed_at": "2026-10-04T19:29:20+00:00",
+      "duration_ms": 8954,
+      "fragment_count": 2,
+      "completeness": "complete",
+      "abstained": false,
+      "plugin_resource_hash": "sha256:62a0e99210572ab64b7a693a3ce06c3a0b7b618f450b60fd40c61151b471ba56",
+      "service_resource_hash": "sha256:4ceacad3c1a32d75acae65839eedf25967a1ff84e397c59785fa30b8fe30efcb",
+      "expected": ["GI_C1_4"],
+      "plausible_secondary_not_required": "GI_C2_2",
+      "suggested": ["GI_C1_4"],
+      "classification": "EXACT",
+      "note": "The primary competency is the only suggestion. The plausible secondary was not returned, so there was nothing extra to judge.",
+      "suggestions": [
+        {
+          "idnumber": "GI_C1_4",
+          "parent": "GI_C1",
+          "moodle_id_matches": true,
+          "confidence": "0.95000",
+          "bm25_rank": 1,
+          "support_count": 2,
+          "warnings": [],
+          "evidence": [
+            {"fragment_id": "moodle:page:6#f001", "exact": true, "quote": "Distributed software is composed of multiple processes or services that cooperate across machines or execution environments."},
+            {"fragment_id": "moodle:page:6#f001", "exact": true, "quote": "Scalability means that a system can handle larger workloads without an unacceptable loss of performance."},
+            {"fragment_id": "moodle:page:6#f002", "exact": true, "quote": "Systems should detect failed instances, retry operations safely, avoid duplicate side effects, and recover state after interruption. Timeouts, idempotent requests, health checks, graceful degradation, and monitored failover are common design techniques."}
+          ]
+        }
+      ]
+    }
+  ]
+}

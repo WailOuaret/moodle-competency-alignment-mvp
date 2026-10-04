@@ -1,13 +1,14 @@
 # Hosted browser checklist (Checkpoint E)
 
-**Status: PENDING.** A person has not yet walked through the hosted screens. Do not mark this
-checkpoint passed until Wail records the result of each row.
+**Status: RECORDED 2026-10-04.** The walk-through is in `docs/LIVE_GEMINI_VERIFICATION.md`.
+Row 5 was observed in the database during the live run and confirmed afterwards as
+"Suggestions ready". Row 16, a failed analysis, was not produced. The other rows passed.
 
 Site: https://srv1872740.hstgr.cloud/
 
 Use the existing admin account and the existing teacher sandbox account. Do not use a student
-account except for the denial row. Do not print passwords. Keep the mock alignment backend.
-Do not call Gemini.
+account except for the denial row. Do not print passwords. The recorded check used the live
+backend that was already in place. Do not press Reanalyse during a repeat of this checklist.
 
 | # | Check | Expected |
 |---|---|---|
