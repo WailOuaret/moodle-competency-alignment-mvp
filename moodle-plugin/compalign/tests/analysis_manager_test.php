@@ -362,13 +362,13 @@ final class analysis_manager_test extends advanced_testcase {
         $this->resetAfterTest();
         $environment = $this->create_environment();
         $userid = (int) $environment['teacher']->id;
-        $forum = $this->getDataGenerator()->create_module('forum', ['course' => $environment['course']->id]);
-        $forumcm = get_fast_modinfo($environment['course'])->get_cm((int) $forum->cmid);
+        $choice = $this->getDataGenerator()->create_module('choice', ['course' => $environment['course']->id]);
+        $choicecm = get_fast_modinfo($environment['course'])->get_cm((int) $choice->cmid);
 
         // The plugin has no service address or token yet.
         $cases = [
             'service not configured' => [new analysis_manager(), $environment['cm'], 'notconfigured_url'],
-            'resource type not supported' => [$this->create_manager(), $forumcm, 'unsupported_resource_type'],
+            'resource type not supported' => [$this->create_manager(), $choicecm, 'unsupported_resource_type'],
         ];
         foreach ($cases as $label => [$manager, $cm, $code]) {
             try {
@@ -432,6 +432,74 @@ final class analysis_manager_test extends advanced_testcase {
             set_config('maxsuggestions', $configured, 'local_compalign');
             $this->assertSame($expected, analysis_manager::configured_max_suggestions(), (string) $configured);
         }
+    }
+
+    /**
+     * A quiz quotation is taken from the question name plus the stem.
+     *
+     * The engine fragments a quiz question from search_text. Checking the quote
+     * against the stem alone rejects that quotation.
+     */
+    public function test_quiz_quote_is_checked_against_the_search_text(): void {
+        $stem = 'Transactions protect groups of related operations.';
+        $resource = [
+            'resource_type' => 'quiz_question',
+            'resource_id' => 'moodle:quiz:1:question:2',
+            'title' => 'Explain a transaction',
+            'text' => $stem,
+            'search_text' => resource_extractor::combine_text('Explain a transaction', $stem),
+        ];
+        $quote = 'Explain a transaction Transactions protect groups of related operations.';
+
+        $this->assertSame($resource['search_text'], analysis_manager::quoted_text($resource));
+        $this->assertSame($stem, analysis_manager::quoted_text([
+            'resource_type' => 'page',
+            'text' => $stem,
+            'search_text' => $resource['search_text'],
+        ]));
+
+        $response = [
+            'schema_version' => '1.0',
+            'analysis_id' => 'quiz-1',
+            'status' => 'completed',
+            'resource_id' => 'moodle:quiz:1:question:2',
+            'manifest' => [
+                'backend' => 'mock',
+                'model' => 'mock-deterministic-1',
+                'prompt_version' => '1.0',
+                'top_k' => 5,
+                'max_selections_per_fragment' => 3,
+                'competency_catalogue_hash' => 'sha256:' . str_repeat('0', 64),
+                'resource_hash' => 'sha256:' . str_repeat('1', 64),
+                'fragment_count' => 1,
+                'completeness' => 'complete',
+                'analysed_at' => '2026-10-04T22:00:00Z',
+                'duration_ms' => 4,
+            ],
+            'suggestions' => [[
+                'competency_idnumber' => 'T1',
+                'confidence' => 0.8,
+                'bm25_rank' => 1,
+                'support_count' => 1,
+                'evidence' => [[
+                    'fragment_id' => 'moodle:quiz:1:question:2#f001',
+                    'quote' => $quote,
+                ]],
+                'warnings' => [],
+            ]],
+            'abstained' => false,
+            'diagnostics' => [],
+        ];
+
+        $validated = response_validator::validate(
+            $response,
+            $resource['resource_id'],
+            ['T1'],
+            5,
+            3,
+            analysis_manager::quoted_text($resource)
+        );
+        $this->assertSame($quote, $validated['suggestions'][0]['evidence'][0]['quote']);
     }
 
     /**

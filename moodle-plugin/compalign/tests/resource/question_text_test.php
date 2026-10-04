@@ -22,8 +22,8 @@ namespace local_compalign\resource;
  * @package    local_compalign
  * @copyright  2026 Wail Ouaret
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @covers     \local_compalign\resource\question_text
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_compalign\resource\question_text::class)]
 final class question_text_test extends \advanced_testcase {
     /**
      * Multiple choice keeps the visible choices. Scores are not an argument of this method.

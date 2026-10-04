@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 use local_compalign\admin\framework_setting;
 use local_compalign\admin\validated_text_setting;
 use local_compalign\service\alignment_client;
+use local_compalign\service\study_phase;
 
 if ($hassiteconfig) {
     $settings = new admin_settingpage('local_compalign', get_string('pluginname', 'local_compalign'));
@@ -90,6 +91,19 @@ if ($hassiteconfig) {
             get_string('maxsuggestions_desc', 'local_compalign'),
             3,
             array_combine(range(1, 10), range(1, 10))
+        ));
+
+        $settings->add(new admin_setting_configselect(
+            'local_compalign/studyphase',
+            get_string('studyphase', 'local_compalign'),
+            get_string('studyphase_desc', 'local_compalign'),
+            study_phase::DEVELOPMENT,
+            [
+                study_phase::DEVELOPMENT => get_string('studyphase_development', 'local_compalign'),
+                study_phase::LIVE_VERIFICATION => get_string('studyphase_verification', 'local_compalign'),
+                study_phase::PILOT => get_string('studyphase_pilot', 'local_compalign'),
+                study_phase::EXCLUDED => get_string('studyphase_excluded', 'local_compalign'),
+            ]
         ));
 
         $settings->add(new admin_setting_configcheckbox(

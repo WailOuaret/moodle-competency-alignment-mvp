@@ -14,6 +14,7 @@
         <FIELD NAME="extractorversion" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="Document extractor version. Empty for HTML activities."/>
         <FIELD NAME="provenance" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON describing where the evidence sits: page, question, file, chapter."/>
         <FIELD NAME="resourcetype" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="researchstatus" TYPE="char" LENGTH="40" NOTNULL="true" DEFAULT="development" SEQUENCE="false" COMMENT="development, development_live_verification, pilot or excluded. Set when the analysis is created and not inferred from the time."/>
         <FIELD NAME="resourcehash" TYPE="char" LENGTH="80" NOTNULL="false" SEQUENCE="false" COMMENT="sha256 of the text that was analysed. The text itself is not stored."/>
         <FIELD NAME="cataloguehash" TYPE="char" LENGTH="80" NOTNULL="false" SEQUENCE="false" COMMENT="Digest of the competency catalogue that was sent."/>
         <FIELD NAME="frameworkid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Competency framework the catalogue was built from."/>

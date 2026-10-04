@@ -44,6 +44,36 @@ final class review_page_test extends advanced_testcase {
     use environment;
 
     /**
+     * Evidence names a page, a slide, a heading or a caption time, not the raw JSON.
+     */
+    public function test_evidence_provenance_is_human_readable(): void {
+        $this->resetAfterTest();
+        $environment = $this->create_environment();
+        $made = $this->create_completed_analysis($environment);
+        $suggestion = reset($made['suggestions']);
+        $evidence = reset($suggestion->evidence);
+        $quote = $evidence->evidencetext;
+        $cases = [
+            ['kind' => 'page', 'number' => '4', 'text' => $quote, 'expect' => 'Page 4'],
+            ['kind' => 'slide', 'number' => '7', 'text' => $quote, 'expect' => 'Slide 7'],
+            ['kind' => 'paragraph', 'heading' => 'Security', 'text' => $quote, 'expect' => 'Section Security'],
+            ['kind' => 'cue', 'start' => '00:08:42', 'end' => '00:08:57', 'text' => $quote, 'expect' => '00:08:42–00:08:57'],
+        ];
+        foreach ($cases as $segment) {
+            $expect = $segment['expect'];
+            unset($segment['expect']);
+            $made['analysis']->provenance = json_encode([
+                'label' => 'database.pdf, page',
+                'segments' => [$segment],
+            ]);
+            $html = $this->render($environment, $made['analysis'], $made['suggestions'], $made['catalogue']);
+            $text = self::text($html);
+            $this->assertStringContainsString($expect, $text);
+            $this->assertStringNotContainsString('"kind"', $html);
+        }
+    }
+
+    /**
      * An answer with a parent and its child, each carrying the hierarchy warning the engine would give.
      *
      * @return array The values that replace the stub's answer.
@@ -364,7 +394,7 @@ final class review_page_test extends advanced_testcase {
         $page = new review_page($environment['cm'], false, null, [], null, [], [], [], $notice, '');
         $text = self::text($PAGE->get_renderer('core')->render($page));
 
-        $this->assertStringContainsString('Resource type not supported in this prototype.', $text);
+        $this->assertStringContainsString('Unsupported resource type.', $text);
         $this->assertStringNotContainsString('No analysis has been requested', $text);
     }
 }

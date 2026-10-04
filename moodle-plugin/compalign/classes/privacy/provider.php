@@ -62,6 +62,7 @@ class provider implements
             'cmid' => 'privacy:metadata:local_compalign_analysis:cmid',
             'sourceitemid' => 'privacy:metadata:local_compalign_analysis:sourceitemid',
             'provenance' => 'privacy:metadata:local_compalign_analysis:provenance',
+            'researchstatus' => 'privacy:metadata:local_compalign_analysis:researchstatus',
             'requestedby' => 'privacy:metadata:local_compalign_analysis:requestedby',
             'timecreated' => 'privacy:metadata:local_compalign_analysis:timecreated',
         ], 'privacy:metadata:local_compalign_analysis');

@@ -53,6 +53,7 @@ final class study_export {
         'catalogue_hash',
         'analysis_time',
         'review_time',
+        'research_status',
     ];
 
     /**
@@ -82,13 +83,17 @@ final class study_export {
             $where[] = 'r.timecreated <= :totime';
             $params['totime'] = (int) $filters['to'];
         }
+        if (!empty($filters['researchstatus'])) {
+            $where[] = 'a.researchstatus = :researchstatus';
+            $params['researchstatus'] = $filters['researchstatus'];
+        }
 
         $sql = "SELECT r.id, r.userid, r.decision, r.finalcompetencyidnumber, r.evidenceusefulness,
                        r.reviewdurationseconds, r.commenttext, r.timecreated AS reviewtime,
                        s.id AS suggestionid, s.competencyidnumber, s.warnings,
                        a.id AS analysisid, a.resourcetype, a.resourceid, a.courseid, a.cmid,
                        a.backend, a.model, a.manifest, a.topk, a.resourcehash, a.cataloguehash,
-                       a.timecompleted,
+                       a.timecompleted, a.researchstatus,
                        c.shortname AS courseshortname,
                        u.idnumber
                   FROM {local_compalign_review} r
@@ -146,6 +151,7 @@ final class study_export {
                 'catalogue_hash' => (string) ($record->cataloguehash ?? ''),
                 'analysis_time' => $record->timecompleted ? gmdate('Y-m-d\TH:i:s\Z', (int) $record->timecompleted) : '',
                 'review_time' => gmdate('Y-m-d\TH:i:s\Z', (int) $record->reviewtime),
+                'research_status' => (string) ($record->researchstatus ?? study_phase::DEVELOPMENT),
             ];
         }
 
@@ -184,9 +190,21 @@ final class study_export {
         if (preg_match('/^T\d{3}$/', $idnumber)) {
             return $idnumber;
         }
-        if ($idnumber !== '') {
-            return 'id-' . substr(hash('sha256', $idnumber), 0, 12);
+        $material = $idnumber !== '' ? 'idnumber:' . $idnumber : 'userid:' . $userid;
+        return 'participant-' . substr(hash_hmac('sha256', $material, $this->salt()), 0, 12);
+    }
+
+    /**
+     * A secret kept in the plugin config. It is created once and never exported.
+     *
+     * @return string
+     */
+    private function salt(): string {
+        $salt = (string) get_config('local_compalign', 'exportsecret');
+        if ($salt === '') {
+            $salt = bin2hex(random_bytes(32));
+            set_config('exportsecret', $salt, 'local_compalign');
         }
-        return 'user-' . $userid;
+        return $salt;
     }
 }

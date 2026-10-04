@@ -53,12 +53,17 @@ final class intro_adapter implements adapter {
         if (!$record) {
             return [];
         }
+        $note = match ($this->resourcetype) {
+            'forum_intro' => get_string('forumpostsnotanalysed', 'local_compalign'),
+            'url' => get_string('urlnofetch', 'local_compalign'),
+            default => $cm->name,
+        };
         return [html_source::item(
             'moodle:' . $this->modname . ':' . $record->id,
             $this->resourcetype,
             resource_extractor::html_to_text($record->name) ?: $cm->name,
             (string) $record->intro,
-            $cm->name
+            $note
         )];
     }
 

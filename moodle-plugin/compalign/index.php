@@ -86,6 +86,7 @@ if ($courseid) {
             echo $OUTPUT->header();
             echo $OUTPUT->heading(get_string('batch_confirm', 'local_compalign'));
             echo html_writer::tag('p', get_string('batch_preview', 'local_compalign', (object) [
+                'selected' => count($matches),
                 'cached' => $cached,
                 'fresh' => $fresh,
                 'active' => $active,
@@ -102,6 +103,8 @@ if ($courseid) {
                 'class' => 'btn btn-primary',
                 'value' => get_string('batch_confirm', 'local_compalign'),
             ]);
+            echo ' ';
+            echo html_writer::link($PAGE->url, get_string('cancel'), ['class' => 'btn btn-secondary']);
             echo html_writer::end_tag('form');
             echo $OUTPUT->footer();
             exit;

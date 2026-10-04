@@ -65,10 +65,19 @@ final class file_item {
         $filename = $file->get_filename();
         $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         $format = self::FORMATS[$extension] ?? '';
-        $supported = $format !== '' && (int) $file->get_filesize() <= self::MAX_BYTES && (int) $file->get_filesize() > 0;
+        $mimetype = (string) $file->get_mimetype();
+        $supported = $format !== '' && (int) $file->get_filesize() <= self::MAX_BYTES && (int) $file->get_filesize() > 0
+            && !self::mime_conflicts($format, $mimetype);
         $reason = '';
-        if ($format === '') {
+        if (in_array($extension, ['doc', 'ppt'], true)) {
+            $reason = 'legacyoffice';
+        } else if (in_array($extension, ['mp4', 'webm', 'mov'], true)) {
+            $reason = 'transcriptrequired';
+        } else if ($format === '') {
             $reason = 'unsupportedfile';
+        } else if (self::mime_conflicts($format, $mimetype)) {
+            $reason = 'mimemismatch';
+            $supported = false;
         } else if ((int) $file->get_filesize() > self::MAX_BYTES) {
             $reason = 'filetoolarge';
         } else if ((int) $file->get_filesize() === 0) {
@@ -97,7 +106,7 @@ final class file_item {
         $file = self::require_file($item);
         $extension = strtolower(pathinfo($file->get_filename(), PATHINFO_EXTENSION));
         $format = self::FORMATS[$extension] ?? '';
-        if ($format === '') {
+        if ($format === '' || self::mime_conflicts($format, (string) $file->get_mimetype())) {
             throw new analysis_exception('unsupported_resource_type');
         }
         if ((int) $file->get_filesize() > self::MAX_BYTES) {
@@ -135,5 +144,38 @@ final class file_item {
             throw new analysis_exception('resource_missing');
         }
         return $file;
+    }
+
+    /**
+     * A stored MIME type that contradicts the extension.
+     *
+     * An empty type, or application/octet-stream, is left to the extractor,
+     * which checks the file signature.
+     *
+     * @param string $format Extraction format, or an empty string.
+     * @param string $mimetype Moodle's stored MIME type.
+     * @return bool
+     */
+    private static function mime_conflicts(string $format, string $mimetype): bool {
+        $mimetype = strtolower(trim($mimetype));
+        if ($format === '' || $mimetype === '' || $mimetype === 'application/octet-stream') {
+            return false;
+        }
+        $allowed = [
+            'pdf' => ['application/pdf'],
+            'docx' => [
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/zip',
+            ],
+            'pptx' => [
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'application/zip',
+            ],
+            'text' => ['text/plain'],
+            'markdown' => ['text/plain', 'text/markdown'],
+            'vtt' => ['text/vtt', 'text/plain'],
+            'srt' => ['text/plain', 'application/x-subrip'],
+        ];
+        return !in_array($mimetype, $allowed[$format] ?? [], true);
     }
 }

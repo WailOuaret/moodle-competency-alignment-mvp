@@ -72,5 +72,25 @@ function xmldb_local_compalign_upgrade(int $oldversion): bool {
         upgrade_plugin_savepoint(true, 2026100402, 'local', 'compalign');
     }
 
+    if ($oldversion < 2026100403) {
+        $table = new xmldb_table('local_compalign_analysis');
+        // Existing rows become development. That is an explicit label, not a guess from the timestamp.
+        $field = new xmldb_field(
+            'researchstatus',
+            XMLDB_TYPE_CHAR,
+            '40',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            'development',
+            'resourcetype'
+        );
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2026100403, 'local', 'compalign');
+    }
+
     return true;
 }

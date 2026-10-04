@@ -137,6 +137,7 @@ final class analysis_manager {
                 'extractorversion' => $extracted['resource']['extractor_version'] ?? '',
                 'provenance' => json_encode($extracted['provenance'] ?? [], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
                 'resourcetype' => $extracted['resource']['resource_type'],
+                'researchstatus' => study_phase::current(),
                 'resourcehash' => $extracted['hash'],
                 'cataloguehash' => $catalogue->hash,
                 'frameworkid' => $catalogue->frameworkid,
@@ -395,6 +396,24 @@ final class analysis_manager {
     }
 
     /**
+     * The text the alignment engine quotes from.
+     *
+     * A quiz question is fragmented from search_text (the question name plus the stem).
+     * Every other resource is fragmented from text. The quotation check has to use the
+     * same string, or a quote of the question name is rejected.
+     *
+     * @param array<string, string> $resource The resource sent to the service.
+     * @return string
+     */
+    public static function quoted_text(array $resource): string {
+        if (($resource['resource_type'] ?? '') === 'quiz_question' && ($resource['search_text'] ?? '') !== '') {
+            return $resource['search_text'];
+        }
+
+        return $resource['text'] ?? '';
+    }
+
+    /**
      * Read the resource and the catalogue, call the service and store a validated answer.
      *
      * @param \stdClass $analysis The running analysis.
@@ -439,7 +458,7 @@ final class analysis_manager {
             $catalogue->idnumbers(),
             (int) $analysis->topk,
             (int) $analysis->maxsuggestions,
-            $resource['text']
+            self::quoted_text($resource)
         );
 
         $this->store($analysis, $validated, $catalogue);

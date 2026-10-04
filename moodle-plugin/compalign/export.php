@@ -37,6 +37,7 @@ $filters = [
     'participant' => optional_param('participant', '', PARAM_ALPHANUMEXT),
     'from' => optional_param('from', 0, PARAM_INT),
     'to' => optional_param('to', 0, PARAM_INT),
+    'researchstatus' => optional_param('researchstatus', '', PARAM_ALPHAEXT),
 ];
 
 $export = new study_export();
