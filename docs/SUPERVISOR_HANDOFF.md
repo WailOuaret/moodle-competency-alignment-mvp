@@ -3,7 +3,8 @@
 **Researcher:** Wail Ouaret  
 **Supervisors:** Marie-Hélène Abel, Le Ngoc Luyen  
 **Institution:** Université de Technologie de Compiègne — Heudiasyc (UMR 7253, CNRS)  
-**Date:** 4 October 2026  
+**Date:** 5 October 2026
+
 **Branch:** `feature/moodle-plugin`
 
 This note describes the Moodle plugin and the private pilot that sit on top of the frozen research experiment. It does not replace the research reports.
@@ -56,6 +57,8 @@ The model may select only from the five candidates. Each quotation must be an ex
 Write-back is off. The confirmation says that nothing was written to Moodle competency links. There is no gold label and no “correct answer” on the page.
 
 ## 5. What was implemented
+
+The list below is the hosted 0.2.0 pilot. The repository branch now also contains release 0.3.0, described in section 19. That release is not what the hosted site is running.
 
 - Plugin installation as `local_compalign`, release 0.2.0, maturity alpha, version `2026100401`.
 - Extraction of a Moodle Page: title, description, and body as plain text, plus the course and section names. Learner fields are not read.
@@ -240,7 +243,7 @@ Top-K is fixed at 5. The service rejects any other value. Across a public networ
 
 ## 16. Limitations
 
-- The plugin analyses Pages. Forums and other modules are shown as unsupported. Quiz questions were part of the frozen experiment and are not yet accepted by the plugin.
+- The hosted pilot analyses Pages. The 0.3.0 code on this branch also accepts the resource types in section 19. Forum posts, student submissions, URL fetching, scanned-PDF OCR and automatic transcription are still out of scope.
 - Official write-back is off and is not part of the first teacher study.
 - The seven-teacher evaluation has not been done.
 - The six-page live run is a development verification. It is not a replacement for the frozen metrics.
@@ -266,14 +269,30 @@ The original measurements were not recomputed and were not mixed with the live p
 
 ## 19. Multi-resource extension
 
-Release 0.2.0 is the hosted Page-only pilot. It is still what a teacher would see. Release 0.3.0 (plugin version `2026100403`) is local development on `feature/moodle-multiresource`. It has not been deployed to https://srv1872740.hstgr.cloud/. No teacher has used 0.3.0.
+Two versions must stay distinct.
 
-0.3.0 keeps the same alignment engine and adds adapters for quiz questions, text-layer PDFs, DOCX, PPTX, plain text, Markdown, VTT and SRT, Book chapters, assignment instructions, Lesson pages, Folder files, text and media areas, the forum introduction, and the URL description. Forum posts, student submissions, URL fetching, scanned-PDF OCR and automatic transcription are not included.
+**Hosted pilot.** Release 0.2.0, Page-only, is what is deployed at https://srv1872740.hstgr.cloud/ for the teacher pilot. The seven teachers have not used 0.3.0. This Git update does not change that site.
 
-Moodle PHPUnit for `local_compalign` was run on an isolated database on the same machine as the pilot, not on the pilot database: 321 tests, 1159 assertions, 0 failures, 0 errors, 0 warnings. Python tests: 577 passed. A throwaway site, bound only on that machine, was used for the browser checks. The mock service stored suggestions for a page, an essay question, PDF, DOCX, PPTX, plain text, Markdown, VTT, SRT, a Book chapter, an assignment, a Lesson page and a Folder file, and each review page showed the quotation. A scanned PDF stopped with the no-text message. The quotation check uses the same text the engine fragments, which for a quiz question includes the question name. Gemini was not called. The live multi-resource matrix is prepared and not executed.
+**Repository latest implementation.** Release 0.3.0 (plugin version `2026100403`) is the code on `feature/moodle-plugin`. It was validated on a throwaway Moodle site on the same machine, not on the teacher-study database. It is not deployed over the teacher pilot.
 
-Two setup commands failed before those runs. Composer was first invoked from an empty directory; the working directory was corrected and the install completed. The first browser-database preparation called `python3` inside a container that does not have Python; the procedure was corrected and the isolated Moodle checks then completed. Those were environment mistakes, not failures of the multi-resource implementation. The final Python result is 577 passed. The final Moodle result is the later throwaway run above.
+0.3.0 keeps the same alignment engine. It supports quiz questions, text-layer PDFs, DOCX, PPTX, plain text, Markdown, VTT and SRT transcripts, Book chapters, assignment instructions, Lesson pages, Folder files, and selected teacher-authored content (text and media areas, the forum introduction, and the URL description). Forum posts, student submissions, URL fetching, scanned-PDF OCR and automatic transcription are not included.
+
+Moodle PHPUnit for `local_compalign` was run on an isolated database, not on the pilot database: 321 tests, 1159 assertions, 0 failures, 0 errors, 0 warnings. Python tests: 577 passed. A throwaway site, bound only on that machine, was used for the browser checks. The mock service stored suggestions for a page, an essay question, PDF, DOCX, PPTX, plain text, Markdown, VTT, SRT, a Book chapter, an assignment, a Lesson page and a Folder file, and each review page showed the quotation. A scanned PDF stopped with the no-text message. The quotation check uses the same text the engine fragments, which for a quiz question includes the question name.
+
+Two setup commands failed before those mock runs. Composer was first invoked from an empty directory; the working directory was corrected and the install completed. The first browser-database preparation called `python3` inside a container that does not have Python; the procedure was corrected and the isolated Moodle checks then completed. Those were environment mistakes, not failures of the multi-resource implementation.
+
+After that mock validation, eight controlled Gemini analyses were run once each on the throwaway site, against the real 13-node UTC GI framework. All eight succeeded. There were no technical failures and no retries. All 18 stored quotations were exact. Privacy checks passed. T001–T007 were not used. The detail is in [MULTI_RESOURCE_LIVE_GEMINI_VERIFICATION.md](MULTI_RESOURCE_LIVE_GEMINI_VERIFICATION.md). This is a development diagnostic, not a new benchmark, and the recorded predictions were not edited afterwards.
+
+The largest limitation in that live check is retrieval, not a free Gemini classification. The model may select only from the BM25 Top-5. The expected competency was outside that list, and therefore could not be selected, for the DOCX (`GI_C1_3`), the VTT transcript (`GI_C3_3`), the assignment (`GI_C1_3`), and the PPTX cybersecurity target (`GI_C2_3`). Where the expected competency was inside the Top-5, the quiz recovered `GI_C3_2` and also returned the parent `GI_C3`; the PDF recovered `GI_C1_2` and also returned `GI_C1_1`; the book chapter returned `GI_C1_4` exactly; and the lesson recovered `GI_C2_3` and also returned the parent `GI_C2`. The PPTX recovered the network/cloud label `GI_C2_2` and added `GI_C1_4`. Prompt, Top-K, schema, and competency descriptions were not changed after these results.
 
 Quiz suggestions, if write-back is enabled later, can be attached only to the Quiz activity. Moodle does not store a competency on a question. Write-back stays off.
 
 Study export is `local/compalign/export.php`, capability `local/compalign:viewallreviews`. It pseudonymises the teacher and can include the free-text comment.
+
+## 20. Optional 0.3.0 staging, not deployed
+
+A later staging site can let supervisors try quiz questions, PDF, DOCX, PPTX, transcripts, Book chapters, assignments, and Lesson pages without touching the 0.2.0 teacher study. It is not deployed. Standing it up would need a separate hostname, a separate Moodle database, a separate Moodle data directory, a separate plugin deployment, a separate alignment-service configuration, and development or reviewer accounts only. It must not reuse the teacher-study database, T001–T007, or https://srv1872740.hstgr.cloud/.
+
+## 21. Future retrieval comparison, not started
+
+Retrieval is unchanged. A later branch, `experiment/retrieval-v2`, could compare the current BM25 tokeniser with stop-word handling, framework aliases and synonyms, parent/child terminology expansion, and per-framework retrieval settings, and only after that with hybrid BM25 plus dense retrieval. Retrieval misses (the expected competency was not in the Top-5) must be counted separately from model-selection misses (the expected competency was in the Top-5 and the model chose something else, or chose it together with an extra label). Frozen experiment files and the recorded 0.3.0 live predictions must not be overwritten by that comparison.

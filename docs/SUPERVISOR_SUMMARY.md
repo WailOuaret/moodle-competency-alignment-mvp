@@ -42,10 +42,12 @@ Whether the suggestion was usable, whether the quotation justified it, how long 
 
 The hosted pilot analyses Pages only. Quiz questions are not analysed there. Write-back is off. Seven teachers have accounts and have not been invited yet. The six-page model check is not a teacher study. A repository-wide licence is not decided, so the plugin is not published to the Moodle Plugins Directory.
 
-## Multi-resource extension
+## Two versions
 
-Release 0.2.0 is the stable hosted Page pilot at the academy site. Teachers are on that release.
+**Hosted pilot.** Release 0.2.0 is Page-only and is what is deployed at https://srv1872740.hstgr.cloud/. The seven teachers have not used a later release.
 
-Release 0.3.0 is the local multi-resource branch `feature/moodle-multiresource`. It is not installed on the hosted site, and no teacher is using it. The same alignment engine is reused through adapters. Moodle PHPUnit on an isolated database passed (321 tests, 1155 assertions). Python tests passed (577). A throwaway Moodle on the same server, not the pilot, was opened in a browser for the new dashboard. No Gemini call was made for 0.3.0.
+**Repository latest implementation.** Release 0.3.0 (version `2026100403`) is the code on `feature/moodle-plugin`. It is not installed on the hosted teacher pilot. It supports quiz questions, PDF, DOCX, PPTX, plain text, Markdown, VTT and SRT transcripts, Book chapters, assignment instructions, Lesson pages, Folder files, and selected teacher-authored content. Moodle PHPUnit on an isolated database passed (321 tests, 1159 assertions). Python tests passed (577).
+
+Eight controlled Gemini analyses on a throwaway site all succeeded: 18 of 18 quotations were exact. That check is a development diagnostic, not a benchmark. The main limitation was retrieval. Because the model may choose only from the BM25 Top-5, it could not select `GI_C1_3` for the DOCX or the assignment, `GI_C3_3` for the VTT transcript, or `GI_C2_3` for the PPTX. Where the expected competency was in the Top-5, the quiz recovered `GI_C3_2` plus the parent `GI_C3`, the PDF recovered `GI_C1_2` plus `GI_C1_1`, the book returned `GI_C1_4` exactly, and the lesson recovered `GI_C2_3` plus the parent `GI_C2`. Prompt, Top-K, and descriptions were not changed after that result.
 
 Passwords are not in this file. They are sent separately.
