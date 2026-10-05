@@ -26,7 +26,13 @@ numpy==2.5.3
 opentelemetry-api==1.45.0
 pydantic-core==2.46.5
 pydantic==2.13.5
-pypdf==6.19.0
+# Document parsers used by the validated 0.3.0 extraction path.
+# pypdf 5.9.0, python-docx 1.2.0, python-pptx 1.0.2 and python-multipart 0.0.32
+# are the versions that extracted the multi-resource live-test files.
+pypdf==5.9.0
+python-docx==1.2.0
+python-multipart==0.0.32
+python-pptx==1.0.2
 python-dotenv==1.2.4
 rank-bm25==0.2.2
 requests==2.34.2

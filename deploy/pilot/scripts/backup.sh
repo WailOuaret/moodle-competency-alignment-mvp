@@ -86,7 +86,8 @@ if [ "$verify" = 1 ]; then
     gunzip -c "$dir/db.sql.gz" | compose exec -T db psql -U "$dbuser" -d "$scratch" -v ON_ERROR_STOP=1 -q >/dev/null
     tables="$(compose exec -T db psql -U "$dbuser" -d "$scratch" -Atc "select count(*) from information_schema.tables where table_schema='public'" | tr -d '\r')"
     plugin="$(compose exec -T db psql -U "$dbuser" -d "$scratch" -Atc "select count(*) from information_schema.tables where table_name like 'mdl_local_compalign_%'" | tr -d '\r')"
-    [ "$plugin" = "4" ] || die "the restored scratch copy has $plugin plugin tables, expected 4"
+    # 0.2.0 has four plugin tables. 0.3.0 adds the file-extraction cache, so five.
+    [ "$plugin" = "4" ] || [ "$plugin" = "5" ] || die "the restored scratch copy has $plugin plugin tables, expected 4 or 5"
     echo "verified: dump loads into a scratch database ($tables tables, $plugin plugin tables)" >>"$dir/MANIFEST.txt"
 fi
 
