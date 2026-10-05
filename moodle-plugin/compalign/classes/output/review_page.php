@@ -253,21 +253,45 @@ class review_page implements renderable, named_templatable {
         foreach ($evidence as $item) {
             $quote = (string) $item->evidencetext;
             $source = '';
+            $matched = null;
+            $flat = static fn(string $text): string => trim((string) preg_replace('/\s+/u', ' ', $text));
+            $needle = $flat($quote);
             foreach ($segments as $segment) {
-                if (!is_array($segment) || !isset($segment['text']) || !str_contains((string) $segment['text'], $quote)) {
+                if (!is_array($segment) || !isset($segment['text'])) {
                     continue;
                 }
-                $source = match ($segment['kind'] ?? '') {
-                    'page' => get_string('evidence_page', 'local_compalign', $segment['number'] ?? ''),
-                    'slide' => get_string('evidence_slide', 'local_compalign', $segment['number'] ?? ''),
-                    'paragraph', 'table' => get_string('evidence_section', 'local_compalign', $segment['heading'] ?? ''),
+                $haystack = $flat((string) $segment['text']);
+                if ($haystack !== '' && $needle !== '' && str_contains($haystack, $needle)) {
+                    $matched = $segment;
+                    break;
+                }
+            }
+            if ($matched === null) {
+                foreach ($segments as $segment) {
+                    if (!is_array($segment)) {
+                        continue;
+                    }
+                    $haystack = $flat((string) ($segment['text'] ?? ''));
+                    if ($haystack !== '' && $needle !== '' && str_contains($needle, $haystack)) {
+                        $matched = $segment;
+                        break;
+                    }
+                }
+            }
+            if (is_array($matched)) {
+                $heading = trim((string) ($matched['heading'] ?? ''));
+                $source = match ($matched['kind'] ?? '') {
+                    'page' => get_string('evidence_page', 'local_compalign', $matched['number'] ?? ''),
+                    'slide' => get_string('evidence_slide', 'local_compalign', $matched['number'] ?? ''),
+                    'paragraph', 'table' => $heading !== ''
+                        ? get_string('evidence_section', 'local_compalign', $heading)
+                        : get_string('evidence_paragraph', 'local_compalign', $matched['number'] ?? ''),
                     'cue' => get_string('evidence_time', 'local_compalign', (object) [
-                        'start' => $segment['start'] ?? '',
-                        'end' => $segment['end'] ?? '',
+                        'start' => $matched['start'] ?? '',
+                        'end' => $matched['end'] ?? '',
                     ]),
                     default => '',
                 };
-                break;
             }
             $rows[] = ['quote' => $quote, 'source' => $source];
         }

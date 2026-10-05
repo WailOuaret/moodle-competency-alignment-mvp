@@ -71,6 +71,38 @@ final class review_page_test extends advanced_testcase {
             $this->assertStringContainsString($expect, $text);
             $this->assertStringNotContainsString('"kind"', $html);
         }
+
+        $made['analysis']->provenance = json_encode([
+            'label' => 'slides.pptx',
+            'segments' => [
+                ['kind' => 'slide', 'number' => '1', 'text' => 'Cloud services'],
+                ['kind' => 'slide', 'number' => '2', 'text' => 'Encrypted links'],
+            ],
+        ]);
+        $suggestion->evidence[0]->evidencetext = 'Cloud services Encrypted links';
+        $text = self::text($this->render($environment, $made['analysis'], $made['suggestions'], $made['catalogue']));
+        $this->assertStringContainsString('Slide 1', $text);
+
+        $made['analysis']->provenance = json_encode([
+            'label' => 'slides.pptx',
+            'segments' => [
+                ['kind' => 'slide', 'number' => '1', 'text' => "Cloud services\nA short deck"],
+            ],
+        ]);
+        $suggestion->evidence[0]->evidencetext = 'Cloud services A short deck';
+        $text = self::text($this->render($environment, $made['analysis'], $made['suggestions'], $made['catalogue']));
+        $this->assertStringContainsString('Slide 1', $text);
+
+        $made['analysis']->provenance = json_encode([
+            'label' => 'notes.docx',
+            'segments' => [
+                ['kind' => 'paragraph', 'number' => '1', 'heading' => '', 'text' => 'Accessible Interface Design'],
+            ],
+        ]);
+        $suggestion->evidence[0]->evidencetext = 'Accessible Interface Design Use this file as a test.';
+        $text = self::text($this->render($environment, $made['analysis'], $made['suggestions'], $made['catalogue']));
+        $this->assertStringContainsString('Paragraph 1', $text);
+        $this->assertStringNotContainsString('Page 1', $text);
     }
 
     /**

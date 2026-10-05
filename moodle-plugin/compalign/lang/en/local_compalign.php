@@ -242,6 +242,7 @@ $string['type_other'] = 'Other';
 $string['evidence_page'] = 'Page {$a}';
 $string['evidence_slide'] = 'Slide {$a}';
 $string['evidence_section'] = 'Section {$a}';
+$string['evidence_paragraph'] = 'Paragraph {$a}';
 $string['evidence_time'] = '{$a->start}–{$a->end}';
 $string['transcript_required'] = 'Transcript required for video alignment.';
 $string['error_resource_not_accessible'] = 'You cannot see this resource, so it cannot be analysed.';
