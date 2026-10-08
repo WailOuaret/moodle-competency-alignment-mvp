@@ -67,16 +67,16 @@
                         {{#rows}}
                             <tr>
                                 <th scope="row">{{name}}</th>
-                                <td>{{type}}</td>
-                                <td>{{relationship}}</td>
-                                <td>{{reviewstatus}}</td>
-                                <td>
+                                <td data-label="{{#str}} column_type, local_compalign {{/str}}">{{type}}</td>
+                                <td data-label="{{#str}} column_relationship, local_compalign {{/str}}">{{relationship}}</td>
+                                <td data-label="{{#str}} column_reviewstatus, local_compalign {{/str}}">{{reviewstatus}}</td>
+                                <td data-label="{{#str}} column_evidence, local_compalign {{/str}}">
                                     {{#sourceurl}}<a href="{{{sourceurl}}}">{{evidence}}</a>{{/sourceurl}}
                                     {{^sourceurl}}{{evidence}}{{/sourceurl}}
                                     {{#evidencenote}}<br><small>{{evidencenote}}</small>{{/evidencenote}}
                                 </td>
-                                <td>{{#official}}{{#str}} yes {{/str}}{{/official}}{{^official}}{{#str}} no {{/str}}{{/official}}</td>
-                                <td>
+                                <td data-label="{{#str}} column_official_link, local_compalign {{/str}}">{{#official}}{{#str}} yes {{/str}}{{/official}}{{^official}}{{#str}} no {{/str}}{{/official}}</td>
+                                <td data-label="{{#str}} column_action, local_compalign {{/str}}">
                                     {{#openurl}}<a href="{{{openurl}}}">{{#str}} openmoodleresource, local_compalign {{/str}}</a>{{/openurl}}
                                     {{#reviewurl}}<br><a href="{{{reviewurl}}}">{{#str}} openreview, local_compalign {{/str}}</a>{{/reviewurl}}
                                 </td>

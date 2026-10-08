@@ -62,6 +62,10 @@ class add_competency_form extends \moodleform {
         $mform->addElement('hidden', 'resourcehash', $this->_customdata['resourcehash']);
         $mform->setType('resourcehash', PARAM_RAW_TRIMMED);
 
+        // A single-choice list selects its first option by default, so the first competency of the framework
+        // would be shown as chosen and saved if the teacher did not pick one. An empty first choice keeps the
+        // field empty until a competency is picked; Moodle's autocomplete does the same when a choice is cleared.
+        $choices = ['' => ''] + $choices;
         $mform->addElement('autocomplete', 'competency', get_string('competency', 'local_compalign'), $choices, [
             'noselectionstring' => get_string('competency_choose', 'local_compalign'),
         ]);
