@@ -57,26 +57,34 @@ reimplemented in PHP.
 | | |
 |---|---|
 | In the repository | **0.3.1 / 2026100701** |
-| Deployed on the pilot | **0.3.1 / 2026100701**, commit `048fbf9`, image tag `g048fbf987d33` |
-| Deployed at | 2026-10-08 13:23 UTC |
-| Consistent? | Same release. The pilot lacks one display fix, `642a83d` (below). |
+| Deployed on the pilot | **0.3.1 / 2026100701**, commit `db1b859`, image tag `gdb1b859a348a` |
+| Deployed at | 2026-10-08 18:15 UTC (0.3.1 first went live at 13:23 UTC as `048fbf9`) |
+| Consistent? | The pilot runs exactly `origin/feature/moodle-plugin`. One local commit, `a3c0e22`, is not deployed. |
 
-**`642a83d` — not yet deployed.** In the Competencies tab, a model proposal the
-teacher had already accepted still read "Not reviewed", beside the
-teacher-reviewed row that contradicted it. The model row now shows the decision
-(Accepted / Rejected / Modified to X). It changes display logic only: no schema,
-string, template or stored-data change, so the plugin version stays
-`2026100701` and the image tag identifies the code. It is committed locally,
-validated on the isolated VPS stack, and waits for Wail's go-ahead to push and
-redeploy (section U).
+The deployed code includes the display fix `642a83d`: in the Competencies tab a
+model proposal the teacher has decided now reads Accepted, Rejected or
+Modified to X, never "Not reviewed". Verified on the live pilot against
+teacher01's two acceptances.
+
+**`a3c0e22` — committed locally, not pushed, not deployed.** Two small UI bugs
+found by real-browser testing, both present on the pilot now:
+
+1. On a phone the Competencies table hides its header but its cells had no
+   labels, so a teacher saw "Reviewed" or "No" without the column name.
+2. Add competency opened with the first competency of the framework already
+   chosen, and saved it if the teacher submitted without picking one.
+
+Neither affects stored data. Both fixes are tested (section Q) and wait for
+Wail's go-ahead (section U). Neither changes the schema or a string, so the
+version stays `2026100701`; the image tag identifies the code.
 
 ## E. Git
 
 | | |
 |---|---|
 | Working branch | `feature/moodle-plugin` |
-| `origin/feature/moodle-plugin` | `048fbf9` — the deployed release |
-| Local, not pushed | `642a83d` (display fix) and the commit adding this file |
+| `origin/feature/moodle-plugin` | `db1b859` — deployed on the pilot |
+| Local, not pushed | `a3c0e22` (two UI fixes) and the commit updating this file |
 | Do not modify | `main`, `public-clean-2026-09-30` |
 | Pushing | only with Wail's explicit say-so; never force-push |
 | Commits | authored by Wail Ouaret; **no assistant attribution trailers** |
@@ -193,14 +201,15 @@ credentials stay server-side and never reach Moodle, the browser, Git or logs.
 Alignment service  ──►  Gemini
 ```
 
-Verified 2026-10-08, after the 0.3.1 deployment:
+Verified 2026-10-08 18:47 UTC, after the display-fix deployment:
 
 | Property | State |
 |---|---|
 | Docker enabled at boot | yes |
 | Restart policy, all four pilot containers | `unless-stopped`, all `healthy` |
 | Healthcheck | 20/20 PASS |
-| Rollback images | `g013c4c986e21` (0.3.0) retained |
+| Running images | `gdb1b859a348a` (alignment service, Moodle, cron) |
+| Rollback images | `g048fbf987d33` (0.3.1 before the fix) and `g013c4c986e21` (0.3.0) retained |
 | PostgreSQL data | persistent named volume |
 | Moodledata | persistent named volume |
 | Alignment service | **no host port** — private Docker network only |
@@ -210,8 +219,9 @@ Verified 2026-10-08, after the 0.3.1 deployment:
 **Wail's PC is not required for the pilot to run.** Containers have survived
 multi-day unattended operation.
 
-A separate isolated PHPUnit stack also exists on the VPS for upgrade and
-integration testing, kept away from pilot data.
+A separate isolated stack also exists on the VPS, kept away from pilot data:
+PHPUnit, plus a browser-test Moodle site with its own database and the
+non-study test account `teacher.local`. See the workflow document.
 
 ## P. Deployment workflow
 
@@ -236,20 +246,26 @@ the full plugin including tests — copy those separately.
 
 ## Q. Test baseline
 
-Verified 2026-10-08 on commit `642a83d`, PHPUnit on the isolated VPS stack:
+Verified 2026-10-08. PHPUnit and the browser tests ran on the isolated VPS stack.
 
-| Check | Result |
-|---|---|
-| Python | **577 passed** |
-| Moodle PHPUnit (`local_compalign`) | **340 tests, 1293 assertions, 0 failures, 0 errors** |
-| Upgrade test 0.3.0 → 0.3.1 | **2 tests, 7 assertions, OK** |
-| PHP syntax | **83 files, 0 errors** |
-| Protected scientific files | **21/21 unchanged** |
+| Check | Deployed `db1b859` | Local `a3c0e22` |
+|---|---|---|
+| Moodle PHPUnit (`local_compalign`) | **340 tests, 1293 assertions** | **343 tests, 1300 assertions** |
+| Upgrade test 0.3.0 → 0.3.1 | OK | OK |
+| PHP syntax | 83 files, 0 errors | 85 files, 0 errors |
+| Real-browser checks, teacher flows (desktop 1440px + 390px) | **52/52** | **52/52** |
+| Real-browser checks, form widgets | **14/14** | **14/14** |
+| Real-browser checks, study export download | **9/9** | not re-run (export unchanged) |
+| Real-browser checks of the two fixes | — | **10/10** |
+| Python | **577 passed** | unchanged, no Python touched |
+| Protected scientific files | **21/21 unchanged** | **21/21 unchanged** |
 
-The deployed commit `048fbf9` measured 339 tests / 1280 assertions; `642a83d`
-adds one regression test, which was confirmed to fail on `048fbf9`. The
-annotation validator, compileall and UI smoke passed on `048fbf9`; `642a83d`
-touches no Python.
+Every regression test added on 2026-10-08 was confirmed to fail on the code it
+fixes. The 0.3.0 → 0.3.1 upgrade also ran on the populated browser-test site
+(41 analyses, 4 reviews): every existing row hashed identical before and after.
+
+The two UI bugs fixed in `a3c0e22` were found by reviewing the browser
+screenshots, not by a failing check: automated checks do not judge layout.
 
 Report actual counts; do not quote older numbers (the suite was 321/1159 before
 0.3.1).
@@ -264,7 +280,8 @@ Report actual counts; do not quote older numbers (the suite was 321/1159 before
 | `teacher01` | last access 2026-10-07; produced real pilot data |
 | Pilot rows as of 2026-10-08 | 1 analysis, 2 suggestions, 4 evidence, 2 `accept` reviews, 0 teacher-added |
 | Status | Confirmed by Wail as **real study data — preserve** |
-| After the 0.3.1 deployment | Every row byte-identical to the pre-deployment backup |
+| After both 2026-10-08 deployments | Every row byte-identical to the pre-deployment state (last checked 18:47 UTC) |
+| Study export on the pilot | Never run yet; its pseudonymisation secret is created on first use |
 | Development accounts | `devteacher`, `devstudent`, both suspended |
 
 Older briefs instruct cleaning analyses/suggestions/evidence/reviews to 0 before
@@ -292,22 +309,23 @@ If any differs: **stop.** Do not overwrite the reference hashes.
 - The hierarchy ablation is **post-hoc** and reference-specific.
 - Confidence scores are uncalibrated.
 - No significance testing; the design does not support it.
-- 0.3.1 is deployed and was verified against live data through the plugin's
-  own services, but has **not** been tested in a real browser.
+- Browser testing used the isolated test site and a non-study account. On the
+  live pilot the features were verified through the plugin's own services,
+  reading teacher01's decisions without logging in as or acting for teacher01.
+- Until `a3c0e22` is deployed, the pilot has the two UI bugs in section D.
 
 ## U. Next unfinished work
 
-Done on 2026-10-08: tests restored to the isolated stack, the full suite and
-upgrade test passed there, a verified pre-deployment backup was taken
-(`PRE_0_3_1_UPGRADE`), `048fbf9` was deployed, the deployed views were
-verified against live data, and a verified post-deployment backup was taken
-(`POST_0_3_1_DEPLOY`).
+Done on 2026-10-08: 0.3.1 deployed (`048fbf9`), then the display fix deployed
+(`db1b859`), each after a verified backup and with every study row compared
+before and after. Backups: `PRE_0_3_1_UPGRADE`, `POST_0_3_1_DEPLOY`,
+`PRE_0_3_1_DISPLAY_FIX`, plus the automatic `before-update` backups. Real-browser
+testing on desktop and at 390px is done.
 
 Remaining, in order:
 
-1. **Wail's decision:** push `642a83d` and redeploy it. The redeploy follows
-   section P: take a verified backup, run `update.sh`, then check that every
-   study row still matches the backup.
-2. **Browser test** on desktop and at ~390px: tabs, filters, empty states,
-   Show in source, and no console errors. Use an account that is not a study
-   participant.
+1. **Wail's decision:** push `a3c0e22` and this file's update, then deploy
+   them. Follow section P: verified backup, `update.sh`, then compare every
+   study row with the pre-deployment state.
+2. Optional: a quick look on a real phone. Automated checks confirm labels,
+   widths and behaviour, not how comfortable the pages feel to use.

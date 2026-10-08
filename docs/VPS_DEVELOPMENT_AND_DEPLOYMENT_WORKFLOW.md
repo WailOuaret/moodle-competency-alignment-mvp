@@ -114,6 +114,33 @@ the upgrade works** — run both.
 The init step rebuilds the whole Moodle test database and takes several minutes
 on this VPS. Run it detached.
 
+### Browser testing on the isolated site
+
+The isolated Moodle container also serves a browser-test site with its own
+database and a non-study account, `teacher.local`. Never use a `teacherNN`
+account, and never log in to the pilot for testing.
+
+> **Trap.** That container's Apache was started by hand and runs with
+> `opcache.validate_timestamps = 0`. After syncing new plugin code, purge
+> Moodle's caches **and** reload Apache, or the web pages keep running the old
+> code. Before this was understood, a page failed with "class not found":
+>
+> ```bash
+> docker exec -u www-data compalign_phpunit_moodle php /var/www/html/admin/cli/purge_caches.php
+> docker exec compalign_phpunit_moodle apachectl -k graceful
+> ```
+>
+> The site's database also needs `admin/cli/upgrade.php` whenever the plugin
+> version rises.
+
+The browser checks are Playwright scripts in the isolated stack's `browser/`
+folder, run in the Playwright container on the isolated Docker network. They
+cover desktop (1440px) and phone (390px) widths and record console errors and
+horizontal overflow. The export check needs `viewallreviews`: its wrapper grants
+`teacher.local` the system manager role for the run and always revokes it.
+Look at the screenshots as well. Automated checks do not judge layout, and two
+UI bugs were found only by eye.
+
 ---
 
 ## 5. Backup — mandatory before any deployment
