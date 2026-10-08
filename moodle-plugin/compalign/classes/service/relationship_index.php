@@ -211,6 +211,10 @@ final class relationship_index {
                 if ($review === null) {
                     continue;
                 }
+                // Keep the model row honest about what happened to it. Without this a proposal the
+                // teacher accepted, rejected or modified would still read "Not reviewed".
+                $proposals[$proposed]['decision'] = (string) $review->decision;
+                $proposals[$proposed]['finalidnumber'] = (string) ($review->finalcompetencyidnumber ?? '');
                 if ($review->decision === review_manager::DECISION_ACCEPT) {
                     $this->remember_reviewed($reviewed, $proposed, self::TEACHER_ACCEPTED, $staleanalysis, $suggestion, $loaded, '');
                 } else if ($review->decision === review_manager::DECISION_MODIFY && $review->finalcompetencyidnumber) {
@@ -616,6 +620,16 @@ final class relationship_index {
         }
         if (in_array($entry['source'], [self::TEACHER_ACCEPTED, self::TEACHER_MODIFIED, self::TEACHER_ADDED], true)) {
             return get_string('reviewstatus_reviewed', 'local_compalign');
+        }
+        if ($entry['source'] === self::MODEL_PROPOSED) {
+            switch ($entry['decision'] ?? '') {
+                case review_manager::DECISION_ACCEPT:
+                    return get_string('decision_accept_summary', 'local_compalign');
+                case review_manager::DECISION_REJECT:
+                    return get_string('decision_reject_summary', 'local_compalign');
+                case review_manager::DECISION_MODIFY:
+                    return get_string('decision_modify_summary', 'local_compalign', (string) ($entry['finalidnumber'] ?? ''));
+            }
         }
 
         return get_string('reviewstatus_notreviewed', 'local_compalign');

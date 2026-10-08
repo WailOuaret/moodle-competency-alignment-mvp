@@ -318,6 +318,46 @@ final class relationship_index_test extends \advanced_testcase {
     }
 
     /**
+     * A model row reports what the teacher decided, never "Not reviewed" after a decision.
+     *
+     * Regression: the review status was derived from the row's origin alone, so a model
+     * proposal the teacher had accepted, rejected or modified still read "Not reviewed",
+     * directly beside the teacher-reviewed row that contradicted it.
+     */
+    public function test_model_row_reports_the_teacher_decision(): void {
+        $this->resetAfterTest();
+        $environment = $this->create_environment();
+        $made = $this->create_completed_analysis($environment);
+        $suggestion = reset($made['suggestions']);
+        $proposed = (string) $suggestion->competencyidnumber;
+        $replacement = $proposed === 'T2' ? 'T1' : 'T2';
+        $teacherid = (int) $environment['teacher']->id;
+        $manager = new review_manager();
+
+        $modelstatus = function () use ($environment, $teacherid, $proposed): string {
+            $rows = (new relationship_index())->for_competency($environment['course'], $teacherid, $proposed, 'proposed');
+            $this->assertCount(1, $rows);
+            $this->assertSame(relationship_index::MODEL_PROPOSED, $rows[0]['source']);
+            return (string) $rows[0]['reviewstatus'];
+        };
+
+        $this->assertSame(get_string('reviewstatus_notreviewed', 'local_compalign'), $modelstatus());
+
+        $manager->save($made['analysis'], $suggestion, $teacherid, 'accept', null, null, null, null, $made['catalogue']);
+        $this->assertSame(get_string('decision_accept_summary', 'local_compalign'), $modelstatus());
+
+        $manager->save($made['analysis'], $suggestion, $teacherid, 'reject', null, null, null, null, $made['catalogue']);
+        $this->assertSame(get_string('decision_reject_summary', 'local_compalign'), $modelstatus());
+
+        $manager->save($made['analysis'], $suggestion, $teacherid, 'modify', $replacement, null, null, null, $made['catalogue']);
+        $this->assertSame(get_string('decision_modify_summary', 'local_compalign', $replacement), $modelstatus());
+
+        // The teacher-reviewed row is unaffected and still reads "Reviewed".
+        $reviewed = (new relationship_index())->for_competency($environment['course'], $teacherid, $replacement, 'reviewed');
+        $this->assertSame(get_string('reviewstatus_reviewed', 'local_compalign'), $reviewed[0]['reviewstatus']);
+    }
+
+    /**
      * Adding a competency in another course is refused.
      */
     public function test_wrong_course_is_refused(): void {
