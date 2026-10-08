@@ -1,9 +1,8 @@
 # Competency Alignment Assistant (local_compalign): administrator guide
 
-**Status: private pilot, not a public release.** The plugin is version 0.2.0, maturity ALPHA. It has
-been verified on Moodle 5.2.1+ (build 20260722). The hosted browser walk-through is recorded in
-docs/LIVE_GEMINI_VERIFICATION.md. No teacher has used it for the study yet. Nothing here is a claim
-of production readiness.
+**Status: private pilot, not a public release.** The plugin is version 0.3.1, maturity ALPHA. It has
+been verified on Moodle 5.2.1+ (build 20260722). No teacher has used it for the study yet. Nothing here is a claim
+of production readiness. UTC Moodle has not been tested; see docs/UTC_MOODLE_DEPLOYMENT_CHECKLIST.md.
 
 **PUBLIC DISTRIBUTION REQUIRES LICENSING/IP CONFIRMATION.** This guide covers installing the plugin on
 a site you control for the private pilot. It does not cover, and nothing in this repository authorises,
@@ -20,10 +19,11 @@ What it does not do, by design in this release:
 
 - It **never writes** to Moodle competency links. The write-back setting is reserved and has no
   effect. No role holds the write-back capability.
-- The hosted pilot handles **Pages only**. Release 0.3.0, which is not installed on the pilot, also
-  reads quiz questions, text-layer PDFs, DOCX, PPTX, plain text, Markdown, caption files, Book
-  chapters, assignment instructions and Lesson pages. See docs/RESOURCE_SUPPORT_MATRIX.md.
-- It never sends student data. Only the text of the Page and the framework's competencies leave Moodle.
+- The pilot reads Pages, one quiz question at a time, text-layer PDFs, DOCX, PPTX, plain text,
+  Markdown, caption files, Book chapters, assignment instructions, Lesson pages and Folder files.
+  See docs/RESOURCE_SUPPORT_MATRIX.md.
+- It never sends student data. Only teacher-authored resource text and the framework's competencies leave Moodle.
+- The course screen has a Resources tab and a Competencies tab. Teachers can add a missing competency. Show in source highlights a quotation. Neither action writes an official Moodle link.
 
 ## Requirements
 

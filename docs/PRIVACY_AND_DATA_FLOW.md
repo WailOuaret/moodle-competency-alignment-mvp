@@ -1,6 +1,6 @@
 # Privacy and data flow
 
-Release 0.3.0 on branch `feature/moodle-multiresource`. The hosted Page pilot (0.2.0) was not upgraded.
+Release 0.3.1 on branch `feature/moodle-plugin`. The teacher study has not started.
 
 ## What leaves Moodle
 
@@ -25,6 +25,8 @@ Document bytes travel only as far as `POST /v1/extractions` on the alignment ser
 `local_compalign_analysis` stores the requester, the resource id, a content fingerprint, provenance (slot, page, slide, chapter or cue list) and the service result.
 
 `local_compalign_review` stores the teacher's decision, optional evidence rating, optional comment and review duration.
+
+`local_compalign_manualrel` stores a competency the teacher added, the resource fingerprint, an optional quotation, an optional comment, and who later removed it. It is not sent to the alignment service. Learner submissions are not stored here. Deleting a user removes the relationships they added.
 
 `local_compalign_extract` caches extracted file text by content hash and extractor version. It has no user id. A document can still contain a name if a teacher typed one.
 

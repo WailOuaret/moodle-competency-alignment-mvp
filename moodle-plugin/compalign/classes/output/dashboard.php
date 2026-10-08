@@ -23,7 +23,7 @@ use local_compalign\service\alignment_client;
 use local_compalign\service\analysis_exception;
 use local_compalign\service\analysis_manager;
 use local_compalign\service\competency_catalogue;
-use local_compalign\service\competency_links;
+use local_compalign\service\relationship_index;
 use local_compalign\resource\registry;
 use local_compalign\service\resource_extractor;
 use local_compalign\service\service_exception;
@@ -96,10 +96,13 @@ class dashboard implements renderable, named_templatable {
             $userid
         );
 
-        $rows = [];
+        $index = new relationship_index();
+        $official = $index->official_by_cm((int) $course->id);
+        $hashes = [];
+        $pending = [];
         foreach ($cms as $cm) {
             $canstart = !$issues && has_capability('local/compalign:analyse', \context_module::instance($cm->id));
-            $links = competency_links::list_for_cm($cm);
+            $links = $official[(int) $cm->id] ?? [];
             foreach (registry::enumerate($cm) as $item) {
                 $analysis = $latest[$item->resourceid] ?? null;
                 $state = null;
@@ -110,22 +113,25 @@ class dashboard implements renderable, named_templatable {
                         'reviewed' => (int) ($reviewed[$analysis->id] ?? 0),
                     ];
                 }
+                $currenthash = null;
                 $stale = false;
-                if ($item->supported && $analysis && $analysis->status === analysis_manager::STATUS_COMPLETED) {
+                if ($item->supported) {
                     try {
-                        $current = (new resource_extractor())->extract($cm, $item->resourceid);
-                        $stale = !hash_equals((string) $analysis->resourcehash, $current['hash']);
+                        $currenthash = (new resource_extractor())->extract($cm, $item->resourceid)['hash'];
+                        $stale = $analysis && $analysis->status === analysis_manager::STATUS_COMPLETED
+                            && !hash_equals((string) $analysis->resourcehash, $currenthash);
                     } catch (analysis_exception) {
-                        $stale = true;
+                        $stale = $analysis && $analysis->status === analysis_manager::STATUS_COMPLETED;
                     }
                 }
+                $hashes[$item->resourceid] = $currenthash;
                 $key = $item->supported
                     ? self::status_key($analysis, $state['total'] ?? 0, $state['reviewed'] ?? 0, $stale)
                     : 'unsupported';
                 if (!self::matches_filter($filter, $key) || !self::matches_type($type, $item->resourcetype)) {
                     continue;
                 }
-                $rows[] = [
+                $pending[] = [
                     'cm' => $cm,
                     'item' => $item,
                     'state' => $state,
@@ -133,8 +139,19 @@ class dashboard implements renderable, named_templatable {
                     'canstart' => $canstart && $item->supported,
                     'stale' => $stale,
                     'statuskey' => $key,
+                    'filterkey' => $key,
                 ];
             }
+        }
+
+        $bundles = $index->bundles((int) $course->id, $userid, $hashes);
+        $rows = [];
+        foreach ($pending as $row) {
+            $row['relations'] = $bundles[$row['item']->resourceid] ?? ['proposals' => [], 'reviewed' => [], 'warnings' => []];
+            if (!self::matches_filter($filter, $row['filterkey']) || !self::matches_type($type, $row['item']->resourcetype)) {
+                continue;
+            }
+            $rows[] = $row;
         }
 
         return new self($course, $issues, $rows, $canmanage, $filter, $type);
@@ -245,6 +262,16 @@ class dashboard implements renderable, named_templatable {
             ));
         }
 
+        $relations = $row['relations'] ?? ['proposals' => [], 'reviewed' => [], 'warnings' => []];
+        $currentreviewed = array_values(array_filter(
+            $relations['reviewed'],
+            static fn(array $entry): bool => empty($entry['stale'])
+        ));
+        $stalereviewed = array_values(array_filter(
+            $relations['reviewed'],
+            static fn(array $entry): bool => !empty($entry['stale'])
+        ));
+
         return [
             'name' => $item->title !== '' ? $item->title : $cm->get_formatted_name(),
             'groupname' => $cm->get_formatted_name(),
@@ -261,11 +288,44 @@ class dashboard implements renderable, named_templatable {
             'progress' => ($key === 'ready' && $reviewed > 0)
                 ? get_string('analysis_progress', 'local_compalign', (object) ['reviewed' => $reviewed, 'total' => $total])
                 : '',
+            'reviewedcount' => count($currentreviewed),
+            'officialcount' => count($row['links']),
+            'writeback' => get_string('writeback_off', 'local_compalign'),
+            'reviewed' => array_map(fn(array $entry): array => $this->relation_line($entry), $currentreviewed),
+            'hasreviewed' => (bool) $currentreviewed,
+            'stalereviewed' => array_map(fn(array $entry): array => $this->relation_line($entry), $stalereviewed),
+            'hasstale' => (bool) $stalereviewed,
+            'proposals' => array_map(fn(array $entry): array => [
+                'text' => $entry['idnumber'] . ' ' . $entry['shortname'],
+            ], $relations['proposals']),
+            'hasproposals' => (bool) $relations['proposals'],
             'links' => array_map(static fn(array $link): array => [
                 'text' => $link['idnumber'] . ' ' . $link['shortname'],
             ], $row['links']),
             'haslinks' => (bool) $row['links'],
+            'warnings' => array_map(static fn(string $text): array => ['text' => $text], $relations['warnings'] ?? []),
+            'haswarnings' => !empty($relations['warnings']),
             'action' => $action,
+        ];
+    }
+
+    /**
+     * One competency line, with the origin a teacher needs to see.
+     *
+     * @param array $entry A reviewed competency from the relationship index.
+     * @return array text and an optional stale note.
+     */
+    private function relation_line(array $entry): array {
+        $origin = match ($entry['source']) {
+            relationship_index::TEACHER_ADDED => get_string('origin_added', 'local_compalign'),
+            relationship_index::TEACHER_MODIFIED => get_string('origin_modified', 'local_compalign'),
+            default => get_string('origin_accepted', 'local_compalign'),
+        };
+
+        return [
+            'text' => $entry['idnumber'] . ' ' . $entry['shortname'],
+            'origin' => $origin,
+            'stale' => !empty($entry['stale']),
         ];
     }
 

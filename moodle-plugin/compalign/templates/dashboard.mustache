@@ -94,9 +94,10 @@
                 <thead>
                     <tr>
                         <th scope="col">{{#str}} column_resource, local_compalign {{/str}}</th>
-                        <th scope="col">{{#str}} column_type, local_compalign {{/str}}</th>
                         <th scope="col">{{#str}} column_status, local_compalign {{/str}}</th>
-                        <th scope="col">{{#str}} column_links, local_compalign {{/str}}</th>
+                        <th scope="col">{{#str}} column_reviewed, local_compalign {{/str}}</th>
+                        <th scope="col">{{#str}} column_proposals, local_compalign {{/str}}</th>
+                        <th scope="col">{{#str}} column_official, local_compalign {{/str}}</th>
                         <th scope="col">{{#str}} column_action, local_compalign {{/str}}</th>
                     </tr>
                 </thead>
@@ -107,20 +108,51 @@
                                 {{#showgroup}}<span class="text-muted">{{groupname}}</span><br>{{/showgroup}}
                                 {{#url}}<a href="{{{url}}}">{{name}}</a>{{/url}}
                                 {{^url}}{{name}}{{/url}}
+                                <br><small>{{typename}}</small>
                                 {{#provenance}}<br><small>{{provenance}}</small>{{/provenance}}
                             </th>
-                            <td>{{typename}}</td>
-                            <td>
+                            <td data-label="{{#str}} column_status, local_compalign {{/str}}">
                                 <span class="badge bg-{{statustype}}">{{statuslabel}}</span>
                                 {{#progress}}<br><small>{{progress}}</small>{{/progress}}
+                                <br><small>{{#str}} status_reviewed_count, local_compalign, {{reviewedcount}} {{/str}}</small>
+                                <br><small>{{#str}} status_official_count, local_compalign, {{officialcount}} {{/str}}</small>
+                                <br><small>{{#str}} status_writeback, local_compalign, {{writeback}} {{/str}}</small>
                             </td>
-                            <td>
+                            <td data-label="{{#str}} column_reviewed, local_compalign {{/str}}">
+                                {{#hasreviewed}}
+                                    <ul class="list-unstyled mb-0">
+                                        {{#reviewed}}<li><strong>{{text}}</strong><br><small>{{origin}}</small></li>{{/reviewed}}
+                                    </ul>
+                                {{/hasreviewed}}
+                                {{^hasreviewed}}<span class="text-muted">{{#str}} reviewed_none, local_compalign {{/str}}</span>{{/hasreviewed}}
+                                {{#hasstale}}
+                                    <ul class="list-unstyled mb-0 mt-2">
+                                        {{#stalereviewed}}
+                                            <li><strong>{{text}}</strong><br><small>{{#str}} reviewed_stale, local_compalign {{/str}}</small></li>
+                                        {{/stalereviewed}}
+                                    </ul>
+                                {{/hasstale}}
+                                {{#haswarnings}}
+                                    <ul class="mb-0 mt-2">
+                                        {{#warnings}}<li>{{text}}</li>{{/warnings}}
+                                    </ul>
+                                {{/haswarnings}}
+                            </td>
+                            <td data-label="{{#str}} column_proposals, local_compalign {{/str}}">
+                                {{#hasproposals}}
+                                    <ul class="list-unstyled mb-0">
+                                        {{#proposals}}<li>{{text}}</li>{{/proposals}}
+                                    </ul>
+                                {{/hasproposals}}
+                                {{^hasproposals}}<span class="text-muted">{{#str}} proposals_none, local_compalign {{/str}}</span>{{/hasproposals}}
+                            </td>
+                            <td data-label="{{#str}} column_official, local_compalign {{/str}}">
                                 {{#haslinks}}
                                     <ul class="list-unstyled mb-0">
                                         {{#links}}<li>{{text}}</li>{{/links}}
                                     </ul>
                                 {{/haslinks}}
-                                {{^haslinks}}<span class="text-muted">{{#str}} linksnone, local_compalign {{/str}}</span>{{/haslinks}}
+                                {{^haslinks}}<span class="text-muted">{{#str}} official_none_help, local_compalign {{/str}}</span>{{/haslinks}}
                             </td>
                             <td>
                                 {{#action.html}}{{{action.html}}}{{/action.html}}

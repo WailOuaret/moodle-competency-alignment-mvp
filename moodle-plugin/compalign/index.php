@@ -27,6 +27,7 @@
 
 require_once(__DIR__ . '/../../config.php');
 
+use local_compalign\output\competency_browser;
 use local_compalign\output\dashboard;
 use local_compalign\output\overview;
 use local_compalign\service\alignment_client;
@@ -40,7 +41,11 @@ if ($courseid) {
     require_capability('local/compalign:view', $context);
     $PAGE->set_pagelayout('incourse');
     $PAGE->set_heading($course->fullname);
-    $PAGE->set_url(new moodle_url('/local/compalign/index.php', ['courseid' => $course->id]));
+    $view = optional_param('view', 'resources', PARAM_ALPHA);
+    if (!in_array($view, ['resources', 'competencies'], true)) {
+        $view = 'resources';
+    }
+    $PAGE->set_url(new moodle_url('/local/compalign/index.php', ['courseid' => $course->id, 'view' => $view]));
     $PAGE->set_context($context);
     $PAGE->set_title(get_string('pluginname', 'local_compalign'));
 
@@ -119,9 +124,27 @@ if ($courseid) {
 
     $filter = optional_param('filter', 'all', PARAM_ALPHA);
     $type = optional_param('type', 'all', PARAM_ALPHA);
+    $tabs = [
+        new tabobject('resources', new moodle_url('/local/compalign/index.php', [
+            'courseid' => $course->id,
+            'view' => 'resources',
+        ]), get_string('tab_resources', 'local_compalign')),
+        new tabobject('competencies', new moodle_url('/local/compalign/index.php', [
+            'courseid' => $course->id,
+            'view' => 'competencies',
+        ]), get_string('tab_competencies', 'local_compalign')),
+    ];
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('competencyalignment', 'local_compalign'));
-    echo $OUTPUT->render(dashboard::create($course, (int) $USER->id, $filter, $type));
+    echo $OUTPUT->tabtree($tabs, $view);
+    if ($view === 'competencies') {
+        $competency = optional_param('competency', '', PARAM_RAW_TRIMMED);
+        $query = optional_param('q', '', PARAM_TEXT);
+        $rel = optional_param('rel', 'reviewed', PARAM_ALPHA);
+        echo $OUTPUT->render(competency_browser::create($course, (int) $USER->id, $competency, $query, $rel));
+    } else {
+        echo $OUTPUT->render(dashboard::create($course, (int) $USER->id, $filter, $type));
+    }
     echo $OUTPUT->footer();
     exit;
 }

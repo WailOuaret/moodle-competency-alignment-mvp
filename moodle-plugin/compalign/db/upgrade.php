@@ -29,7 +29,7 @@
  * @return bool
  */
 function xmldb_local_compalign_upgrade(int $oldversion): bool {
-    global $DB;
+    global $CFG, $DB;
 
     $dbman = $DB->get_manager();
 
@@ -90,6 +90,15 @@ function xmldb_local_compalign_upgrade(int $oldversion): bool {
         }
 
         upgrade_plugin_savepoint(true, 2026100403, 'local', 'compalign');
+    }
+
+    if ($oldversion < 2026100701) {
+        $table = new xmldb_table('local_compalign_manualrel');
+        if (!$dbman->table_exists($table)) {
+            $dbman->install_one_table_from_xmldb_file($CFG->dirroot . '/local/compalign/db/install.xml', 'local_compalign_manualrel');
+        }
+
+        upgrade_plugin_savepoint(true, 2026100701, 'local', 'compalign');
     }
 
     return true;

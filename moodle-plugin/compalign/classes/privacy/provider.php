@@ -75,6 +75,14 @@ class provider implements
             'timecreated' => 'privacy:metadata:local_compalign_extract:timecreated',
         ], 'privacy:metadata:local_compalign_extract');
 
+        $collection->add_database_table('local_compalign_manualrel', [
+            'userid' => 'privacy:metadata:local_compalign_manualrel:userid',
+            'competencyidnumber' => 'privacy:metadata:local_compalign_manualrel:competencyidnumber',
+            'evidencetext' => 'privacy:metadata:local_compalign_manualrel:evidencetext',
+            'commenttext' => 'privacy:metadata:local_compalign_manualrel:commenttext',
+            'timecreated' => 'privacy:metadata:local_compalign_manualrel:timecreated',
+        ], 'privacy:metadata:local_compalign_manualrel');
+
         $collection->add_database_table('local_compalign_review', [
             'userid' => 'privacy:metadata:local_compalign_review:userid',
             'decision' => 'privacy:metadata:local_compalign_review:decision',
@@ -112,14 +120,23 @@ class provider implements
                   JOIN {local_compalign_analysis} a ON a.courseid = ctx.instanceid
                   JOIN {local_compalign_review} r ON r.analysisid = a.id
                  WHERE ctx.contextlevel = :courselevel2
-                       AND r.userid = :reviewer";
+                       AND r.userid = :reviewer
+                 UNION
+                SELECT ctx.id
+                  FROM {context} ctx
+                  JOIN {local_compalign_manualrel} m ON m.courseid = ctx.instanceid
+                 WHERE ctx.contextlevel = :courselevel3
+                       AND (m.userid = :adder OR m.removedby = :remover)";
 
         $contextlist = new contextlist();
         $contextlist->add_from_sql($sql, [
             'courselevel1' => CONTEXT_COURSE,
             'courselevel2' => CONTEXT_COURSE,
+            'courselevel3' => CONTEXT_COURSE,
             'requester' => $userid,
             'reviewer' => $userid,
+            'adder' => $userid,
+            'remover' => $userid,
         ]);
 
         return $contextlist;
@@ -146,6 +163,13 @@ class provider implements
                                              FROM {local_compalign_review} r
                                              JOIN {local_compalign_analysis} a ON a.id = r.analysisid
                                             WHERE a.courseid = :courseid", $params);
+
+        $userlist->add_from_sql('userid', "SELECT m.userid
+                                             FROM {local_compalign_manualrel} m
+                                            WHERE m.courseid = :courseid", $params);
+        $userlist->add_from_sql('removedby', "SELECT m.removedby
+                                                FROM {local_compalign_manualrel} m
+                                               WHERE m.courseid = :courseid AND m.removedby IS NOT NULL", $params);
     }
 
     /**
@@ -212,6 +236,28 @@ class provider implements
                 writer::with_context($context)->export_data(
                     [get_string('privacy:path:reviews', 'local_compalign')],
                     (object) ['reviews' => $reviews]
+                );
+            }
+
+            $added = [];
+            $relations = $DB->get_records('local_compalign_manualrel', [
+                'courseid' => $context->instanceid,
+                'userid' => $user->id,
+            ], 'timecreated ASC');
+            foreach ($relations as $relation) {
+                $added[] = (object) [
+                    'resource' => $relation->resourceid,
+                    'competency' => $relation->competencyidnumber,
+                    'status' => $relation->status,
+                    'evidence' => $relation->evidencetext,
+                    'comment' => $relation->commenttext,
+                    'added' => transform::datetime($relation->timecreated),
+                ];
+            }
+            if ($added) {
+                writer::with_context($context)->export_data(
+                    [get_string('privacy:path:manual', 'local_compalign')],
+                    (object) ['relationships' => $added]
                 );
             }
         }
@@ -298,6 +344,19 @@ class provider implements
             "courseid = :courseid AND requestedby {$usersql}",
             ['courseid' => $courseid] + $userparams
         );
+
+        $DB->delete_records_select(
+            'local_compalign_manualrel',
+            "courseid = :courseid AND userid {$usersql}",
+            ['courseid' => $courseid] + $userparams
+        );
+        $DB->set_field_select(
+            'local_compalign_manualrel',
+            'removedby',
+            null,
+            "courseid = :courseid AND removedby {$usersql}",
+            ['courseid' => $courseid] + $userparams
+        );
     }
 
     /**
@@ -307,6 +366,8 @@ class provider implements
      */
     private static function delete_analyses_of_course(int $courseid): void {
         global $DB;
+
+        $DB->delete_records('local_compalign_manualrel', ['courseid' => $courseid]);
 
         $analysisids = $DB->get_fieldset_select('local_compalign_analysis', 'id', 'courseid = :courseid', [
             'courseid' => $courseid,

@@ -234,6 +234,7 @@ append-only.
 | `local_compalign_sugg` | The original proposal: competency (Moodle id and ID number), confidence, BM25 rank, support count, order, hierarchy warnings |
 | `local_compalign_evidence` | The exact quotations and their fragment ids |
 | `local_compalign_review` | Reviewer, revision, decision, final competency (Moodle id and ID number), evidence usefulness, comment, when the card was first shown, review duration in seconds, write-back status |
+| `local_compalign_manualrel` | A competency a teacher added. Course, resource id and type, resource fingerprint, framework, competency, teacher, optional quotation and comment, status `active` or `removed`, who removed it and when. Not a model suggestion and not an official Moodle link. |
 
 The resource text itself is not stored, only its hash. The evidence quotations are.
 

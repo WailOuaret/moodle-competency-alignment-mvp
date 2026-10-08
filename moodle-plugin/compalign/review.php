@@ -37,6 +37,7 @@ use local_compalign\service\analysis_manager;
 use local_compalign\service\competency_catalogue;
 use local_compalign\service\competency_links;
 use local_compalign\service\resource_extractor;
+use local_compalign\service\manual_relationship;
 use local_compalign\service\review_manager;
 
 $cmid = required_param('cmid', PARAM_INT);
@@ -66,6 +67,18 @@ $PAGE->navbar->add(
     new moodle_url('/local/compalign/index.php', ['courseid' => $course->id])
 );
 $PAGE->navbar->add($cm->get_formatted_name());
+
+if ($action === 'removemanual' && data_submitted()) {
+    require_sesskey();
+    require_capability('local/compalign:review', $context);
+    $relationid = required_param('relationid', PARAM_INT);
+    try {
+        (new manual_relationship())->remove($relationid, $cm, (int) $USER->id, $context);
+        redirect($url, get_string('manualremoved', 'local_compalign'), null, notification::NOTIFY_SUCCESS);
+    } catch (analysis_exception $exception) {
+        redirect($url, error_messages::for_code($exception->get_error_code()), null, notification::NOTIFY_ERROR);
+    }
+}
 
 $manager = new analysis_manager();
 $supported = resource_extractor::supports($cm);

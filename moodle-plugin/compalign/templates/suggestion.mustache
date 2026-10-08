@@ -68,8 +68,10 @@
             <blockquote class="blockquote border-start ps-3 mb-2">
                 <p class="mb-0 fs-6">{{quote}}</p>
                 {{#source}}<footer class="blockquote-footer">{{source}}</footer>{{/source}}
+                {{#sourceurl}}<a href="{{{sourceurl}}}">{{#str}} showinsource, local_compalign {{/str}}</a>{{/sourceurl}}
             </blockquote>
         {{/evidence}}
+        {{#evidencenote}}<p class="text-muted">{{evidencenote}}</p>{{/evidencenote}}
 
         {{#haswarnings}}
             <div class="alert alert-warning mt-3" role="note">

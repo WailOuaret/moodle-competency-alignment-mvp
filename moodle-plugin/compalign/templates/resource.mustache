@@ -52,15 +52,36 @@
     <p class="text-muted">{{typename}} &middot; {{coursename}}</p>
     {{#hasprovenance}}<p>{{provenance}}</p>{{/hasprovenance}}
 
+    <section class="mb-4" aria-labelledby="local-compalign-reviewed">
+        <h3 class="h5" id="local-compalign-reviewed">{{#str}} column_reviewed, local_compalign {{/str}}</h3>
+        {{#hasreviewedsummary}}
+            <ul>
+                {{#reviewedsummary}}
+                    <li>
+                        <strong>{{text}}</strong> — {{origin}}
+                        {{#stale}}<br><span class="text-warning">{{#str}} reviewed_stale, local_compalign {{/str}}</span>{{/stale}}
+                        {{#removehtml}}<br>{{{removehtml}}}{{/removehtml}}
+                    </li>
+                {{/reviewedsummary}}
+            </ul>
+        {{/hasreviewedsummary}}
+        {{^hasreviewedsummary}}
+            <p class="text-muted">{{#str}} reviewed_none, local_compalign {{/str}}</p>
+        {{/hasreviewedsummary}}
+        {{#summarywarnings}}<p class="text-warning">{{text}}</p>{{/summarywarnings}}
+        {{#canadd}}<p><a class="btn btn-secondary" href="{{{addurl}}}">{{#str}} addcompetency, local_compalign {{/str}}</a></p>{{/canadd}}
+    </section>
+
     <section aria-labelledby="local-compalign-links">
         <h3 class="h5" id="local-compalign-links">{{#str}} officiallinks, local_compalign {{/str}}</h3>
         {{#haslinks}}
             <ul>
                 {{#links}}<li><strong>{{idnumber}}</strong> {{shortname}}</li>{{/links}}
             </ul>
+            <p class="text-muted">{{#str}} writeback_still_off, local_compalign {{/str}}</p>
         {{/haslinks}}
         {{^haslinks}}
-            <p class="text-muted">{{#str}} officiallinks_none, local_compalign {{/str}}</p>
+            <p class="text-muted">{{#str}} official_none_help, local_compalign {{/str}}</p>
         {{/haslinks}}
     </section>
 

@@ -15,18 +15,25 @@ should gain as **competencies**: here, 13 competencies of the UTC GI framework (
 "Concevoir et mettre en œuvre des architectures informatiques", and the more specific competencies
 below it).
 
-The assistant reads one Page and **suggests** which competencies the Page supports. For every
-suggestion it shows the **exact sentences from your Page** that it relied on, so you can check the
-reasoning in a few seconds instead of taking its word for it.
+The assistant reads a resource and **suggests** which competencies that resource supports. A
+resource can be a Page, one quiz question, a PDF, a Word document, a PowerPoint file, a text or
+Markdown file, a caption file, a Book chapter, assignment instructions, or a Lesson page. For every
+suggestion it shows the **exact sentences** it relied on. **Show in source** opens those sentences
+in the surrounding text.
 
-The site you were invited to analyses Pages. A later version, not installed on this site, can also
-review one quiz question at a time, a PDF page, a presentation slide, a caption timestamp, a Book
-chapter, assignment instructions and a Lesson page. Evidence then names that place. Scanned PDFs
-and videos without a transcript are not analysed.
+The course screen has two tabs.
 
-**You decide.** The assistant never decides and never changes anything in Moodle. In this pilot,
-saving a decision does **not** create or change any Moodle competency link. It only records what you
-decided so that we can learn from it.
+- **Resources** lists each resource, the competencies you have confirmed, the model's proposals,
+  and any official Moodle competency links. Those three lists are separate.
+- **Competencies** lets you pick a competency and see which resources are associated with it, and
+  why: model proposal, accepted, modified, added by you, or an official Moodle link.
+
+**You decide.** You can accept a suggestion, reject it, or replace it with another competency from
+the framework. You can also use **Add competency** when the model missed one. Adding a competency
+does not replace the suggestion you already accepted. The assistant never decides for you, and it
+does not mark a choice as correct. In this pilot, saving a decision does **not** create or change
+any official Moodle competency link. Official links, when Moodle already has them, are shown on
+their own. Write-back is off.
 
 The suggestions come from an AI language model. It can be wrong, and it can miss something. Your
 judgement is the point of the exercise. Treat each suggestion as a colleague's proposal.

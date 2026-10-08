@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/compalign/db" VERSION="2026100301" COMMENT="XMLDB file for Moodle local/compalign"
+<XMLDB PATH="local/compalign/db" VERSION="2026100701" COMMENT="XMLDB file for Moodle local/compalign"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -10,8 +10,8 @@
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Course module of the analysed resource."/>
         <FIELD NAME="resourceid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Stable resource id sent to the service, for example moodle:page:42."/>
-        <FIELD NAME="sourceitemid" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="Same stable id, kept so a course module can hold many items."/>
-        <FIELD NAME="extractorversion" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="Document extractor version. Empty for HTML activities."/>
+        <FIELD NAME="sourceitemid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Same stable id, kept so a course module can hold many items."/>
+        <FIELD NAME="extractorversion" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Document extractor version. Empty for HTML activities."/>
         <FIELD NAME="provenance" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON describing where the evidence sits: page, question, file, chapter."/>
         <FIELD NAME="resourcetype" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="researchstatus" TYPE="char" LENGTH="40" NOTNULL="true" DEFAULT="development" SEQUENCE="false" COMMENT="development, development_live_verification, pilot or excluded. Set when the analysis is created and not inferred from the time."/>
@@ -129,6 +129,39 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="hash_version" UNIQUE="true" FIELDS="contenthash, extractorversion"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_compalign_manualrel" COMMENT="A competency a teacher added to a resource. Not a model suggestion and not an official Moodle link.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="resourceid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="resourcetype" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="resourcehash" TYPE="char" LENGTH="80" NOTNULL="true" SEQUENCE="false" COMMENT="Fingerprint of the resource when the teacher added the competency."/>
+        <FIELD NAME="frameworkid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="competencyid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="competencyidnumber" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The teacher who added the competency."/>
+        <FIELD NAME="evidencetext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Optional quotation supplied by the teacher."/>
+        <FIELD NAME="evidenceprovenance" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="commenttext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="active" SEQUENCE="false" COMMENT="active or removed."/>
+        <FIELD NAME="researchstatus" TYPE="char" LENGTH="40" NOTNULL="true" DEFAULT="development" SEQUENCE="false"/>
+        <FIELD NAME="removedby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timeremoved" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="course_resource_status" UNIQUE="false" FIELDS="courseid, resourceid, status"/>
+        <INDEX NAME="course_competency_status" UNIQUE="false" FIELDS="courseid, competencyidnumber, status"/>
+        <INDEX NAME="user_course" UNIQUE="false" FIELDS="userid, courseid"/>
       </INDEXES>
     </TABLE>
   </TABLES>

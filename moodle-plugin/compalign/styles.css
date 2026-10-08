@@ -7,3 +7,53 @@
 .local-compalign-card form:not(:has(input[type="radio"][name="decision"][value="modify"]:checked)) .fitem:has(select[name="finalcompetency"]) {
     display: none !important;
 }
+
+/* Competency alignment: keep the Moodle theme and make the tables readable on a phone. */
+
+.local-compalign-source mark {
+    background: #fff3bf;
+    padding: 0 0.15em;
+}
+
+.local-compalign-source-text {
+    white-space: pre-wrap;
+}
+
+@media (max-width: 576px) {
+    .local-compalign-dashboard table thead,
+    .local-compalign-competencies table thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+    }
+
+    .local-compalign-dashboard table,
+    .local-compalign-dashboard tbody,
+    .local-compalign-dashboard tr,
+    .local-compalign-dashboard td,
+    .local-compalign-dashboard th,
+    .local-compalign-competencies table,
+    .local-compalign-competencies tbody,
+    .local-compalign-competencies tr,
+    .local-compalign-competencies td,
+    .local-compalign-competencies th {
+        display: block;
+        width: 100%;
+    }
+
+    .local-compalign-dashboard tr,
+    .local-compalign-competencies tr {
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .local-compalign-dashboard td::before,
+    .local-compalign-competencies td::before {
+        content: attr(data-label);
+        display: block;
+        font-weight: 600;
+    }
+}

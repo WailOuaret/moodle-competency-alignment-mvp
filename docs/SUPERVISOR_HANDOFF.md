@@ -296,3 +296,20 @@ A later staging site can let supervisors try quiz questions, PDF, DOCX, PPTX, tr
 ## 21. Future retrieval comparison, not started
 
 Retrieval is unchanged. A later branch, `experiment/retrieval-v2`, could compare the current BM25 tokeniser with stop-word handling, framework aliases and synonyms, parent/child terminology expansion, and per-framework retrieval settings, and only after that with hybrid BM25 plus dense retrieval. Retrieval misses (the expected competency was not in the Top-5) must be counted separately from model-selection misses (the expected competency was in the Top-5 and the model chose something else, or chose it together with an extra label). Frozen experiment files and the recorded 0.3.0 live predictions must not be overwritten by that comparison.
+
+## 22. Release 0.3.1 — both directions, before the teacher study
+
+The teacher study had not started, so the teacher-facing screens were extended. The alignment engine was not retuned. Top-K, the prompt, the schema and the frozen metrics are unchanged. Official write-back stays off.
+
+Release 0.3.1 (plugin version `2026100701`) adds:
+
+- A course screen with two tabs, **Resources** and **Competencies**. Resources is the default.
+- On each resource, separate lists for teacher-reviewed competencies, model proposals, and official Moodle competency links. "Reviewed" is the review status. It does not mean the competency is linked in Moodle. When there is no official link, the screen says write-back is disabled for this pilot.
+- **Add competency**, independent of Accept, Reject and Modify. The competency must belong to the configured framework. A duplicate of a current teacher-reviewed competency is refused. Removing an addition keeps the row with status `removed`.
+- A **Competencies** tab that reads the configured framework from Moodle and lists the resources associated with the selected competency. The same stored analyses, reviews, teacher-added rows and official Moodle links feed both directions. The view is a table, not a graph.
+- **Show in source**, which highlights a stored quotation in the canonical text. It does not call the model again. A teacher must be allowed to view the plugin and the activity. An evidence id from another course is refused.
+- Study-export columns `relationship_source`, `relationship_status` and `teacher_evidence`. Rejections are not exported as relationships.
+
+Teacher-reviewed relationships follow the decision: accept keeps the proposed competency, modify keeps the replacement, reject keeps nothing, and a teacher-added competency is stored in `local_compalign_manualrel`. The same final competency is shown once. If the resource changes, the old relationship is marked stale and is not treated as current.
+
+UTC Moodle has not been deployed. What that administration team would need to check is in [UTC_MOODLE_DEPLOYMENT_CHECKLIST.md](UTC_MOODLE_DEPLOYMENT_CHECKLIST.md).

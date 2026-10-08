@@ -1,0 +1,93 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_compalign/competencies
+
+    The configured framework and the resources associated with one competency.
+}}
+<div class="local-compalign-competencies">
+    <p>{{#str}} competencies_intro, local_compalign {{/str}}</p>
+    <form method="get" action="{{{searchurl}}}" class="mb-3" role="search">
+        <input type="hidden" name="courseid" value="{{courseid}}">
+        <input type="hidden" name="view" value="competencies">
+        <label class="me-2" for="compalign-q">{{#str}} competencysearch, local_compalign {{/str}}</label>
+        <input id="compalign-q" type="text" name="q" value="{{query}}" class="form-control d-inline-block w-auto">
+        <button type="submit" class="btn btn-secondary">{{#str}} search {{/str}}</button>
+    </form>
+
+    {{#hascompetencies}}
+        <ul class="list-unstyled">
+            {{#competencies}}
+                <li>
+                    <a href="{{{url}}}" {{#active}}aria-current="page"{{/active}}>{{pad}}<strong>{{idnumber}}</strong> {{shortname}}</a>
+                    <br><small class="text-muted">{{breadcrumb}}</small>
+                </li>
+            {{/competencies}}
+        </ul>
+    {{/hascompetencies}}
+    {{^hascompetencies}}
+        <p class="text-muted">{{#str}} competencies_none, local_compalign {{/str}}</p>
+    {{/hascompetencies}}
+
+    {{#selected}}
+        <nav class="mb-3" aria-label="{{#str}} relfilter_all, local_compalign {{/str}}">
+            {{#filters}}
+                <a class="{{classes}}" href="{{{url}}}" {{#active}}aria-current="page"{{/active}}>{{label}}</a>
+            {{/filters}}
+        </nav>
+        {{#hasrows}}
+            <div class="table-responsive">
+                <table class="generaltable table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{#str}} column_resource, local_compalign {{/str}}</th>
+                            <th scope="col">{{#str}} column_type, local_compalign {{/str}}</th>
+                            <th scope="col">{{#str}} column_relationship, local_compalign {{/str}}</th>
+                            <th scope="col">{{#str}} column_reviewstatus, local_compalign {{/str}}</th>
+                            <th scope="col">{{#str}} column_evidence, local_compalign {{/str}}</th>
+                            <th scope="col">{{#str}} column_official_link, local_compalign {{/str}}</th>
+                            <th scope="col">{{#str}} column_action, local_compalign {{/str}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#rows}}
+                            <tr>
+                                <th scope="row">{{name}}</th>
+                                <td>{{type}}</td>
+                                <td>{{relationship}}</td>
+                                <td>{{reviewstatus}}</td>
+                                <td>
+                                    {{#sourceurl}}<a href="{{{sourceurl}}}">{{evidence}}</a>{{/sourceurl}}
+                                    {{^sourceurl}}{{evidence}}{{/sourceurl}}
+                                    {{#evidencenote}}<br><small>{{evidencenote}}</small>{{/evidencenote}}
+                                </td>
+                                <td>{{#official}}{{#str}} yes {{/str}}{{/official}}{{^official}}{{#str}} no {{/str}}{{/official}}</td>
+                                <td>
+                                    {{#openurl}}<a href="{{{openurl}}}">{{#str}} openmoodleresource, local_compalign {{/str}}</a>{{/openurl}}
+                                    {{#reviewurl}}<br><a href="{{{reviewurl}}}">{{#str}} openreview, local_compalign {{/str}}</a>{{/reviewurl}}
+                                </td>
+                            </tr>
+                        {{/rows}}
+                    </tbody>
+                </table>
+            </div>
+        {{/hasrows}}
+        {{#showempty}}
+            <p class="text-muted">{{#str}} competency_noresources, local_compalign {{/str}}</p>
+        {{/showempty}}
+    {{/selected}}
+</div>

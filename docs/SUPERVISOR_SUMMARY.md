@@ -4,7 +4,7 @@
 
 The research MVP maps a learning resource to competencies from the UTC GI catalogue. BM25 proposes five candidates. A constrained model may select only from that list, and only with a quotation copied from the resource. A person decides.
 
-That engine is now inside Moodle. The local plugin `local_compalign` (Competency Alignment Assistant, release 0.2.0) sends a course Page and the live competency framework to a Python service. The service returns suggestions. The teacher accepts, rejects, or replaces each one. Saving a decision does not write a Moodle competency link.
+That engine is now inside Moodle. The local plugin `local_compalign` (Competency Alignment Assistant, release 0.3.1) sends a course resource and the live competency framework to a Python service. The service returns suggestions. The teacher accepts, rejects, or replaces each one, and can add a competency the model missed. The course screen has a Resources tab and a Competencies tab. Model proposals, teacher-reviewed relationships and official Moodle links are shown separately. Saving a decision does not write a Moodle competency link. Write-back stays off.
 
 ## Where it runs
 

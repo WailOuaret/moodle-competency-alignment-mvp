@@ -92,6 +92,10 @@ $report = [
     ],
     'analyses' => ['total' => array_sum($byStatus), 'by_status' => $byStatus],
     'reviews' => $DB->count_records('local_compalign_review'),
+    'suggestions' => $DB->count_records('local_compalign_sugg'),
+    'evidence' => $DB->count_records('local_compalign_evidence'),
+    'manual_relationships' => $DB->count_records('local_compalign_manualrel'),
+    'manual_relationships_active' => $DB->count_records('local_compalign_manualrel', ['status' => 'active']),
     'checks' => $checks,
 ];
 echo json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;

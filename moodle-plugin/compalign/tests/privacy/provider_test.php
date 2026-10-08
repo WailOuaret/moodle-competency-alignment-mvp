@@ -92,6 +92,7 @@ final class provider_test extends provider_testcase {
             'local_compalign_analysis',
             'local_compalign_review',
             'local_compalign_extract',
+            'local_compalign_manualrel',
             'alignmentservice',
         ], $names);
 

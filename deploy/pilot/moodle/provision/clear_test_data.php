@@ -6,15 +6,22 @@
 //
 // This is for the day the pilot starts: whatever was saved while the site was being tested (for
 // example the one live-model test) must not be mixed with the teachers' decisions. It touches the
-// four tables of local_compalign and nothing else: not users, not the course, not Moodle's own
-// competency links. Take a backup first (scripts/backup.sh); the wrapper script does.
+// the plugin's analysis, review and teacher-added relationship tables, and nothing else:
+// not users, not the course, not Moodle's own competency links, and not the file-text cache.
+// Take a backup first (scripts/backup.sh); the wrapper script does.
 
 require(__DIR__ . '/_bootstrap.php');
 
 [$options] = cli_get_params(['count' => false, 'confirm' => ''], []);
 
 // Children first.
-$tables = ['local_compalign_review', 'local_compalign_evidence', 'local_compalign_sugg', 'local_compalign_analysis'];
+$tables = [
+    'local_compalign_manualrel',
+    'local_compalign_review',
+    'local_compalign_evidence',
+    'local_compalign_sugg',
+    'local_compalign_analysis',
+];
 
 $counts = static function () use ($DB, $tables): array {
     $result = [];

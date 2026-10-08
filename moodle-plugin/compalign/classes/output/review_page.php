@@ -19,8 +19,11 @@ namespace local_compalign\output;
 use core\output\named_templatable;
 use core\output\renderable;
 use core\output\renderer_base;
+use local_compalign\service\analysis_exception;
 use local_compalign\service\analysis_manager;
 use local_compalign\service\catalogue_snapshot;
+use local_compalign\service\relationship_index;
+use local_compalign\service\resource_extractor;
 use local_compalign\service\review_manager;
 
 /**
@@ -106,7 +109,7 @@ class review_page implements renderable, named_templatable {
             'actionhtml' => $this->actionhtml,
             'hascards' => (bool) $cards,
             'cards' => $cards,
-        ];
+        ] + $this->relationship_summary();
     }
 
     /**
@@ -207,6 +210,9 @@ class review_page implements renderable, named_templatable {
                 : get_string('unknownvalue', 'local_compalign'),
             'supportcount' => (int) $suggestion->supportcount,
             'passages' => implode(', ', $fragments),
+            'evidencenote' => ($this->reviews[(int) $suggestion->id]->decision ?? '') === review_manager::DECISION_MODIFY
+                ? get_string('evidence_original_proposal', 'local_compalign')
+                : '',
             'reviewed' => $this->export_review($this->reviews[(int) $suggestion->id] ?? null),
             'form' => $this->forms[(int) $suggestion->id] ?? '',
         ];
@@ -218,6 +224,92 @@ class review_page implements renderable, named_templatable {
      * @param \stdClass|null $review The review, if any.
      * @return array|null Summary and when it was saved, or null when not yet reviewed.
      */
+    /**
+     * Teacher-reviewed competencies, kept separate from official Moodle links.
+     *
+     * @return array Template fields.
+     */
+    private function relationship_summary(): array {
+        global $USER;
+
+        $resourceid = $this->analysis->resourceid ?? '';
+        $hash = null;
+        if ($this->supported && $resourceid !== '') {
+            try {
+                $hash = (new resource_extractor())->extract($this->cm, (string) $resourceid)['hash'];
+            } catch (analysis_exception) {
+                $hash = null;
+            }
+        }
+
+        $bundle = ['reviewed' => [], 'warnings' => []];
+        if ($resourceid !== '') {
+            $bundles = (new relationship_index())->bundles((int) $this->cm->course, (int) $USER->id, [
+                (string) $resourceid => $hash,
+            ]);
+            $bundle = $bundles[(string) $resourceid] ?? $bundle;
+        }
+
+        $reviewed = [];
+        foreach ($bundle['reviewed'] as $entry) {
+            $origin = match ($entry['source']) {
+                relationship_index::TEACHER_ADDED => get_string('origin_added', 'local_compalign'),
+                relationship_index::TEACHER_MODIFIED => get_string('origin_modified', 'local_compalign'),
+                default => get_string('origin_accepted', 'local_compalign'),
+            };
+            $removehtml = '';
+            if ($entry['source'] === relationship_index::TEACHER_ADDED && !empty($entry['manualid'])
+                    && has_capability('local/compalign:review', \context_module::instance($this->cm->id))) {
+                $removehtml = $this->remove_control((int) $entry['manualid']);
+            }
+            $reviewed[] = [
+                'text' => $entry['idnumber'] . ' ' . $entry['shortname'],
+                'origin' => $origin,
+                'stale' => !empty($entry['stale']),
+                'removehtml' => $removehtml,
+            ];
+        }
+
+        $canadd = $this->supported && $resourceid !== ''
+            && has_capability('local/compalign:review', \context_module::instance($this->cm->id));
+
+        return [
+            'reviewedsummary' => $reviewed,
+            'hasreviewedsummary' => (bool) $reviewed,
+            'summarywarnings' => array_map(static fn(string $text): array => ['text' => $text], $bundle['warnings'] ?? []),
+            'canadd' => $canadd,
+            'addurl' => $canadd ? (new \moodle_url('/local/compalign/add.php', [
+                'cmid' => $this->cm->id,
+                'item' => $resourceid,
+            ]))->out(false) : '',
+        ];
+    }
+
+    /**
+     * A button that withdraws one teacher-added competency.
+     *
+     * @param int $id The relationship id.
+     * @return string
+     */
+    private function remove_control(int $id): string {
+        $url = new \moodle_url('/local/compalign/review.php', [
+            'cmid' => $this->cm->id,
+            'item' => (string) ($this->analysis->resourceid ?? ''),
+        ]);
+        $html = \html_writer::start_tag('form', ['method' => 'post', 'action' => $url->out(false), 'class' => 'd-inline']);
+        $html .= \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+        $html .= \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'removemanual']);
+        $html .= \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'relationid', 'value' => $id]);
+        $html .= \html_writer::empty_tag('input', [
+            'type' => 'submit',
+            'class' => 'btn btn-link btn-sm p-0',
+            'value' => get_string('removemanual', 'local_compalign'),
+        ]);
+        $html .= \html_writer::end_tag('form');
+
+        return $html;
+    }
+
     /**
      * The human provenance stored with the analysis, such as a chapter or a file name.
      *
@@ -293,7 +385,15 @@ class review_page implements renderable, named_templatable {
                     default => '',
                 };
             }
-            $rows[] = ['quote' => $quote, 'source' => $source];
+            $sourceurl = '';
+            if ($this->analysis !== null && !empty($item->id)) {
+                $sourceurl = (new \moodle_url('/local/compalign/source.php', [
+                    'cmid' => $this->cm->id,
+                    'item' => (string) $this->analysis->resourceid,
+                    'evidence' => (int) $item->id,
+                ]))->out(false);
+            }
+            $rows[] = ['quote' => $quote, 'source' => $source, 'sourceurl' => $sourceurl];
         }
 
         return $rows;
